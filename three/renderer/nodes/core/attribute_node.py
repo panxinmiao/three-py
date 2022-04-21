@@ -1,0 +1,32 @@
+#from three.renderer.nodes import Node, VaryNode, NodeBuilder
+
+from .node import Node
+from .vary_node import VaryNode
+from .node_builder import NodeBuilder
+
+class AttributeNode(Node):
+    def __init__(self, attributeName, nodeType=None) -> None:
+        super().__init__(nodeType=nodeType)
+        self._attributeName = attributeName
+
+    def getHash(self, builder ):
+        return self.getAttributeName( builder )
+
+    def setAttributeName(self, attributeName ):
+        self._attributeName = attributeName
+        return self
+
+    def getAttributeName(self, *args):
+        '''/*builder*/'''
+        return self._attributeName
+
+    def generate( self, builder:'NodeBuilder'):
+        attribute = builder.getAttribute( self.getAttributeName( builder ), self.getNodeType( builder ) )
+        if builder.isShaderStage( 'vertex' ):
+            return attribute.name
+        else:
+            nodeVary = VaryNode( self )
+            return nodeVary.build( builder, attribute.type )
+
+    
+
