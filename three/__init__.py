@@ -12,4 +12,4 @@ from .geometries import *
 from .lights import *
 from .controls import *
 
-__version__ = "0.0.1-alpha"
+__version__ = "0.0.1"
