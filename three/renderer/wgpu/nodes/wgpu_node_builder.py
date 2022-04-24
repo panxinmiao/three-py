@@ -3,11 +3,7 @@ from typing import Iterable
 
 from ....structure import Dict
 
-from ...nodes import (NodeBuilder, ModelViewProjectionNode, VarNode, MaterialNode, NormalNode, LightContextNode, WGSLNodeParser, PositionNode, OperatorNode, CodeNode,
-        BypassNode, SkinningNode, ExpressionNode, nodeObject, add, join, ColorSpaceNode, vec3, mix, mul, add)
-from ....constants import LinearEncoding
-# from ...shaders import ShaderLib
-from ...nodes.functions.material.getRoughness import getRoughness
+from ...nodes import NodeBuilder, WGSLNodeParser, CodeNode
 from ..wgpu_buffer_utils import getStrideLength, getVectorLength
 from .wgpu_node_sampler import WgpuNodeSampler
 from .wgpu_node_sampled_texture import WgpuNodeSampledTexture, WgpuNodeSampledCubeTexture
@@ -72,12 +68,12 @@ fn mod( x : f32, y : f32 ) -> f32 {
 	return x - y * floor( x / y );
 }
 ''' ),
-    'smoothstep':  CodeNode( '''
-fn smoothstep( low : f32, high : f32, x : f32 ) -> f32 {
-    let t = clamp( ( x - low ) / ( high - low ), 0.0, 1.0 );
-    return t * t * ( 3.0 - 2.0 * t );
-}
-''' ),
+#     'smoothstep':  CodeNode( '''
+# fn smoothstep( low : f32, high : f32, x : f32 ) -> f32 {
+#     let t = clamp( ( x - low ) / ( high - low ), 0.0, 1.0 );
+#     return t * t * ( 3.0 - 2.0 * t );
+# }
+# ''' ),
 	'repeatWrapping': CodeNode( '''
 fn repeatWrapping( uv : vec2<f32>, dimension : vec2<i32> ) -> vec2<i32> {
 	let uvScaled = vec2<i32>( uv * vec2<f32>( dimension ) );
@@ -101,172 +97,15 @@ class WgpuNodeBuilder(NodeBuilder):
 
         self.builtins = set()
 
-    # @property
-    # def lightNode(self):
-    #     return self._lightNode
-
-    # @lightNode.setter
-    # def lightNode(self, value):
-    #     self._lightNode = value
 
     def build(self):
         fromMaterial(self.material).build(self)
-        #self._parseObject()
         return super().build()
-
-
-    def _parseObject(self):
-        object = self.object
-        material = self.material
-
-        # parse inputs
-
-        if material.isMeshStandardMaterial or material.isMeshBasicMaterial or material.isPointsMaterial or material.isLineBasicMaterial or material.isMeshNormalMaterial:
-            lightNode = material.lightNode
-
-            # VERTEX STAGE
-            vertex = PositionNode( PositionNode.GEOMETRY )
-            
-            if lightNode == None and self.lightNode:
-                lightNode = self.lightNode
-
-            if material.positionNode and material.positionNode.isNode:
-                assignPositionNode = OperatorNode( '=', PositionNode( PositionNode.LOCAL ), material.positionNode )
-                vertex = BypassNode( vertex, assignPositionNode )
-
-            if object.isSkinnedMesh:
-                vertex = BypassNode( vertex, SkinningNode( object ) )
-
-            self.context.vertex = vertex
-            self.addFlow( 'vertex', VarNode( ModelViewProjectionNode(), 'MVP', 'vec4' ) )
-
-            # COLOR
-            colorNode = None
-
-            if material.isMeshNormalMaterial:
-                colorNode = NormalNode( NormalNode.VIEW )
-                colorNode = mul(colorNode, 0.5)
-                colorNode = add(colorNode, 0.5)
-                # colorNode = OperatorNode( '*', colorNode, FloatNode( 0.5 ).setConst( True ))
-                # colorNode = OperatorNode( '+', colorNode, FloatNode( 0.5 ).setConst( True ))
-            else:
-                if material.colorNode and material.colorNode.isNode:
-                    colorNode = material.colorNode
-                else:
-                    colorNode = MaterialNode( MaterialNode.COLOR )
-
-            colorNode = self.addFlow( 'fragment', VarNode( colorNode, 'Color', 'vec4' ) )
-
-            diffuseColorNode = self.addFlow( 'fragment', VarNode( colorNode, 'DiffuseColor', 'vec4' ) )
-
-            # OPACITY
-
-            opacityNode = None
-
-            if material.opacityNode and material.opacityNode.isNode:
-                opacityNode = material.opacityNode
-            else:
-                opacityNode = VarNode( MaterialNode( MaterialNode.OPACITY ) )
-
-            self.addFlow( 'fragment', VarNode( opacityNode, 'OPACITY', 'float' ) )
-
-            self.addFlow( 'fragment', ExpressionNode( 'DiffuseColor.a = DiffuseColor.a * OPACITY;' ) )
-
-            # ALPHA TEST
-            alphaTest = None
-
-            if material.alphaTestNode and material.alphaTestNode.isNode:
-                alphaTest = material.alphaTestNode
-            elif material.alphaTest > 0:
-                alphaTest = MaterialNode( MaterialNode.ALPHA_TEST )
-
-            if alphaTest is not None:
-                self.addFlow( 'fragment', VarNode( alphaTest, 'AlphaTest', 'float' ) )
-                self.addFlow( 'fragment', ExpressionNode( 'if ( DiffuseColor.a <= AlphaTest ) { discard; }' ) )
-
-            if material.isMeshStandardMaterial:
-                # METALNESS
-                metalnessNode = None
-
-                if material.metalnessNode and material.metalnessNode.isNode:
-                    metalnessNode = material.metalnessNode
-                else:
-                    metalnessNode = MaterialNode( MaterialNode.METALNESS )
-
-                self.addFlow( 'fragment', VarNode( metalnessNode, 'Metalness', 'float' ) )
-
-                self.addFlow( 'fragment', ExpressionNode( 'DiffuseColor = vec4<f32>( DiffuseColor.rgb * ( 1.0 - Metalness ), DiffuseColor.a );' ) )
-
-                # ROUGHNESS
-
-                roughnessNode = None
-
-                if material.roughnessNode and material.roughnessNode.isNode:
-                    roughnessNode = material.roughnessNode
-                else:
-                    roughnessNode = MaterialNode( MaterialNode.ROUGHNESS )
-
-                roughnessNode = getRoughness( { 'roughness': roughnessNode } )
-
-                self.addFlow( 'fragment', VarNode( roughnessNode, 'Roughness', 'float' ) )
-                
-                # SPECULAR_TINT
-
-                self.addFlow( 'fragment', VarNode( ExpressionNode( 'mix( vec3<f32>( 0.04 ), Color.rgb, Metalness )', 'vec3' ), 'SpecularColor', 'color' ) )
-
-                # NORMAL_VIEW
-
-                normalNode = None
-
-                if material.normalNode and material.normalNode.isNode:
-                    normalNode = material.normalNode
-                else:
-                    normalNode = NormalNode( NormalNode.VIEW )
-
-                self.addFlow( 'fragment', VarNode( normalNode, 'TransformedNormalView', 'vec3' ) )
-
-            # LIGHT
-            outputNode = diffuseColorNode
-
-            if lightNode and lightNode.isNode and lightNode.hasLight != False:
-                lightContextNode = LightContextNode( lightNode )
-                outputNode = self.addFlow( 'fragment', VarNode( lightContextNode, 'Light', 'vec3' ) )
-
-            # OUTGOING LIGHT
-            outgoingLightNode = vec3( outputNode )
-
-            # EMISSIVE
-            emissiveNode = material.emissiveNode
-
-            if emissiveNode and emissiveNode.isNode:
-                outgoingLightNode = add( emissiveNode, outgoingLightNode )
-
-            # OUTPUT
-            outputNode = join( vec3( outgoingLightNode ), nodeObject( diffuseColorNode ).w )
-            
-            # ENCODING
-            outputEncoding = self.renderer.outputEncoding
-
-            if outputEncoding != LinearEncoding:
-                outputNode =  ColorSpaceNode( ColorSpaceNode.LINEAR_TO_LINEAR, outputNode )
-                outputNode.fromEncoding( outputEncoding )
-
-            # FOG
-
-            fogNode = self.fogNode
-
-            if fogNode and fogNode.isFogNode:
-                outputNode = mix( outputNode, fogNode.colorNode, fogNode )
-
-            self.addFlow( 'fragment', VarNode( outputNode, 'Output', 'vec4' ) )
-
 
     def addFlowCode( self, code ):
         if not _flow_p.match(code):
             code += ';'
         super().addFlowCode( code + '\n\t' )
-
-
 
     def getSampler( self, textureProperty, uvSnippet, shaderStage = None ):
 
@@ -280,11 +119,6 @@ class WgpuNodeBuilder(NodeBuilder):
             dimension = f'textureDimensions( {textureProperty}, 0 )'
             
             return f'textureLoad( {textureProperty}, repeatWrapping( {uvSnippet}, {dimension} ), 0 )'
-
-        # if biasSnippet:
-        #     return f'texture( sampler2D( {textureProperty}, {textureProperty}_sampler ), {uvSnippet}, {biasSnippet} )'
-        # else:
-        #     return f'texture( sampler2D( {textureProperty}, {textureProperty}_sampler ), {uvSnippet} )'
 
     def getSamplerBias( self, textureProperty, uvSnippet, biasSnippet, shaderStage = None ):
         if shaderStage is None:
@@ -337,7 +171,6 @@ class WgpuNodeBuilder(NodeBuilder):
             if type == 'texture' or type == 'cubeTexture':
                 return name
             elif type == 'buffer':
-                #return f'NodeBuffer.{name}'
                 return f'NodeBuffer_{node.node.id}.{name}'
             else:
                 return f'NodeUniforms.{name}'
@@ -430,24 +263,14 @@ class WgpuNodeBuilder(NodeBuilder):
     def getAttributes(self, shaderStage ):
         snippets = []
         if shaderStage == 'vertex':
-            #if self.builtins.has( 'instance_index' ):
             if 'instance_index' in self.builtins:
-                snippets.append( '[[ builtin( instance_index ) ]] instanceIndex : u32' )
+                snippets.append( '@builtin( instance_index ) instanceIndex : u32' )
 
             attributes = self.attributes
-            length = len(attributes)
-            #snippet += '\n'
             for index, attribute in enumerate(attributes):
                 name = attribute.name
                 type = self.getType( attribute.type )
-                snippets.append(f'[[ location( {index} )]] { name } : { type }')
-
-                #snippet += f'\t[[ location( {index} )]] { name } : { type }'
-
-                # if index + 1 < length:
-                #     snippet += ',\n'
-            
-            #snippet += '\n'
+                snippets.append(f'@location( {index} ) { name } : { type }')
 
         return  ',\n\t'.join(snippets)
 
@@ -461,8 +284,6 @@ class WgpuNodeBuilder(NodeBuilder):
         for variable in vars:
             name = variable.name
             type = self.getType( variable.type )
-
-            #snippet += f'var {name} : {type}; '
             snippets.append( f'var {name} : {type}; ' )
 
         code = '\n'.join( snippets )
@@ -470,44 +291,30 @@ class WgpuNodeBuilder(NodeBuilder):
 
 
     def getVarys(self, shaderStage ):
-        #snippets = []
-        snippet= ''
+        snippets = []
         if shaderStage == 'vertex':
-            #snippets.append( '[[ builtin( position ) ]] Vertex: vec4<f32>' )
-            snippet += '\t[[ builtin( position ) ]] Vertex: vec4<f32>;\n'
-            
+            snippets.append( '@builtin( position ) Vertex: vec4<f32>' )
             varys = self.varys
 
             for index, vary in enumerate(varys):
-                snippet += f'\t[[ location( {index} ) ]] { vary.name } : { self.getType( vary.type ) };\n'
-                #snippets.append(f'[[ location( {index} ) ]] { vary.name } : { self.getType( vary.type ) }' )
-
-            #snippet = self._getWGSLStruct( 'NodeVarysStruct', snippet )
+                snippets.append(f'@location( {index} ) { vary.name } : { self.getType( vary.type ) }' )
 
         elif shaderStage == 'fragment':
             varys = self.varys
-            #snippet += '\n'
             for index, vary in enumerate(varys):
-                # snippets.append( f'[[ location( {index} ) ]] { vary.name } : { self.getType( vary.type ) }' )
-                snippet += f'\t [[ location( {index} ) ]] { vary.name } : { self.getType( vary.type ) }'
+                snippets.append( f'@location( {index} ) { vary.name } : { self.getType( vary.type ) }' )
 
-                if index + 1 < len(varys):
-                    snippet += ',\n'
-
-            snippet += '\n'
-
-        #return snippet
-
-        #code = '\n\t'.join(snippets)
-        return self._getWGSLStruct( 'NodeVarysStruct', '\t' + snippet ) if shaderStage == 'vertex' else snippet
+        code = ',\n\t'.join(snippets)
+        return self._getWGSLStruct( 'NodeVarysStruct', '\t' + code ) if shaderStage == 'vertex' else code
 
     
     def getUniforms(self, shaderStage ):
 
         uniforms = self.uniforms[ shaderStage ]
 
-        snippet = ''
-        groupSnippet = ''
+        bindingSnippets = []
+        bufferSnippets = []
+        groupSnippets = []
 
         index = self.bindingsOffset[ shaderStage ]
 
@@ -515,31 +322,31 @@ class WgpuNodeBuilder(NodeBuilder):
             if uniform.type == 'texture':
                 
                 if shaderStage == 'fragment':
-                    snippet += f'[[ group( 0 ), binding( {index} ) ]] var {uniform.name}_sampler : sampler; '
+                    bindingSnippets.append( f'@group( 0 ) @binding( {index} ) var {uniform.name}_sampler : sampler;' )
                     index += 1
 
-                snippet += f'[[ group( 0 ), binding( {index } ) ]] var {uniform.name} : texture_2d<f32>; '
+                bindingSnippets.append( f'@group( 0 ) @binding( {index} ) var {uniform.name} : texture_2d<f32>;' )
                 index += 1
 
             elif uniform.type == 'cubeTexture':
 
                 if shaderStage == 'fragment':
-                    # snippet += f'@group( 0 ) @binding( ${index} ) var ${uniform.name}_sampler : sampler; '
-                    snippet += f'[[ group( 0 ), binding( {index} ) ]] var {uniform.name}_sampler : sampler; '
+                    bindingSnippets.append( f'@group( 0 ) @binding( {index} ) var {uniform.name}_sampler : sampler;' )
                     index += 1
 
-                # snippet += f'@group( 0 ) @binding( ${index} ) var ${uniform.name} : texture_cube<f32>; '
-                snippet += f'[[ group( 0 ), binding( {index } ) ]] var {uniform.name} : texture_cube<f32>; '
+                bindingSnippets.append( f'@group( 0 ) @binding( {index} ) var {uniform.name} : texture_cube<f32>;' )
                 index += 1
 
-            elif uniform.type == 'buffer':
+            elif uniform.type == 'buffer' or uniform.type == 'storageBuffer':
                 bufferNode = uniform.node
                 bufferType = self.getType( bufferNode.bufferType )
                 bufferCount = bufferNode.bufferCount
 
-                bufferSnippet = f'\t{uniform.name} : array< {bufferType}, {bufferCount} >;\n'
+                bufferCountSnippet =  ', ' + str(bufferCount) if bufferCount > 0 else ''
+                bufferSnippet = f'\t{uniform.name} : array< {bufferType}{bufferCountSnippet} >\n'
+                bufferAccessMode = 'storage,read_write' if bufferNode.isStorageBufferNode else 'uniform'
 
-                snippet += self._getWGSLUniforms( 'NodeBuffer_' + str(bufferNode.id), bufferSnippet, index  ) + '\n\n'
+                bufferSnippets.append( self._getWGSLStructBinding( 'NodeBuffer_' + str(bufferNode.id), bufferSnippet, bufferAccessMode, index ) )
                 index += 1
 
             else:
@@ -547,18 +354,25 @@ class WgpuNodeBuilder(NodeBuilder):
 
                 if isinstance(uniform.value, Iterable):
                     length = len(uniform.value)
-                    groupSnippet += f'uniform {vectorType}[ {length} ] {uniform.name}; '
+                    groupSnippets.append( f'uniform {vectorType}[ {length} ] {uniform.name}' )
                 else:
-                    groupSnippet += f'\t{uniform.name} : { vectorType};\n'
+                    groupSnippets.append( f'\t{uniform.name} : { vectorType}' )
 
+        code = '\n'.join(bindingSnippets)
+        code += '\n'.join(bufferSnippets)
 
-
-        if len(groupSnippet)>0:
-            # snippet += f'layout(set = 0, binding = {index}) uniform NodeUniforms {{ {groupSnippet} }} nodeUniforms; '
-            snippet += self._getWGSLUniforms( 'NodeUniforms', groupSnippet, index )
+        if len(groupSnippets) > 0:
+            code += self._getWGSLStructBinding( 'NodeUniforms', ',\n'.join(groupSnippets), 'uniform', index )
             index += 1
+        
+        return code
 
-        return snippet
+        # if len(groupSnippet)>0:
+        #     # snippet += f'layout(set = 0, binding = {index}) uniform NodeUniforms {{ {groupSnippet} }} nodeUniforms; '
+        #     snippet += self._getWGSLUniforms( 'NodeUniforms', groupSnippet, index )
+        #     index += 1
+
+        # return snippet
 
     
     def buildCode(self):
@@ -604,8 +418,12 @@ class WgpuNodeBuilder(NodeBuilder):
             stageData.codes = self.getCodes( shaderStage )
             stageData.flow = flow
 
-        self.vertexShader = self._getWGSLVertexCode( shadersData.vertex )
-        self.fragmentShader = self._getWGSLFragmentCode( shadersData.fragment )
+        if self.material is not None:
+            self.vertexShader = self._getWGSLVertexCode( shadersData.vertex )
+            self.fragmentShader = self._getWGSLFragmentCode( shadersData.fragment )
+        else:
+            # self.computeShader = self._getWGSLComputeCode( shadersData.compute, ( self.object.workgroupSize || [ 64 ] ).join( ', ' ) );
+            pass
 
     def getMethod( self, method ):
         m = wgslPolyfill.get(method, None)
@@ -644,38 +462,55 @@ class WgpuNodeBuilder(NodeBuilder):
 
     def _getWGSLVertexCode( self, shaderData ):
         return f'''{ self.getSignature() }
+
 // uniforms
 {shaderData.uniforms}
+
 // varys
 {shaderData.varys}
+
 // codes
 {shaderData.codes}
-[[ stage( vertex ) ]]
+
+@stage( vertex )
 fn main( {shaderData.attributes} ) -> NodeVarysStruct {{
+
 	// system
 	var NodeVarys: NodeVarysStruct;
+
 	// vars
 	{shaderData.vars}
+
 	// flow
 	{shaderData.flow}
+
 	return NodeVarys;
+
 }}
 '''
 
     def _getWGSLFragmentCode( self, shaderData ):
         return f'''{ self.getSignature() }
+
 // uniforms
 {shaderData.uniforms}
+
 // codes
 {shaderData.codes}
-[[ stage( fragment ) ]]
-fn main( {shaderData.varys} ) -> [[ location( 0 ) ]] vec4<f32> {{
+
+@stage( fragment )
+fn main( {shaderData.varys} ) -> @location( 0 ) vec4<f32> {{
+
 	// vars
 	{shaderData.vars}
+
 	// flow
 	{shaderData.flow}
 }}
 '''
+
+    def _getWGSLComputeCode( self, shaderData, workgroupSize ):
+        pass
 
     def _getWGSLStruct( self, name, vars ):
         return f'''
@@ -683,19 +518,27 @@ struct {name} {{
 \n{vars}
 }};'''
 
-
-    def _getWGSLUniforms( self, name, vars, binding = 0, group = 0 ):
+    def _getWGSLStructBinding( self, name, vars, access, binding = 0, group = 0 ):
         structName = name + 'Struct'
         structSnippet = self._getWGSLStruct( structName, vars )
 
-#         s = f'''{structSnippet}
-# @binding( {binding} ) @group( {group} )
-# var<uniform> {name} : {structName};'''
-        s = f'''{structSnippet}
-[[group({group}), binding({binding})]]
-var<uniform> {name} : {structName};'''
+        return f'''{structSnippet}
+@binding( {binding} ) @group( {group} )
+var<{access}> {name} : {structName};'''
 
-        return s
+
+#     def _getWGSLUniforms( self, name, vars, binding = 0, group = 0 ):
+#         structName = name + 'Struct'
+#         structSnippet = self._getWGSLStruct( structName, vars )
+
+# #         s = f'''{structSnippet}
+# # @binding( {binding} ) @group( {group} )
+# # var<uniform> {name} : {structName};'''
+#         s = f'''{structSnippet}
+# [[group({group}), binding({binding})]]
+# var<uniform> {name} : {structName};'''
+
+#         return s
 
 
 

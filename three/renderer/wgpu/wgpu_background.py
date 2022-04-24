@@ -43,37 +43,34 @@ class WgpuBackground:
         if renderer.autoClear or forceClear:
             if renderer.autoClearColor:
                 WgpuBackground._clearColor.multiplyScalar( WgpuBackground._clearAlpha )
-                # colorAttachment.clear_value = { 'r': WgpuBackground._clearColor.r, 'g': WgpuBackground._clearColor.g, 'b': WgpuBackground._clearColor.b, 'a': WgpuBackground._clearAlpha }
-                # colorAttachment.load_value = GPULoadOp.Clear
-                colorAttachment.load_value = { 'r': WgpuBackground._clearColor.r, 'g': WgpuBackground._clearColor.g, 'b': WgpuBackground._clearColor.b, 'a': WgpuBackground._clearAlpha }
+                colorAttachment.clear_value = (WgpuBackground._clearColor.r, WgpuBackground._clearColor.g, WgpuBackground._clearColor.b, WgpuBackground._clearAlpha)
+                colorAttachment.load_op = GPULoadOp.Clear
                 colorAttachment.store_op = GPUStoreOp.Store
 
             else:
-                colorAttachment.load_value = GPULoadOp.Load
+                colorAttachment.load_op = GPULoadOp.Load
 
             if renderer.autoClearDepth:
-                #depthStencilAttachment.depthClearValue = renderer._clearDepth
-                #depthStencilAttachment.depthLoadOp = GPULoadOp.Clear
-                depthStencilAttachment.depth_load_value = renderer._clearDepth
+                depthStencilAttachment.depth_clear_value = renderer._clearDepth
+                depthStencilAttachment.depth_load_op = GPULoadOp.Clear
 
             else:
-                depthStencilAttachment.depth_load_value = GPULoadOp.Load
+                depthStencilAttachment.depth_load_op = GPULoadOp.Load
 
 
             if renderer.autoClearStencil:
-                # depthStencilAttachment.stencilClearValue = renderer._clearStencil
-                # depthStencilAttachment.stencilLoadOp = GPULoadOp.Clear
-                depthStencilAttachment.stencil_load_value = renderer._clearStencil
+                depthStencilAttachment.stencil_clear_value = renderer._clearStencil
+                depthStencilAttachment.stencil_load_op = GPULoadOp.Clear
 
             else:
-                depthStencilAttachment.stencil_load_value = GPULoadOp.Load
+                depthStencilAttachment.stencil_load_op = GPULoadOp.Load
 
 
         else:
 
-            colorAttachment.load_value = GPULoadOp.Load
-            depthStencilAttachment.depth_load_value = GPULoadOp.Load
-            depthStencilAttachment.stencil_load_value = GPULoadOp.Load
+            colorAttachment.load_op = GPULoadOp.Load
+            depthStencilAttachment.depth_load_op = GPULoadOp.Load
+            depthStencilAttachment.stencil_load_op = GPULoadOp.Load
 
 
         self.forceClear = False

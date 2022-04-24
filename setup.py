@@ -1,7 +1,5 @@
 import re
-
 from setuptools import find_packages, setup
-
 
 NAME = "three-py"
 SUMMARY = "A Python render engine like threejs"
@@ -9,8 +7,7 @@ SUMMARY = "A Python render engine like threejs"
 with open(f"three/__init__.py") as fh:
     VERSION = re.search(r"__version__ = \"(.*?)\"", fh.read()).group(1)
 
-
-runtime_deps = ["wgpu>=0.7.7,<0.8.0"]
+runtime_deps = ["wgpu>=0.8.0,<0.9.0"]
 
 setup(
     name=NAME,
@@ -25,11 +22,9 @@ setup(
     ],
     packages=find_packages(
         include=["three", 'three.*'], exclude=["*.tests", "*.tests.*", "tests.*", "tests"]
-        # exclude=["codegen", "codegen.*", "tests", "tests.*", "examples", "examples.*"]
     ),
     python_requires=">=3.7.0",
     install_requires=runtime_deps,
-    #extras_require=extra_deps,
     license="MIT",
     description=SUMMARY,
     long_description=open("README.md").read(),

@@ -182,45 +182,12 @@ class WgpuRenderer(NoneAttribute):
         # TODO async?
         pass
 
-    def show(self):
-        self._canvas._draw_frame_and_present()
-        import asyncio
-        loop = asyncio.get_event_loop()
-
-        async def mainloop():
-            while not self._canvas.is_closed():
-                await asyncio.sleep(0.001)
-                self._canvas.poll_events()
-
-            loop.stop()
-
-        loop.create_task(mainloop())
-        loop.run_forever()
-
-
     def setAnimationLoop(self, animationLoop):
         self._canvas.request_draw(animationLoop)
-        # import asyncio
-        # loop = asyncio.get_event_loop()
-
-        # async def mainloop():
-        #     while not self._canvas.is_closed():
-        #         animationLoop()
-        #         self._canvas._draw_frame_and_present()
-        #         await asyncio.sleep(0.001)
-        #         self._canvas.poll_events()
-        #     loop.stop()
-
-
-        # loop.create_task(mainloop())
-        # loop.run_forever()
-
-    # def show(self,  scene:'three.Scene', camera:'three.Camera' ):
-    #     self._canvas.request_draw(lambda : self.render(scene, camera))
 
     def render( self, scene:'three.Scene', camera:'three.Camera' ):
 
-        # @TODO: move this to animation loop
+        # @TODO: move this to animation loop?
 
         cw, ch = self._canvas.get_physical_size()
 
@@ -325,13 +292,10 @@ class WgpuRenderer(NoneAttribute):
             self._renderObjects( transparentObjects, camera, scene, lightNode, passEncoder )
         # finish render pass
     
-        passEncoder.end_pass()
+        passEncoder.end()
         device.queue.submit([cmd_encoder.finish()])
 
         if renderTarget is None:
-            # pass 
-            # self._canvas._need_draw = True
-            # self._canvas._draw_frame_and_present()
             if ch !=0 and cw != 0:
                 self._canvas.request_draw()
         
