@@ -7,7 +7,7 @@ class JoinNode(Node):
         super().__init__()
         self.nodes = nodes
 
-    def getNodeType( self, builder ):
+    def getNodeType( self, builder, *args ):
         count = 0
         for node in self.nodes:
             count += builder.getTypeLength( node.getNodeType( builder ) )

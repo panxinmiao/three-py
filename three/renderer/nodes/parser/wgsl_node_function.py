@@ -6,7 +6,7 @@ __declarationRegexp = re.compile(r'^fn\s*([a-z_0-9]+)?\s*\(([\s\S]*?)\)\s*\-\>\s
 
 __propertiesRegexp = re.compile(r'[a-z_0-9]+', flags=re.I)
 
-def __parse( source: str ):
+def _parse( source: str ):
     ''' wlsl souce code parser
 
     Parameters:
@@ -16,13 +16,12 @@ def __parse( source: str ):
         ( type, inputs, name, inputsCode, blockCode )
     '''
     source = source.strip()
-    declaration = __declarationRegexp.findall(source)
+    declaration = __declarationRegexp.findall(source)[0]
 
     match = __declarationRegexp.match(source)
 
     if match and len(match.groups()) == 3:
         # tokenizer
-
         inputsCode = declaration[ 1 ]
         propsMatches = __propertiesRegexp.findall(inputsCode)
 
@@ -64,7 +63,7 @@ class WGSLNodeFunction(NodeFunction):
 
     def __init__(self, source) -> None:
         #p = parse(source)
-        type, inputs, name, inputsCode, blockCode = __parse( source )
+        type, inputs, name, inputsCode, blockCode = _parse( source )
         super().__init__(type, inputs, name=name)
 
         self.inputsCode = inputsCode

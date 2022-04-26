@@ -13,7 +13,7 @@ class CondNode(Node):
         self.ifNode = ifNode
         self.elseNode = elseNode
 
-    def getNodeType( self, builder ):
+    def getNodeType( self, builder, *args ):
         
         ifType = self.ifNode.getNodeType( builder )
         elseType = self.elseNode.getNodeType( builder )

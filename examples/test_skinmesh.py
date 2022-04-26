@@ -1,20 +1,13 @@
-import three, math
-
+import three, math, time, os
 from wgpu.gui.auto import WgpuCanvas, run
 
-canvas = WgpuCanvas(size=(640, 480), title="wgpu_renderer")
-
-render = three.WgpuRenderer(canvas, parameters={'antialias': True})
-render.init()
-
-camera = three.PerspectiveCamera(70, 640 / 480, 0.01, 100 )
-camera.position.z = 30
-
-scene = three.Scene()
-
+''' 
+    Vulkan backend does not support at present.
+    For more information, see: https://github.com/gfx-rs/naga/pull/1820/commits/65f8750dbae95efd25d60189285269643e9bd453 
+'''
+os.environ["WGPU_BACKEND_TYPE"] = "D3D12"
 
 def createGeometry( sizing ):
-    print(sizing)
     geometry = three.CylinderGeometry( 5, 5, sizing.height, 8, sizing.segmentHeight, True )
     position = geometry.attributes.position
 
@@ -24,21 +17,17 @@ def createGeometry( sizing ):
 
     for i in range(position.count):
         vertex.fromBufferAttribute( position, i )
-        # skinIndices.append( three.Vector4(0, 0, 0, 0) )
-        # skinWeights.append( three.Vector4(0, 0, 0, 0) )
 
         y = ( vertex.y + sizing.halfHeight )
 
         skinIndex = math.floor( y / sizing.segmentHeight )
         skinWeight = ( y % sizing.segmentHeight ) / sizing.segmentHeight
 
-        #skinIndices.append( skinIndex, skinIndex + 1, 0, 0 )
         skinIndices.append( skinIndex )
         skinIndices.append( skinIndex+1 )
         skinIndices.append( 0 )
         skinIndices.append( 0 )
 
-        #skinWeights.append( 1 - skinWeight, skinWeight, 0, 0 )
         skinWeights.append( 1 - skinWeight )
         skinWeights.append( skinWeight )
         skinWeights.append( 0 )
@@ -70,11 +59,13 @@ def createBones( sizing ):
 
 
 def createMesh( geometry, bones ):
-    print(bones)
     material = three.MeshNormalMaterial()
     material.side = three.DoubleSide
 
-    #material.side = three.DoubleSide
+    # flat shading
+    from three.renderer.nodes import add, mul, normalize, cross, dFdx, dFdy, positionWorld
+    material.colorNode = add(mul(normalize(cross(dFdx(positionWorld), dFdy(positionWorld))), 0.5), 0.5)
+    
     mesh = three.SkinnedMesh(geometry, material)
     skeleton = three.Skeleton( bones )
 
@@ -84,7 +75,7 @@ def createMesh( geometry, bones ):
     return mesh
 
 
-def initBones():
+def init():
     segmentHeight = 8
     segmentCount = 4
     height = segmentHeight * segmentCount
@@ -97,26 +88,40 @@ def initBones():
         'halfHeight': halfHeight
     })
 
+    canvas = WgpuCanvas(size=(640, 480), title="Skinmesh")
+
+    render = three.WgpuRenderer(canvas, parameters={'antialias': True})
+    render.init()
+
+    camera = three.PerspectiveCamera(75, 640 / 480, 0.1, 200 )
+    camera.position.z = 30
+    camera.position.y = 30
+
+    scene = three.Scene()
+
     geometry = createGeometry( sizing )
     bones = createBones( sizing )
     mesh = createMesh( geometry, bones )
 
     mesh.scale.multiplyScalar( 1 )
+
     scene.add( mesh )
+    skeleton = three.SkeletonHelper( mesh )
 
-    control = three.OrbitControls(camera, canvas)
+    scene.add( skeleton )
 
+    three.OrbitControls(camera, canvas)
 
+    def loop():
+        t = time.time()
+        for bone in mesh.skeleton.bones:
+            bone.rotation.z = math.sin( t ) * 2 / len(mesh.skeleton.bones)
+        render.render(scene, camera)
 
+    render.setAnimationLoop(loop)
 
+    run()
 
+if __name__ == '__main__':
+    init()
 
-initBones()
-
-
-def loop():
-    render.render(scene, camera)
-
-render.setAnimationLoop(loop)
-
-run()

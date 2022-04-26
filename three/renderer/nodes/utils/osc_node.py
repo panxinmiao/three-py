@@ -17,7 +17,7 @@ class OscNode(Node):
         self.method = method
         self.timeNode = timeNode
 
-    def getNodeType( self, builder ):
+    def getNodeType( self, builder, *args ):
         return self.timeNode.getNodeType( builder )
 
     def generate( self, builder ):

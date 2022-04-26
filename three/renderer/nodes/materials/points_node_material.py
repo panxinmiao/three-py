@@ -37,4 +37,4 @@ class PointsNodeMaterial(NodeMaterial):
 
         self.positionNode = source.positionNode
 
-        return super.copy( source )
+        return super().copy( source )

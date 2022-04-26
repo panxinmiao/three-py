@@ -2,6 +2,7 @@ from .wgpu_render_pipeline import WgpuRenderPipeline
 from .wgpu_programmable_stage import WgpuProgrammableStage
 from weakref import WeakKeyDictionary
 from ...structure import Dict
+import os
 
 class WgpuRenderPipelines:
 
@@ -39,9 +40,9 @@ class WgpuRenderPipelines:
             nodeBuilder = self.nodes.get( object )
             
             # programmable stages
-
-            # print('===============stageVertex=================', nodeBuilder.vertexShader)
-            # print('===============stageFragment=================', nodeBuilder.fragmentShader)
+            if os.getenv('SHOW_WGSL') == 'on':
+                print('\n===============Stage Vertex=================\n', nodeBuilder.vertexShader)
+                print('\n===============Stage Fragment=================\n', nodeBuilder.fragmentShader)
 
             stageVertex = self.stages.vertex.get( nodeBuilder.vertexShader )
             if stageVertex is None:

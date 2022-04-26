@@ -8,7 +8,7 @@ class LightContextNode(ContextNode):
         super().__init__(node)
         self.lightingModelNode = lightingModelNode
 
-    def getNodeType(self, builder):
+    def getNodeType(self, *args ):
         return 'vec3'
 
     def generate( self, builder ):

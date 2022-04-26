@@ -66,7 +66,7 @@ class Geometry(EventDispatcher):
             self.index = index
         return self
 
-    def getAttribute( self, name ):
+    def getAttribute( self, name ) -> 'BufferAttribute':
         return self.attributes[name]
     
     def setAttribute( self, name, attribute ) -> 'Geometry':
@@ -617,3 +617,96 @@ class Geometry(EventDispatcher):
             geometry2.addGroup( group.start, group.count, group.materialIndex )
             
         return geometry2
+
+    def clone(self):
+        return self.__class__().copy( self )
+
+    def copy( self, source:'Geometry' ):
+        # reset
+        self.index = None
+        self.attributes = Dict({})
+        self.morphAttributes = Dict({})
+        self.groups = []
+        self.boundingBox = None
+        self.boundingSphere = None
+
+        # used for storing cloned, shared data
+
+        # data = {}
+
+        # name
+
+        self.name = source.name
+
+        # index
+
+        index = source.index
+
+        if index is not None:
+            self.setIndex( index.clone() )
+
+        # attributes
+
+        attributes = source.attributes
+
+        for name in attributes:
+            attribute = attributes[ name ]
+            self.setAttribute( name, attribute.clone() )
+
+
+        # morph attributes
+
+        morphAttributes = source.morphAttributes
+
+        for name in morphAttributes:
+
+            array = []
+            morphAttribute = morphAttributes[ name ]; # morphAttribute: array of Float32BufferAttributes
+
+            for i in range(morphAttribute.length):
+                array.append( morphAttribute[ i ].clone() )
+
+            self.morphAttributes[ name ] = array
+
+        self.morphTargetsRelative = source.morphTargetsRelative
+
+        # groups
+
+        groups = source.groups
+        for i in range(len(groups)):
+            group = groups[ i ]
+            self.addGroup( group.start, group.count, group.materialIndex )
+
+        # bounding box
+
+        boundingBox = source.boundingBox
+
+        if boundingBox is not None:
+            self.boundingBox = boundingBox.clone()
+
+        # bounding sphere
+
+        boundingSphere = source.boundingSphere
+
+        if boundingSphere is not None:
+            self.boundingSphere = boundingSphere.clone()
+
+
+        # draw range
+
+        self.drawRange.start = source.drawRange.start
+        self.drawRange.count = source.drawRange.count
+
+        # user data
+
+        self.userData = source.userData
+
+        # geometry generator parameters
+
+        if source.parameters is not None:
+            self.parameters = source.parameters.copy()
+
+        return self
+
+    def dispose(self):
+        self.dispatchEvent( { 'type': 'dispose' } )

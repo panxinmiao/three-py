@@ -15,7 +15,7 @@ class ContextNode(Node):
     # def getContextValue( self, name ):
     #     return self.context[ name ]
 
-    def getNodeType( self, builder ):
+    def getNodeType( self, builder , *args ):
         return self.node.getNodeType( builder )
 
     def generate( self, builder, output ):

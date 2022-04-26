@@ -1,7 +1,6 @@
 #from array import array
 from ..structure import NoneAttribute, TypedArray, Dict
 from ..structure import Int8Array, Uint8Array,  Int16Array, Uint16Array, Int32Array, Uint32Array, BigInt64Array, BigUint64Array ,Float32Array, Float64Array
-from copy import copy
 from ..math import Color, Vector2, Vector3, Vector4, Matrix3, Matrix4
 from warnings import warn
 
@@ -89,11 +88,11 @@ class BufferAttribute(NoneAttribute):
             if color is None:
                 warn( f'THREE.BufferAttribute.copyColorsArray(): color is undefined, {i}' )
                 color = Color()
-            array[ offset  ] = color.r
+            array[ offset ] = color.r
             offset +=1
-            array[ offset  ] = color.g
+            array[ offset ] = color.g
             offset +=1
-            array[ offset  ] = color.b
+            array[ offset ] = color.b
             offset +=1
 
         return self
@@ -281,7 +280,7 @@ class BufferAttribute(NoneAttribute):
         return self
 
     def clone(self):
-        return BufferAttribute( self.array, self.itemSize ).copy( self )
+        return self.__class__( self.array, self.itemSize ).copy( self )
 
 
     #TODO set and transform
@@ -305,10 +304,9 @@ class Uint8ClampedBufferAttribute(BufferAttribute):
         super().__init__( Uint8Array( ary ), itemSize, normalized)
 
 
-# class Int16BufferAttribute(BufferAttribute):
-#     def __init__(self, ary, itemSize, normalized=False) -> None:
-#         super().__init__( Uint8ClampedArray( ary ), itemSize, normalized)
-
+class Int16BufferAttribute(BufferAttribute):
+    def __init__(self, ary, itemSize, normalized=False) -> None:
+        super().__init__( Int16Array( ary ), itemSize, normalized)
 
 class Uint16BufferAttribute(BufferAttribute):
     def __init__(self, ary, itemSize, normalized=False) -> None:
@@ -321,6 +319,14 @@ class Int32BufferAttribute(BufferAttribute):
 class Uint32BufferAttribute(BufferAttribute):
     def __init__(self, ary, itemSize, normalized=False) -> None:
         super().__init__( Uint32Array( ary ), itemSize, normalized)
+
+class BigInt64BufferAttribute(BufferAttribute):
+    def __init__(self, ary, itemSize, normalized=False) -> None:
+        super().__init__( BigInt64Array( ary ), itemSize, normalized)
+
+class BigUInt64BufferAttribute(BufferAttribute):
+    def __init__(self, ary, itemSize, normalized=False) -> None:
+        super().__init__( BigUint64Array( ary ), itemSize, normalized)
 
 # class Float16BufferAttribute(BufferAttribute):
 #     def __init__(self, ary, itemSize, normalized=False) -> None:

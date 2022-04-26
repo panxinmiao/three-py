@@ -11,5 +11,6 @@ from .materials import *
 from .geometries import *
 from .lights import *
 from .controls import *
+from .helpers import *
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"

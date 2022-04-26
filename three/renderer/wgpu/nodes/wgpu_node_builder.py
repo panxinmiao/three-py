@@ -284,7 +284,7 @@ class WgpuNodeBuilder(NodeBuilder):
         for variable in vars:
             name = variable.name
             type = self.getType( variable.type )
-            snippets.append( f'var {name} : {type}; ' )
+            snippets.append( f'\tvar {name} : {type}; ' )
 
         code = '\n'.join( snippets )
         return f"\n{code}\n"
@@ -461,7 +461,7 @@ class WgpuNodeBuilder(NodeBuilder):
         raise Exception( f'Uniform "{type}" not declared.' )
 
     def _getWGSLVertexCode( self, shaderData ):
-        return f'''{ self.getSignature() }
+        return f'''{self.getSignature()}
 
 // uniforms
 {shaderData.uniforms}
@@ -525,50 +525,6 @@ struct {name} {{
         return f'''{structSnippet}
 @binding( {binding} ) @group( {group} )
 var<{access}> {name} : {structName};'''
-
-
-#     def _getWGSLUniforms( self, name, vars, binding = 0, group = 0 ):
-#         structName = name + 'Struct'
-#         structSnippet = self._getWGSLStruct( structName, vars )
-
-# #         s = f'''{structSnippet}
-# # @binding( {binding} ) @group( {group} )
-# # var<uniform> {name} : {structName};'''
-#         s = f'''{structSnippet}
-# [[group({group}), binding({binding})]]
-# var<uniform> {name} : {structName};'''
-
-#         return s
-
-
-
-    # def composeShaderCode(self, code:str, snippet ):
-
-	# 	#use regex maybe for security?
-    #     versionStrIndex = code.index( '\n' )
-    #     finalCode = code[:versionStrIndex] + '\n\n'
-    #     #finalCode = code.substr( 0, versionStrIndex ) + '\n\n'
-
-    #     finalCode += snippet
-
-    #     finalCode += code[versionStrIndex:]
-    #     #finalCode += code.substr( versionStrIndex );
-
-    #     return finalCode
-
-    # def build(self):
-    #     keywords = self.getContextValue( 'keywords' )
-        
-    #     for shaderStage in [ 'vertex', 'fragment' ]:
-    #         self.shaderStage = shaderStage
-    #         keywords.include( self, self.nativeShader.fragmentShader )
-
-    #     super().build()
-
-    #     self.vertexShader = self.composeShaderCode( self.nativeShader.vertexShader, self.vertexShader )
-    #     self.fragmentShader = self.composeShaderCode( self.nativeShader.fragmentShader, self.fragmentShader )
-
-    #     return self
 
 
 

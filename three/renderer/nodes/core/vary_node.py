@@ -16,7 +16,7 @@ class VaryNode(Node):
         else:
             return super().getHash( builder )
 
-    def getNodeType( self, builder:'NodeBuilder' ):
+    def getNodeType( self, builder:'NodeBuilder' , *args ):
 
 		# VaryNode is auto type
         return self.node.getNodeType( builder )
