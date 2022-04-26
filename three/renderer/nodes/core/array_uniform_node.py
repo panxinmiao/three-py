@@ -7,5 +7,5 @@ class ArrayUniformNode(UniformNode):
         super().__init__()
         self.nodes = nodes or []
 
-    def getNodeType(self, builder):
+    def getNodeType(self, builder, *args ):
         return self.nodes[ 0 ].getNodeType( builder )

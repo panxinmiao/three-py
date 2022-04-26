@@ -2,8 +2,6 @@ import weakref, warnings, re
 
 import three
 from ....structure import NoneAttribute, Dict
-# from ....constants import LinearEncoding
-#from three.renderer.nodes import NodeUpdateType, NodeAttribute, NodeCode, NodeUniform, NodeVar, NodeVary, NodeKeywords
 
 from .constants import NodeUpdateType
 from .node_attribute import NodeAttribute
@@ -14,10 +12,6 @@ from .node_vary import NodeVary
 from .node_keywords import NodeKeywords
 
 _shaderStages = [ 'fragment', 'vertex' ]
-
-_vector = [ 'x', 'y', 'z', 'w' ]
-
-_type = type
 
 _componet_exp = re.compile('(b|i|u|)(vec|mat)([2-4])')
 
@@ -490,7 +484,7 @@ class NodeBuilder(NoneAttribute):
         toTypeLength = self.getTypeLength( toType )
         if fromTypeLength > 4: # fromType is matrix-like
 
-            vectorType = self.getVectorFromMatrix( fromType )
+            # vectorType = self.getVectorFromMatrix( fromType )
             # return self.format( f'( { snippet } * { self.getType( vectorType ) }( 1.0 ) )', vectorType, toType )
 
             # ignore for now
@@ -515,89 +509,7 @@ class NodeBuilder(NoneAttribute):
 
         return f"{ self.getType( toType ) }( { snippet } )" # fromType is float-like
 
-
-    # def format(self, snippet, fromType, toType ):
-    #     fromType = self.getVectorType( fromType )
-    #     toType = self.getVectorType( toType )
-
-    #     typeToType = f'{fromType} to {toType}'
-
-    #     if typeToType == 'int to float' :
-    #         return f"{ self.getType( 'float' ) }( { snippet } )"
-        
-    #     if typeToType == 'int to vec2' :
-    #         return f"{ self.getType( 'vec2' ) }( { self.getType( 'float' ) }( { snippet } ) )"
-
-    #     if typeToType ==  'int to float' : 
-    #         return f"{ self.getType( 'float' ) }( { snippet } )"
-    #     if typeToType ==  'int to vec2' : 
-    #         return f"{ self.getType( 'vec2' ) }( { self.getType( 'float' ) }( { snippet } ) )"
-    #     if typeToType ==  'int to vec3' : 
-    #         return f"{ self.getType( 'vec3' ) }( { self.getType( 'float' ) }( { snippet } ) )"
-    #     if typeToType ==  'int to vec4' : 
-    #         return f"{ self.getType( 'vec4' ) }( { self.getType( 'vec3' ) }( { self.getType( 'float' ) }( { snippet } ) ), 1.0 )"
-
-    #     if typeToType ==  'float to int' :
-    #         return f"{ self.getType( 'int' ) }( { snippet } )"
-    #     if typeToType ==  'float to vec2' : 
-    #         return f"{ self.getType( 'vec2' ) }( { snippet } )"
-    #     if typeToType ==  'float to vec3' : 
-    #         return f"{ self.getType( 'vec3' ) }( { snippet } )"
-    #     if typeToType ==  'float to vec4' : 
-    #         return f"{ self.getType( 'vec4' ) }( { self.getType( 'vec3' ) }( { snippet } ), 1.0 )"
-
-    #     if typeToType ==  'vec2 to int' : 
-    #         return f"{ self.getType( 'int' ) }( { snippet }.x )"
-    #     if typeToType ==  'vec2 to float' : 
-    #         return f"{ snippet }.x"
-    #     if typeToType ==  'vec2 to vec3' : 
-    #         return f"{ self.getType( 'vec3' ) }( { snippet }, 0.0 )"
-    #     if typeToType ==  'vec2 to vec4' : 
-    #         return f"{ self.getType( 'vec4' ) }( { snippet }.xy, 0.0, 1.0 )"
-
-    #     if typeToType ==  'vec3 to int' : 
-    #         return f"{ self.getType( 'int' ) }( { snippet }.x )"
-    #     if typeToType ==  'vec3 to float' : 
-    #         return f"{ snippet }.x"
-    #     if typeToType ==  'vec3 to vec2' : 
-    #         return f"{ snippet }.xy"
-    #     if typeToType ==  'vec3 to vec4' : 
-    #         return f"{ self.getType( 'vec4' ) }( { snippet }, 1.0 )"
-
-    #     if typeToType ==  'vec4 to int' : 
-    #         return f"{ self.getType( 'int' ) }( { snippet }.x )"
-    #     if typeToType ==  'vec4 to float' : 
-    #         return f"{ snippet }.x"
-    #     if typeToType ==  'vec4 to vec2' : 
-    #         return f"{ snippet }.xy"
-    #     if typeToType ==  'vec4 to vec3' : 
-    #         return f"{ snippet }.xyz"
-
-    #     if typeToType ==  'mat3 to int' : 
-    #         return f"{ self.getType( 'int' ) }( { snippet } * { self.getType( 'vec3' ) }( 1.0 ) ).x"
-    #     if typeToType ==  'mat3 to float' : 
-    #         return f"( { snippet } * { self.getType( 'vec3' ) }( 1.0 ) ).x"
-    #     if typeToType ==  'mat3 to vec2' : 
-    #         return f"( { snippet } * { self.getType( 'vec3' ) }( 1.0 ) ).xy"
-    #     if typeToType ==  'mat3 to vec3' : 
-    #         return f"( { snippet } * { self.getType( 'vec3' ) }( 1.0 ) ).xyz"
-    #     if typeToType ==  'mat3 to vec4' : 
-    #         return f"{ self.getType( 'vec4' ) }( { snippet } * { self.getType( 'vec3' ) }( 1.0 ), 1.0 )"
-
-    #     if typeToType ==  'mat4 to int' : 
-    #         return f"{ self.getType( 'int' ) }( { snippet } * { self.getType( 'vec4' ) }( 1.0 ) ).x"
-    #     if typeToType ==  'mat4 to float' : 
-    #         return f"( { snippet } * { self.getType( 'vec4' ) }( 1.0 ) ).x"
-    #     if typeToType ==  'mat4 to vec2' : 
-    #         return f"( { snippet } * { self.getType( 'vec4' ) }( 1.0 ) ).xy"
-    #     if typeToType ==  'mat4 to vec3' : 
-    #         return f"( { snippet } * { self.getType( 'vec4' ) }( 1.0 ) ).xyz"
-    #     if typeToType ==  'mat4 to vec4' : 
-    #         return f"( { snippet } * { self.getType( 'vec4' ) }( 1.0 ) )"
-
-    #     return snippet
-
     def getSignature(self):
-        return f'// Three r{ 138 } - NodeMaterial System\n'
+        return f'// Three r{ three.__version__ } - NodeMaterial System\n'
 
 

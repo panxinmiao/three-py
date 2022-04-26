@@ -347,6 +347,8 @@ class Object3D(EventDispatcher):
         e = self.matrixWorld.elements
         return target.set( e[ 8 ], e[ 9 ], e[ 10 ] ).normalize()
 
+    def raycast( self, raycaster, intersects ):
+        warn(f'{self.__class__.name}.raycast() has not been implemented yet.')
 
     def traverse(self, callback, skip_invisible=False):
         """Executes the callback on self object and all descendants.

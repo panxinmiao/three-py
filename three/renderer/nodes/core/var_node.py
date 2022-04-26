@@ -37,8 +37,7 @@ class VarNode(Node):
         else:
             return super().getHash( builder )
 
-
-    def getNodeType( self, builder:'NodeBuilder' ):
+    def getNodeType( self, builder:'NodeBuilder' , *args ):
         type = super().getNodeType( builder )
         if type is not None :
             return type

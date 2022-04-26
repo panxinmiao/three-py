@@ -10,7 +10,7 @@ class BypassNode(Node):
         self.callNode = callNode
 
     
-    def getNodeType( self, builder ):
+    def getNodeType( self, builder , *args ):
         return self.outputNode.getNodeType( builder )
 
 

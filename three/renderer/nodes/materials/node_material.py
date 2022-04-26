@@ -1,6 +1,7 @@
 from inspect import isfunction
 from ....materials import ShaderMaterial
 from ..core.expression_node import ExpressionNode
+from ..core.attribute_node import AttributeNode
 
 from ..shader.shader_node_elements import (float, vec3, vec4,
 	assign, label, mul, add, bypass,
@@ -44,8 +45,15 @@ class NodeMaterial(ShaderMaterial):
         builder.addFlow( 'vertex', modelViewProjection() )
 
         # < FRAGMENT STAGE >
+        if not self.colorNode and self.vertexColors == True:
+            self.colorNode = AttributeNode('color', 'vec3')
 
         colorNode = vec4( self.colorNode or materialColor )
+
+        # TODO - add support for flatShading?
+        # if self.flatShading:
+        #     colorNode = add(mul(normalize(cross(dFdx(positionWorld), dFdy(positionWorld))), 0.5), 0.5)
+
         opacityNode = float( self.opacityNode ) if self.opacityNode else materialOpacity
 
         # COLOR

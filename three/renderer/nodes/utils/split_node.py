@@ -10,7 +10,7 @@ class SplitNode(Node):
         self.components = components
 
     
-    def getNodeType( self, builder ):
+    def getNodeType( self, builder, *args ):
 
         return builder.getTypeFromLength( len(self.components) )
 

@@ -14,12 +14,10 @@ class FunctionCallNode(TempNode):
         self.parameters = parameters
         return self
 
-
     def getParameters( self ):
         return self.parameters
 
-
-    def getNodeType( self, builder ):
+    def getNodeType( self, builder , *args ):
         return self.functionNode.getNodeType( builder )
 
     def generate( self, builder:'NodeBuilder' ):

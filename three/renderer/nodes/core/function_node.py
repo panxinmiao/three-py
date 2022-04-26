@@ -13,10 +13,8 @@ class FunctionNode(CodeNode):
         #self.useKeywords = True
         self.keywords = {}
 
-    
-    def getNodeType( self, builder:'NodeBuilder'):
+    def getNodeType( self, builder:'NodeBuilder', *args ):
         return self.getNodeFunction( builder ).type
-
 
     def getInputs( self, builder ):
         return self.getNodeFunction( builder ).inputs
