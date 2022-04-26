@@ -1,14 +1,13 @@
 
 from .node_material import NodeMaterial
-from ....materials import PointsMaterial
+from three.materials import LineBasicMaterial
 
-defaultValues = PointsMaterial()
-class PointsNodeMaterial(NodeMaterial):
+defaultValues = LineBasicMaterial()
+
+class LineBasicNodeMaterial(NodeMaterial):
 
     def __init__(self, parameters) -> None:
         super().__init__()
-
-        self.transparent = True
 
         self.colorNode = None
         self.opacityNode = None
@@ -17,11 +16,10 @@ class PointsNodeMaterial(NodeMaterial):
 
         self.lightNode = None
 
-        self.sizeNode = None
-
         self.positionNode = None
 
         self.setDefaultValues( defaultValues )
+
         self.setValues( parameters )
 
     def copy( self, source ):
@@ -32,8 +30,6 @@ class PointsNodeMaterial(NodeMaterial):
         self.alphaTestNode = source.alphaTestNode
 
         self.lightNode = source.lightNode
-
-        self.sizeNode = source.sizeNode
 
         self.positionNode = source.positionNode
 

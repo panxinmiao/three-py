@@ -63,7 +63,7 @@ def createMesh( geometry, bones ):
     material.side = three.DoubleSide
 
     # flat shading
-    from three.renderer.nodes import add, mul, normalize, cross, dFdx, dFdy, positionWorld
+    from three.nodes import add, mul, normalize, cross, dFdx, dFdy, positionWorld
     material.colorNode = add(mul(normalize(cross(dFdx(positionWorld), dFdy(positionWorld))), 0.5), 0.5)
     
     mesh = three.SkinnedMesh(geometry, material)

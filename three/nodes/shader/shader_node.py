@@ -1,6 +1,6 @@
 
 from .shader_node_utils import shader_node_objects, shader_node_object
-from ....structure import Dict
+from three.structure import Dict
 
 # def shader_node_object(obj):
 #     if isinstance(obj, int) or isinstance(obj, float):

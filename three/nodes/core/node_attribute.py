@@ -1,6 +1,6 @@
-from ....structure import NoneAttribute
+from three.structure import NoneAttribute
 
-class NodeVar(NoneAttribute):
+class NodeAttribute(NoneAttribute):
 
     def __init__(self, name, type) -> None:
         super().__init__()

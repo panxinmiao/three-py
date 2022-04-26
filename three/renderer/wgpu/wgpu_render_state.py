@@ -3,7 +3,7 @@ from weakref import WeakKeyDictionary
 class WebGPURenderState:
 
     def __init__(self) -> None:
-        from ..nodes import LightsNode
+        from three.nodes import LightsNode
         self.lightsNode = LightsNode()
         self.lightsArray = []
 

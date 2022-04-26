@@ -1,7 +1,7 @@
 import uuid, warnings
 
 #from three.renderer.nodes import NodeUpdateType, NodeBuilder
-from ....structure import NoneAttribute
+from three.structure import NoneAttribute
 from .constants import NodeUpdateType
 from .node_builder import NodeBuilder
 from .node_utils import getNodesKeys

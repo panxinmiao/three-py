@@ -1,4 +1,3 @@
-import three
 from three import Color, Matrix3, Matrix4, Vector2, Vector3, Vector4
 
 def getNodesKeys( object:'object' ):
@@ -6,8 +5,8 @@ def getNodesKeys( object:'object' ):
 
     for name in object.__dict__:
         value = object.__dict__[ name ]
-
-        if value and isinstance(value, three.Node) == True:
+        from ..core.node import Node
+        if value and isinstance(value, Node) == True:
             props.append( name )
 
     return props

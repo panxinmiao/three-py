@@ -3,7 +3,7 @@ from typing import Iterable
 
 from ....structure import Dict
 
-from ...nodes import NodeBuilder, WGSLNodeParser, CodeNode
+from three.nodes import NodeBuilder, WGSLNodeParser, CodeNode
 from ..wgpu_buffer_utils import getStrideLength, getVectorLength
 from .wgpu_node_sampler import WgpuNodeSampler
 from .wgpu_node_sampled_texture import WgpuNodeSampledTexture, WgpuNodeSampledCubeTexture
@@ -11,7 +11,7 @@ from .wgpu_node_uniforms_group import WgpuNodeUniformsGroup
 from ..wgpu_uniform_buffer import WgpuUniformBuffer
 from .wgpu_node_uniform import FloatNodeUniform, Vector2NodeUniform, Vector3NodeUniform, Vector4NodeUniform, ColorNodeUniform, Matrix3NodeUniform, Matrix4NodeUniform
 
-from ...nodes.materials import fromMaterial
+from three.nodes.materials import fromMaterial
 
 _flow_p = re.compile(r'.*;\s*$')
 

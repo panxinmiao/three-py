@@ -1,5 +1,5 @@
 import warnings
-from ....structure import NoneAttribute
+from three.structure import NoneAttribute
 
 class NodeParser(NoneAttribute):
 

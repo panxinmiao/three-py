@@ -1,5 +1,5 @@
 from weakref import WeakKeyDictionary
-import wgpu, three
+import wgpu
 from ...structure import Dict
 
 class WgpuBindings:

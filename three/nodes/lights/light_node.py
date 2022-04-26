@@ -8,7 +8,7 @@ from ..math.math_node import MathNode
 from ..math.operator_node import OperatorNode
 from ..functions import getDistanceAttenuation
 
-from ....math import Color
+from three.math import Color
 
 class LightNode(Node):
 

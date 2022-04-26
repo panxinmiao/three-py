@@ -1,5 +1,5 @@
 from inspect import isfunction
-from ....materials import ShaderMaterial
+from three.materials import ShaderMaterial
 from ..core.expression_node import ExpressionNode
 from ..core.attribute_node import AttributeNode
 

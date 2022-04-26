@@ -1,5 +1,5 @@
 from .node_material import NodeMaterial
-from ....materials import MeshStandardMaterial
+from three.materials import MeshStandardMaterial
 from ..functions import PhysicalLightingModel, getRoughness
 from ..shader.shader_node_elements import float, vec3, vec4, assign, label, mul, invert, mix, normalView, materialRoughness, materialMetalness
 

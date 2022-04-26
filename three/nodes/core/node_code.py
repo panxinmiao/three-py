@@ -1,4 +1,4 @@
-from ....structure import NoneAttribute
+from three.structure import NoneAttribute
 
 class NodeCode(NoneAttribute):
 

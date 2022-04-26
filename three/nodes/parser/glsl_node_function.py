@@ -1,5 +1,5 @@
 import re
-from three.renderer.nodes import NodeFunctionInput, NodeFunction
+from three.nodes import NodeFunctionInput, NodeFunction
 
 __pragmaMain = '#pragma main'
 

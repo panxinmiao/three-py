@@ -1,7 +1,7 @@
 import weakref, warnings, re
 
 import three
-from ....structure import NoneAttribute, Dict
+from three.structure import NoneAttribute, Dict
 
 from .constants import NodeUpdateType
 from .node_attribute import NodeAttribute

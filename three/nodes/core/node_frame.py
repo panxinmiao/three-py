@@ -1,7 +1,7 @@
 
 import time
 from weakref import WeakKeyDictionary
-from ....structure import NoneAttribute
+from three.structure import NoneAttribute
 #from three.renderer.nodes import NodeUpdateType
 from .constants import NodeUpdateType
 

@@ -1,6 +1,6 @@
 #from three.renderer.nodes import Node
 from .node import Node
-from ....structure import Dict
+from three.structure import Dict
 
 class ContextNode(Node):
     def __init__(self, node, context=None) -> None:

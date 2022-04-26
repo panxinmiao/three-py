@@ -1,5 +1,5 @@
 from .node_material import NodeMaterial
-from ....materials import MeshBasicMaterial
+from three.materials import MeshBasicMaterial
 
 defaultValues = MeshBasicMaterial()
 
