@@ -4,7 +4,7 @@ from three.materials import MeshBasicMaterial
 defaultValues = MeshBasicMaterial()
 
 class MeshBasicNodeMaterial(NodeMaterial):
-    def __init__(self, parameters ) -> None:
+    def __init__(self, parameters = None ) -> None:
         super().__init__()
         self.lights = True
         self.colorNode = None

@@ -46,7 +46,7 @@ class VarNode(Node):
 
     def generate( self, builder:'NodeBuilder' ):
         node = self.node
-        if node.isTempNode:
+        if node.isTempNode and self.name is None:  # TODO if need special handling for label?
             return node.build( builder )
 
         name = self.name

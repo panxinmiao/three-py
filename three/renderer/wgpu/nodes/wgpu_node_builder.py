@@ -434,10 +434,10 @@ class WgpuNodeBuilder(NodeBuilder):
 
 
     def getType( self, type ):
-        return wgslTypeLib[ type ] or type
+        return wgslTypeLib[ type ] if type in wgslTypeLib else type
 
     def isAvailable( self, name ):
-        return supports[ name ] == True
+        return name in supports and supports[ name ] == True
 
     def _include( self, name ):
         wgslPolyfill[ name ].build( self )

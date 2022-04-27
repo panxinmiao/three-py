@@ -52,9 +52,9 @@ material.side = three.DoubleSide
 
 mesh = three.Mesh(geometry, material)
 
-al = three.AmbientLight(three.Color(0x404040))
-al.position.set(0, 10, 20)
-scene.add(al)
+light = three.PointLight(three.Color(0x404040))
+light.position.set(0, 10, 10)
+scene.add(light)
 
 scene.add(mesh)
 

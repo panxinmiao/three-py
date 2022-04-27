@@ -5,7 +5,7 @@ from three.materials import PointsMaterial
 defaultValues = PointsMaterial()
 class PointsNodeMaterial(NodeMaterial):
 
-    def __init__(self, parameters) -> None:
+    def __init__(self, parameters=None) -> None:
         super().__init__()
 
         self.transparent = True

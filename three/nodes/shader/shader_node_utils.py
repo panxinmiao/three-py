@@ -57,10 +57,10 @@ class ProxyNode:
     p2 = re.compile(r'^\d+$')
 
     def __init__(self, node) -> None:
-        self.node = node
+        self.ori_node = node
 
     def __getattribute__(self, prop: str):
-        node = object.__getattribute__(self, 'node')        
+        node = object.__getattribute__(self, 'ori_node')        
         if type(prop) == str and getattr(node, prop) == None:
             if ProxyNode.p1.match(prop):
                 prop = re.sub(r"r|s", 'x', prop)

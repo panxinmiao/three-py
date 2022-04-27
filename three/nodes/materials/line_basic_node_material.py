@@ -6,7 +6,7 @@ defaultValues = LineBasicMaterial()
 
 class LineBasicNodeMaterial(NodeMaterial):
 
-    def __init__(self, parameters) -> None:
+    def __init__(self, parameters = None) -> None:
         super().__init__()
 
         self.colorNode = None

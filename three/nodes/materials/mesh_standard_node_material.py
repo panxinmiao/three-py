@@ -7,7 +7,7 @@ defaultValues = MeshStandardMaterial()
 
 class MeshStandardNodeMaterial(NodeMaterial):
     
-    def __init__(self, parameters) -> None:
+    def __init__(self, parameters = None) -> None:
 
         super().__init__()
 
