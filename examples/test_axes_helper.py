@@ -1,7 +1,7 @@
 import three
 from wgpu.gui.auto import WgpuCanvas, run
 
-canvas = WgpuCanvas(size=(640, 480), title="wgpu_renderer")
+canvas = WgpuCanvas(size=(640, 480), title="Axes Helper Test")
 
 render = three.WgpuRenderer(canvas, parameters={'antialias': True})
 render.init()

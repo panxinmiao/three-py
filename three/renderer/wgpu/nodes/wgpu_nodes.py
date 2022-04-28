@@ -1,4 +1,4 @@
-from ...nodes import NodeFrame
+from three.nodes import NodeFrame
 from .wgpu_node_builder import WgpuNodeBuilder
 
 class WgpuNodes:
