@@ -87,7 +87,7 @@ def _phong_light_model(inputs, *args):
 
     # ambient
     ambientStrength = 0.1
-    ambientColor = mul(lightColor, ambientStrength)
+    ambientColor = lightColor * ambientStrength
 
     # flat shading
     # normal = add(
@@ -95,17 +95,17 @@ def _phong_light_model(inputs, *args):
 
     # diffuse
     diffuseStrength = max(dot(transformedNormalView, lightDirection), 0)
-    diffuseColor = mul(lightColor, diffuseStrength)
+    diffuseColor = lightColor * diffuseStrength
 
     # specular
-    viewDirection = normalize(sub(positionView, positionWorld))
-    reflectDirection = reflect(sub(0, lightDirection), normalWorld)
-    specularStrength = pow(
-        max(dot(viewDirection, reflectDirection), 0.0), 32.0)
-    specularColor = mul(specularStrength, lightColor)
+    viewDirection = normalize(positionView - positionWorld)
+    reflectDirection = reflect(-lightDirection, normalWorld)
+    # specularStrength = pow(
+    #     max(dot(viewDirection, reflectDirection), 0.0), 32.0)
+    specularStrength = max(dot(viewDirection, reflectDirection), 0.0) ** 32
+    specularColor = specularStrength * lightColor
 
-    total = mul(add(add(ambientColor, diffuseColor),
-                specularColor), materialColor)
+    total = (ambientColor + diffuseColor + specularColor) * materialColor
 
     # trick, outlight = directDiffuse + directSpecular + indirectDiffuse + indirectSpecular
     inputs.reflectedLight.directDiffuse.add(total)

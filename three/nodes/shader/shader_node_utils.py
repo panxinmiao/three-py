@@ -8,6 +8,8 @@ from ..utils.array_element_node import ArrayElementNode
 from ..utils.convert_node import ConvertNode
 from ..utils.join_node import JoinNode
 from ..core.node_utils import getValueFromType
+from ..math.operator_node import OperatorNode
+from ..math.math_node import MathNode
 
 nodeObjectsCacheMap = weakref.WeakKeyDictionary()
 
@@ -75,6 +77,58 @@ class ProxyNode:
                 #return shader_node_object( ArrayElementNode( node, uint( float( prop ), 'uint' ) ) )
                 
         return getattr(node, prop)
+
+    def __add__(self, other):
+        return nodeProxy(OperatorNode, '+')(self, other)
+
+    def __sub__(self, other):
+        return nodeProxy(OperatorNode, '-')(self, other)
+
+    def __mul__(self, other):
+        return nodeProxy(OperatorNode, '*')(self, other)
+
+    def __div__(self, other):
+        return nodeProxy(OperatorNode, '/')(self, other)
+
+    def __mod__(self, other):
+        return nodeProxy(OperatorNode, '%')(self, other)
+
+    # def __eq__(self, other):
+    #     return nodeProxy(OperatorNode, '==')(self, other)
+
+    def __neg__(self):
+        return nodeProxy(MathNode, 'negate')(self)
+
+    def __lq__(self, other):
+        return nodeProxy(OperatorNode, '<')(self, other)
+
+    def __gq__(self, other):
+        return nodeProxy(OperatorNode, '>')(self, other)
+
+    def __le__(self, other):
+        return nodeProxy(OperatorNode, '<=')(self, other)
+
+    def __ge__(self, other):
+        return nodeProxy(OperatorNode, '>=')(self, other)
+
+    def __or__(self, other):
+        return nodeProxy(OperatorNode, '|')(self, other)
+
+    def __and__(self, other):
+        return nodeProxy(OperatorNode, '&')(self, other)
+
+    def __xor__(self, other):
+        return nodeProxy(OperatorNode, '^')(self, other)
+
+    def __lshift__(self, other):
+        return nodeProxy(OperatorNode, '<<')(self, other)
+
+    def __rshift__(self, other):
+        return nodeProxy(OperatorNode, '>>')(self, other)
+
+    def __pow__(self, other):
+        # TODO: check if this is correct
+        return nodeProxy(MathNode, 'pow')(self, other)
 
     # def __getattr__(self, name):
     #     node = object.__getattribute__(self, 'node')
