@@ -51,7 +51,7 @@ camera.position.y = 10
 
 scene = three.Scene()
 
-material = three.MeshStandardMaterial({'color': 0xffffff})
+material = three.MeshStandardMaterial({'color': 0xffffff, 'shinniness': 32.0})
 
 material.side = three.DoubleSide
 
@@ -99,10 +99,13 @@ def _phong_light_model(inputs, *args):
 
     # specular
     viewDirection = normalize(positionView - positionWorld)
-    reflectDirection = reflect(-lightDirection, normalWorld)
-    # specularStrength = pow(
-    #     max(dot(viewDirection, reflectDirection), 0.0), 32.0)
-    specularStrength = max(dot(viewDirection, reflectDirection), 0.0) ** 32
+    # reflectDirection = reflect(-lightDirection, normalWorld)
+    # specularStrength = max(dot(viewDirection, reflectDirection), 0.0) ** 32
+
+    halfDirection = normalize(viewDirection + lightDirection)
+    specularStrength = pow(
+        max(dot(normalWorld, halfDirection), 0.0), MaterialReferenceNode('shinniness', 'float'))
+
     specularColor = specularStrength * lightColor
 
     total = (ambientColor + diffuseColor + specularColor) * materialColor
