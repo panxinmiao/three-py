@@ -2,9 +2,13 @@ import re
 from ..core.node_function_input import NodeFunctionInput
 from ..core.node_function import NodeFunction
 
-__declarationRegexp = re.compile(r'^fn\s*([a-z_0-9]+)?\s*\(([\s\S]*?)\)\s*\-\>\s*([a-z_0-9]+)?', flags=re.I)
+__declarationRegexp = re.compile(r'^[fn]*\s*([a-z_0-9]+)?\s*\(([\s\S]*?)\)\s*[\-\>]*\s*([a-z_0-9]+)?', flags=re.I)
 
 __propertiesRegexp = re.compile(r'[a-z_0-9]+', flags=re.I)
+
+wgslTypeLib = {
+	'f32': 'float'
+}
 
 def _parse( source: str ):
     ''' wlsl souce code parser
@@ -34,6 +38,7 @@ def _parse( source: str ):
             name = propsMatches[ i ]
             i += 1
             type = propsMatches[ i ]
+            type = wgslTypeLib[type] or type
             i += 1
 
             #precision = propsMatches[ i ]
@@ -46,7 +51,7 @@ def _parse( source: str ):
 
         blockCode = source[len(match.group()):]
         name = declaration[ 0 ] if declaration[ 0 ] is not None else ''
-        type = declaration[ 2 ]
+        type = declaration[ 2 ] or 'void'
 
         return (
             type,
@@ -74,5 +79,6 @@ class WGSLNodeFunction(NodeFunction):
             name = self.name
         
         #return f"fn { name } ( { self.inputsCode.strip() } ) -> { self.type }" + self.blockCode
-
-        return f"fn { name } ( { self.inputsCode.strip() } ) -> { self.type } {self.blockCode}"
+        type = '-> ' + self.type if self.type != 'void' else ''
+        return f"fn { name } ( { self.inputsCode.strip() } ) { type }" + self.blockCode
+        #return f"fn { name } ( { self.inputsCode.strip() } ) -> { self.type } {self.blockCode}"

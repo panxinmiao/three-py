@@ -28,8 +28,12 @@ class WgpuBindings:
             nodeBuilder = self.nodes.get( object )
             bindings = nodeBuilder.getBindings()
             # setup (static) binding layout and (dynamic) binding group
-            renderPipeline = self.renderPipelines.get( object )
-            bindLayout = renderPipeline.pipeline.get_bind_group_layout( 0 )
+            # renderPipeline = self.renderPipelines.get( object )
+            
+            pipeline = self.computePipelines.get(
+                object) if object.isNode else self.renderPipelines.get(object).pipeline
+
+            bindLayout = pipeline.get_bind_group_layout( 0 )
             bindGroup = self._createBindGroup( bindings, bindLayout )
 
             data = Dict({
@@ -46,7 +50,6 @@ class WgpuBindings:
 
 
     def getForCompute( self, param ):
-
         data = self.uniformsData.get( param )
         
         if data is None:
@@ -89,10 +92,10 @@ class WgpuBindings:
 
             if binding.isUniformBuffer:
                 buffer = binding.getBuffer()
-                bufferGPU = binding.bufferGPU
-
                 needsBufferWrite = binding.update()
+
                 if needsBufferWrite:
+                    bufferGPU = binding.bufferGPU
                     self.device.queue.write_buffer( bufferGPU, 0, buffer.range_buffer(), 0 )
 
 

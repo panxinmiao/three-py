@@ -34,7 +34,7 @@ class WgpuAttributes:
             attribute = attribute.data
 
         data = self.buffers.get( attribute )
-
+   
         if data is None:
             if usage is None:
                 usage = GPUBufferUsage.INDEX if isIndex else GPUBufferUsage.VERTEX
@@ -56,12 +56,6 @@ class WgpuAttributes:
     def _createBuffer( self, attribute: three.BufferAttribute, usage ):
         ary = attribute.array
         size = ary.byteLength + ( ( 4 - ( ary.byteLength % 4 ) ) % 4 );  # ensure 4 byte alignment, see #20441
-
-        # buffer: wgpu.GPUBuffer = self.device.create_buffer(
-        #     size = size, usage = usage | GPUBufferUsage.COPY_DST, mapped_at_creation = True
-        # )
-        
-        # buffer.map_write(ary.range_buffer())
 
         buffer = ary.range_buffer()
 

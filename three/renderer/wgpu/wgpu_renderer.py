@@ -150,7 +150,7 @@ class WgpuRenderer(NoneAttribute):
         self._textures = WgpuTextures( device, self._properties, self._info )
         self._objects = WgpuObjects( self._geometries, self._info )
         self._nodes = WgpuNodes( self, self._properties )
-        self._computePipelines = WgpuComputePipelines( device )
+        self._computePipelines = WgpuComputePipelines( device, self._nodes)
         self._renderPipelines = WgpuRenderPipelines( self, device, parameters.sampleCount, self._nodes )
         self._renderPipelines.bindings = WgpuBindings( device, self._info, self._properties, self._textures, self._renderPipelines, self._computePipelines, self._attributes, self._nodes )
         self._bindings = self._renderPipelines.bindings
@@ -480,7 +480,7 @@ class WgpuRenderer(NoneAttribute):
         if renderTarget is not None:
             self._textures.initRenderTarget( renderTarget )
 
-    def compute( self, computeParams ):
+    def compute( self, *computeNodes ):
 
         device = self._device
 
@@ -488,19 +488,22 @@ class WgpuRenderer(NoneAttribute):
 
         passEncoder:wgpu.GPUComputePassEncoder = cmdEncoder.begin_compute_pass()
 
-        for param in computeParams:
+        for computeNode in computeNodes:
             # pipeline
-            pipeline = self._computePipelines.get( param )
+            pipeline = self._computePipelines.get(computeNode)
             passEncoder.set_pipeline( pipeline )
 
+            # node
+            # self._nodes.update( computeNode )
+
             # bind group
-            bindGroup = self._bindings.getForCompute( param ).group
-            self._bindings.update( param )
-            passEncoder.set_bind_group( 0, bindGroup )
-            passEncoder.dispatch( param.num )
+            bindGroup = self._bindings.get(computeNode).group
+            self._bindings.update(computeNode)
+            passEncoder.set_bind_group(0, bindGroup, [], 0, 99)
+            passEncoder.dispatch_workgroups(computeNode.dispatchCount)
 
 
-        passEncoder.end_pass()
+        passEncoder.end()
         device.queue.submit( [ cmdEncoder.finish() ] )
 
     def getRenderTarget( self ):

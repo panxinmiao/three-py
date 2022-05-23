@@ -352,15 +352,15 @@ class WgpuRenderPipeline():
             descriptor['strip_index_format'] = GPUIndexFormat.Uint32 if count > 65535 else GPUIndexFormat.Uint16  # define data type for primitive restart value
 
         if material.side == FrontSide:
-            descriptor['front_face'] = GPUFrontFace.CCW
-            descriptor['cull_mode'] = GPUCullMode.Back
+            descriptor['front_face'] = GPUFrontFace.CW
+            descriptor['cull_mode'] = GPUCullMode.Front
         
         elif material.side == BackSide:
             descriptor['front_face'] = GPUFrontFace.CW
             descriptor['cull_mode'] = GPUCullMode.Back
 
         elif material.side == DoubleSide:
-            descriptor['front_face'] = GPUFrontFace.CCW
+            descriptor['front_face'] = GPUFrontFace.CW
             descriptor['cull_mode'] = GPUCullMode.NONE
 
         else:

@@ -1,17 +1,15 @@
-from .wgpu_binding import WgpuBinding
+from .wgpu_buffer import WgpuBuffer
 from .constants import GPUBindingType, GPUBufferUsage
 
-class WgpuStorageBuffer(WgpuBinding):
+
+class WgpuStorageBuffer(WgpuBuffer):
 
     def __init__(self, name, attribute) -> None:
-        super().__init__(name)
+        super().__init__(name, GPUBindingType.StorageBuffer, attribute.array)
 
-        self.type = GPUBindingType.StorageBuffer
-
-        self.usage = GPUBufferUsage.VERTEX | GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST
+        self.usage |= GPUBufferUsage.VERTEX | GPUBufferUsage.STORAGE
 
         self.attribute = attribute
-        self.bufferGPU = None  # set by the renderer
 
     @property
     def isStorageBuffer(self):

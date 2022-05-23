@@ -24,13 +24,14 @@ class WgpuRenderPipelines:
 
     def get( self, object ):
         device = self.device
-        material = object.material
 
         cache = self._getCache( object )
 
         currentPipeline = None
 
         if self._needsUpdate( object, cache ):
+            material = object.material
+            
             # release previous cache
             if cache.currentPipeline:
                 self._releaseObject( object )

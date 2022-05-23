@@ -5,8 +5,10 @@ from ..core.uniform_node import UniformNode
 from ..core.bypass_node import BypassNode
 from ..core.instance_index_node import InstanceIndexNode
 from ..core.context_node import ContextNode
+from ..core.function_node import FunctionNode
 
 from ..accessors.buffer_node import BufferNode
+from ..accessors.storage_buffer_node import StorageBufferNode
 from ..accessors.camera_node import CameraNode
 from ..accessors.material_node import MaterialNode
 from ..accessors.model_node import ModelNode
@@ -18,16 +20,22 @@ from ..accessors.texture_node import TextureNode
 from ..accessors.uv_node import UVNode
 from ..accessors.instance_node import InstanceNode
 
-# from ..math import CondNode, OperatorNode, MathNode
+#gpgpu
+from ..gpgpu.compute_node import ComputeNode
+
+# math nodes
 from ..math.operator_node import OperatorNode
 from ..math.cond_node import CondNode
 from ..math.math_node import MathNode
 
+# util nodes
 from ..utils.array_element_node import ArrayElementNode
 from ..utils.convert_node import ConvertNode
 from ..utils.join_node import JoinNode
+from ..utils.timer_node import TimerNode
 #from ..utils.split_node import SplitNode
 
+# other nodes
 from ..display.color_space_node import ColorSpaceNode
 from ..lights.light_context_node import LightContextNode
 from ..lights.reflected_light_node import ReflectedLightNode
@@ -86,32 +94,21 @@ def label(node, name):
 
 temp = nodeProxy( VarNode )
 
-def join( *args ):
-    return nodeObject( JoinNode( nodeArray( list(args) ) ) )
+join = lambda *args: nodeObject( JoinNode( nodeArray( list(args) ) ) )
+uv = lambda *args: nodeObject( UVNode( *args ) )
+attribute = lambda *args: nodeObject( AttributeNode( *args ) )
+storage = lambda *args: nodeObject( StorageBufferNode( *args ) )
+buffer = lambda *args: nodeObject( BufferNode( *args ) )
+texture = lambda *args: nodeObject( TextureNode( *args ) )
+sampler = lambda texture: nodeObject(ConvertNode(
+    texture if texture.isNode else TextureNode(texture), 'sampler'))
 
-def uv( *args ):
-    return nodeObject( UVNode( *args ) )
+timer = lambda *args: nodeObject( TimerNode( *args ) )
 
-def attribute( *args ):
-    return nodeObject( AttributeNode( *args ) )
+compute = lambda *args: nodeObject( ComputeNode( *args ) )
+func = lambda *args: nodeObject( FunctionNode( *args ) )
 
-def buffer( *args ):
-    return nodeObject( BufferNode( *args ) )
-
-def texture( *args ):
-    return nodeObject( TextureNode( *args ) )
-
-def sampler( texture ):
-    return nodeObject( ConvertNode( texture if texture.isNode else TextureNode( texture ), 'sampler' ) )
-
-# def cond( *args ):
-#     return nodeObject( CondNode( *ShaderNodeArray( list(args) ) ) )
 cond = nodeProxy( CondNode )
-
-
-# def addTo( varNode, *params ):
-# 	varNode.node = add( varNode.node, *nodeArray( params ) )
-# 	return nodeObject( varNode )
 
 add = nodeProxy( OperatorNode, '+' )
 sub = nodeProxy( OperatorNode, '-' )

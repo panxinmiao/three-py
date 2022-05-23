@@ -7,13 +7,21 @@ from three.nodes import NodeBuilder, WGSLNodeParser, CodeNode
 from ..wgpu_buffer_utils import getStrideLength, getVectorLength
 from .wgpu_node_sampler import WgpuNodeSampler
 from .wgpu_node_sampled_texture import WgpuNodeSampledTexture, WgpuNodeSampledCubeTexture
-from .wgpu_node_uniforms_group import WgpuNodeUniformsGroup
+from ..constants import GPUShaderStage
+from ..wgpu_uniforms_group import WgpuUniformsGroup
 from ..wgpu_uniform_buffer import WgpuUniformBuffer
+from ..wgpu_storage_buffer import WgpuStorageBuffer
 from .wgpu_node_uniform import FloatNodeUniform, Vector2NodeUniform, Vector3NodeUniform, Vector4NodeUniform, ColorNodeUniform, Matrix3NodeUniform, Matrix4NodeUniform
 
 from three.nodes.materials import fromMaterial
 
 _flow_p = re.compile(r'.*;\s*$')
+
+gpuShaderStageLib = {
+	'vertex': GPUShaderStage.VERTEX,
+	'fragment': GPUShaderStage.FRAGMENT,
+	'compute': GPUShaderStage.COMPUTE
+}
 
 supports = {
 	'instance': True
@@ -90,8 +98,8 @@ class WgpuNodeBuilder(NodeBuilder):
         self.lightNode = None
         self.fogNode = None
 
-        self.bindings = {'vertex': [], 'fragment': []}
-        self.bindingsOffset = {'vertex': 0, 'fragment': 0}
+        self.bindings = {'vertex': [], 'fragment': [], 'compute': []}
+        self.bindingsOffset = {'vertex': 0, 'fragment': 0, 'compute': 0}
 
         self.uniformsGroup = {}
 
@@ -99,7 +107,12 @@ class WgpuNodeBuilder(NodeBuilder):
 
 
     def build(self):
-        fromMaterial(self.material).build(self)
+
+        if self.material is not None:
+            fromMaterial(self.material).build(self)
+        else:
+            self.addFlow('compute', self.object)
+
         return super().build()
 
     def addFlowCode( self, code ):
@@ -170,7 +183,7 @@ class WgpuNodeBuilder(NodeBuilder):
 
             if type == 'texture' or type == 'cubeTexture':
                 return name
-            elif type == 'buffer':
+            elif type == 'buffer' or type == 'storageBuffer':
                 return f'NodeBuffer_{node.node.id}.{name}'
             else:
                 return f'NodeUniforms.{name}'
@@ -180,7 +193,7 @@ class WgpuNodeBuilder(NodeBuilder):
     
     def getBindings(self):
         bindings = self.bindings
-        return bindings['vertex'] + bindings['fragment']
+        return bindings['vertex'] + bindings['fragment'] if self.material is not None else bindings['compute']
 
     
     def getUniformFromNode(self, node, shaderStage, type ):
@@ -209,9 +222,11 @@ class WgpuNodeBuilder(NodeBuilder):
                     bindings[index:index] = [texture]
                     uniformGPU = [ texture ]
             
-            elif type == 'buffer':
-                buffer = WgpuUniformBuffer( 'NodeBuffer_' + str(node.id), node.value )
-
+            elif type == 'buffer' or type == 'storageBuffer':
+                #buffer = WgpuUniformBuffer( 'NodeBuffer_' + str(node.id), node.value )
+                bufferClass = WgpuStorageBuffer if type=='storageBuffer' else WgpuUniformBuffer
+                buffer = bufferClass('NodeBuffer_' + str(node.id), node.value)
+                buffer.setVisibility(gpuShaderStageLib[shaderStage])
                 # add first textures in sequence and group for last
                 lastBinding = bindings[ - 1 ] if bindings else None
                 index = len(bindings)-1 if (lastBinding and lastBinding.isUniformsGroup) else len(bindings)
@@ -223,13 +238,16 @@ class WgpuNodeBuilder(NodeBuilder):
                 uniformsGroup = self.uniformsGroup.get(shaderStage, None)
 
                 if not uniformsGroup:
-                    uniformsGroup = WgpuNodeUniformsGroup( shaderStage )
+                    uniformsGroup = WgpuUniformsGroup( shaderStage )
+                    uniformsGroup.setVisibility(gpuShaderStageLib[shaderStage])
                     self.uniformsGroup[ shaderStage ] = uniformsGroup
                     bindings.append( uniformsGroup )
-                if node.isArrayInputNode:
+
+                if node.isArrayUniformNode:
                     uniformGPU = []
-                    for inputNode in node.nodes:
-                        uniformNodeGPU = self._getNodeUniform( inputNode, type )
+                    for uniformNode in node.nodes:
+                        uniformNodeGPU = self._getNodeUniform(
+                            uniformNode, type)
 
                         # fit bounds to buffer
                         uniformNodeGPU.boundary = getVectorLength( uniformNodeGPU.itemSize )
@@ -256,14 +274,15 @@ class WgpuNodeBuilder(NodeBuilder):
 
         self.builtins.add( 'instance_index' )
 
-        if shaderStage == 'vertex':
-            return 'instanceIndex'
+        return 'instanceIndex'
 
 
     def getAttributes(self, shaderStage ):
         snippets = []
-        if shaderStage == 'vertex':
-            if 'instance_index' in self.builtins:
+        if shaderStage == 'vertex' or shaderStage == 'compute':
+            if shaderStage == 'compute':
+                snippets.append( '@builtin( global_invocation_id ) id : vec3<u32>' )
+            elif 'instance_index' in self.builtins:
                 snippets.append( '@builtin( instance_index ) instanceIndex : u32' )
 
             attributes = self.attributes
@@ -376,8 +395,7 @@ class WgpuNodeBuilder(NodeBuilder):
 
     
     def buildCode(self):
-
-        shadersData = Dict({ 'fragment': {}, 'vertex': {} })
+        shadersData = Dict({'fragment': {}, 'vertex': {}}) if self.material is not None else Dict({'compute': {}})
        
         for shaderStage in shadersData:
             flow = '// code\n'
@@ -398,7 +416,7 @@ class WgpuNodeBuilder(NodeBuilder):
 
                 flow += f'{ flowSlotData.code }\n\t'
 
-                if node == mainNode:
+                if node == mainNode and shaderStage != 'compute':
                     flow += '// FLOW RESULT\n\t'
 
                     if shaderStage == 'vertex':
@@ -422,8 +440,7 @@ class WgpuNodeBuilder(NodeBuilder):
             self.vertexShader = self._getWGSLVertexCode( shadersData.vertex )
             self.fragmentShader = self._getWGSLFragmentCode( shadersData.fragment )
         else:
-            # self.computeShader = self._getWGSLComputeCode( shadersData.compute, ( self.object.workgroupSize || [ 64 ] ).join( ', ' ) );
-            pass
+            self.computeShader = self._getWGSLComputeCode(shadersData.compute, (', '.join( map(str, self.object.workgroupSize or [64] ) ) ) )
 
     def getMethod( self, method ):
         m = wgslPolyfill.get(method, None)
@@ -510,7 +527,27 @@ fn main( {shaderData.varys} ) -> @location( 0 ) vec4<f32> {{
 '''
 
     def _getWGSLComputeCode( self, shaderData, workgroupSize ):
-        pass
+        return f'''{ self.getSignature() }
+
+// system
+var<private> instanceIndex : u32;
+
+// uniforms
+{shaderData.uniforms}
+
+// codes
+{shaderData.codes}
+
+@stage( compute ) @workgroup_size( {workgroupSize} )
+fn main( {shaderData.attributes} ) {{
+	// system
+	instanceIndex = id.x;
+	// vars
+	{shaderData.vars}
+	// flow
+	{shaderData.flow}
+}}        
+'''
 
     def _getWGSLStruct( self, name, vars ):
         return f'''

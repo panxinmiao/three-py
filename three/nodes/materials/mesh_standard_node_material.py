@@ -1,7 +1,7 @@
 from .node_material import NodeMaterial
 from three.materials import MeshStandardMaterial
 from ..functions import PhysicalLightingModel, getRoughness
-from ..shader.shader_node_elements import float, vec3, vec4, assign, label, mul, invert, mix, normalView, materialRoughness, materialMetalness
+from ..shader.shader_node_elements import float, vec3, vec4, context, assign, label, mul, invert, mix, normalView, materialRoughness, materialMetalness
 
 defaultValues = MeshStandardMaterial()
 
@@ -56,6 +56,12 @@ class MeshStandardNodeMaterial(NodeMaterial):
         outgoingLightNode = super().generateLight( builder, { 'diffuseColorNode': diffuseColorNode, 'lightNode': lightNode, 'lightingModelNode': PhysicalLightingModel } )
 
         # @TODO: add IBL code here
+
+        # TONE MAPPING
+        renderer = builder.renderer
+
+        if renderer.toneMappingNode:
+            outgoingLightNode = context(renderer.toneMappingNode, {'color': outgoingLightNode})
 
         return outgoingLightNode
 
