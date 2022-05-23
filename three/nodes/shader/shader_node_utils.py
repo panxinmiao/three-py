@@ -62,7 +62,7 @@ class ProxyNode:
         self.ori_node = node
 
     def __getattribute__(self, prop: str):
-        node = object.__getattribute__(self, 'ori_node')        
+        node = object.__getattribute__(self, 'ori_node')
         if type(prop) == str and getattr(node, prop) == None:
             if ProxyNode.p1.match(prop):
                 prop = re.sub(r"r|s", 'x', prop)
@@ -77,6 +77,9 @@ class ProxyNode:
                 #return shader_node_object( ArrayElementNode( node, uint( float( prop ), 'uint' ) ) )
                 
         return getattr(node, prop)
+
+    def __getitem__(self, prop):
+        return ProxyNode.__getattribute__(self, str(prop))
 
     def __add__(self, other):
         return nodeProxy(OperatorNode, '+')(self, other)

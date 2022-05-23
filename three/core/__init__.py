@@ -5,3 +5,4 @@ from .object3d import Object3D
 from .geometry import Geometry
 from .geometry import Geometry as BufferGeometry
 from .event import Event
+from .instanced_buffer_attribute import InstancedBufferAttribute

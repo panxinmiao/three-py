@@ -213,7 +213,7 @@ class WgpuNodeBuilder(NodeBuilder):
                 buffer = WgpuUniformBuffer( 'NodeBuffer_' + str(node.id), node.value )
 
                 # add first textures in sequence and group for last
-                lastBinding = bindings[ - 1 ]
+                lastBinding = bindings[ - 1 ] if bindings else None
                 index = len(bindings)-1 if (lastBinding and lastBinding.isUniformsGroup) else len(bindings)
                 
                 bindings[index:index] = [buffer]

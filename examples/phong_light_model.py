@@ -6,10 +6,13 @@ import math
 from PyQt5 import QtWidgets
 from wgpu.gui.qt import WgpuCanvas
 from pymeshio.pmx import reader
+from pathlib import Path
 
 app = QtWidgets.QApplication([])
 
-pmd_file = reader.read_from_file(r'examples/miku_pmx/blue.pmx')
+p = Path(__file__).parent / "miku_pmx" / "blue.pmx"
+
+pmd_file = reader.read_from_file(p)
 
 positions = []
 normals = []
@@ -51,7 +54,8 @@ camera.position.y = 10
 
 scene = three.Scene()
 
-material = three.MeshStandardMaterial({'color': 0xffffff, 'shinniness': 32.0})
+material = three.MeshStandardMaterial(
+    {'color': 0xffffff, 'shinniness': 32.0, 'emissive': 0x000000})
 
 material.side = three.DoubleSide
 
@@ -97,12 +101,8 @@ def _phong_light_model(inputs, *args):
     diffuseStrength = max(dot(transformedNormalView, lightDirection), 0)
     diffuseColor = lightColor * diffuseStrength
 
-    # specular
-    viewDirection = normalize(positionView - positionWorld)
-    # reflectDirection = reflect(-lightDirection, normalWorld)
-    # specularStrength = max(dot(viewDirection, reflectDirection), 0.0) ** 32
 
-    halfDirection = normalize(viewDirection + lightDirection)
+    halfDirection = normalize(positionViewDirection + lightDirection)
     specularStrength = pow(
         max(dot(normalWorld, halfDirection), 0.0), MaterialReferenceNode('shinniness', 'float'))
 
@@ -118,7 +118,6 @@ phongLightModel = three.nodes.ShaderNode(_phong_light_model)
 lightingModelContext = three.nodes.LightContextNode(
     allLightsNode, phongLightModel)
 material.lightNode = lightingModelContext
-
 
 control = three.OrbitControls(camera, canvas)
 
