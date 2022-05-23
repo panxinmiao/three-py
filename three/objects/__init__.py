@@ -7,3 +7,4 @@ from .skinned_mesh import SkinnedMesh
 from .line import Line
 from .line_segments import LineSegments
 from .points import Points
+from .instanced_mesh import InstancedMesh

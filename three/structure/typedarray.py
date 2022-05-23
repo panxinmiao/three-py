@@ -59,9 +59,13 @@ class TypedArray(metaclass=abc.ABCMeta):
 
     def __init__(self, __initializer: list = []) -> None:
         self._uuid = uuid.uuid1()
-        self._length = len(__initializer)
-        bytes = struct.pack(f'{self._length}{self.struct_symbol}', *__initializer)
-        self._buffer = bytearray(bytes)
+        if type(__initializer) == int:
+            self._length = __initializer
+            self._buffer = bytearray(__initializer * self.bytes_per_element)
+        elif type(__initializer) == list:
+            self._length = len(__initializer)
+            bytes = struct.pack(f'{self._length}{self.struct_symbol}', *__initializer)
+            self._buffer = bytearray(bytes)
         self._byteOffset = 0
         #self._byteLength = len(bytes)
 
@@ -215,6 +219,14 @@ class TypedArray(metaclass=abc.ABCMeta):
 
         return struct.unpack_from(f'{cnt}{self.struct_symbol}', self._buffer, _start)
 
+
+    def append(self, value):
+        self._length += 1
+        self._buffer += struct.pack(self.struct_symbol, value)
+
+    def extend(self, values):
+        self._length += len(values)
+        self._buffer += struct.pack(f'{len(values)}{self.struct_symbol}', *values)
 
     def copyWithin(self, target, start, end):
         raise NotImplementedError

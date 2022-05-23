@@ -11,7 +11,18 @@ from .node_var import NodeVar
 from .node_vary import NodeVary
 from .node_keywords import NodeKeywords
 
-_shaderStages = [ 'fragment', 'vertex' ]
+defaultShaderStages = ['fragment', 'vertex']
+
+shaderStages = [*defaultShaderStages, 'compute']
+
+typeFromLength = {
+    1: "float",
+    2: "vec2",
+    3: "vec3",
+    4: "vec4",
+    9: "mat3",
+    16: "mat4"
+}
 
 _componet_exp = re.compile('(b|i|u|)(vec|mat)([2-4])')
 
@@ -29,14 +40,15 @@ class NodeBuilder(NoneAttribute):
 
         self.vertexShader = None
         self.fragmentShader = None
+        self.computeShader = None
 
-        self.flowNodes = { 'vertex': [], 'fragment': [] }
-        self.flowCode = { 'vertex': '', 'fragment': '' }
-        self.uniforms = { 'vertex': [], 'fragment': [], 'index': 0 }
-        self.codes = { 'vertex': [], 'fragment': [] }
+        self.flowNodes = {'vertex': [], 'fragment': [], 'compute': []}
+        self.flowCode = {'vertex': '', 'fragment': '', 'compute': ''}
+        self.uniforms = {'vertex': [], 'fragment': [], 'compute': [], 'index': 0}
+        self.codes = {'vertex': [], 'fragment': [], 'compute': []}
         self.attributes = []
         self.varys = []
-        self.vars = { 'vertex': [], 'fragment': [] }
+        self.vars = {'vertex': [], 'fragment': [], 'compute': []}
         self.flow = { 'code': '' }
         self.stack = []
 
@@ -237,23 +249,8 @@ class NodeBuilder(NoneAttribute):
         return type
 
 
-    def getTypeFromLength(self, type ):
-        
-        if type == 1:
-            return 'float'
-        if type == 2:
-            return 'vec2'
-        if type == 3: 
-            return 'vec3'
-        if type == 4:
-            return 'vec4'
-        if type == 9:
-            return 'mat3'
-        if type == 16:
-            return 'mat4'
-
-        return 0
-
+    def getTypeFromLength(self, length ):
+        return typeFromLength.get(length)
 
 
     def getTypeLength(self, type:str ):
@@ -283,7 +280,7 @@ class NodeBuilder(NoneAttribute):
         nodeData = self.nodesData.get( node, None )
 
         if nodeData is None:
-            nodeData = Dict({ 'vertex': {}, 'fragment': {} })
+            nodeData = Dict({'vertex': {}, 'fragment': {}, 'compute': {}})
             self.nodesData[node] = nodeData
 
         return nodeData[ shaderStage ] if shaderStage is not None else nodeData
@@ -434,7 +431,7 @@ class NodeBuilder(NoneAttribute):
         return code
 
     def getHash( self ):
-        return self.vertexShader + self.fragmentShader
+        return self.vertexShader + self.fragmentShader + self.computeShader
 
     def getShaderStage( self ):
         return self.shaderStage
@@ -448,7 +445,7 @@ class NodeBuilder(NoneAttribute):
 
     def build(self):
         # stage 1: analyze nodes to possible optimization and validation        
-        for shaderStage in _shaderStages:
+        for shaderStage in shaderStages:
             self.setShaderStage( shaderStage )
             flowNodes = self.flowNodes[ shaderStage ]
             for node in flowNodes:
@@ -459,7 +456,7 @@ class NodeBuilder(NoneAttribute):
             self.flowNodeFromShaderStage( 'vertex', self.context.vertex )
 
         # stage 3: generate shader
-        for shaderStage in _shaderStages:
+        for shaderStage in shaderStages:
             self.setShaderStage( shaderStage )
             flowNodes = self.flowNodes[ shaderStage ]
             for node in flowNodes:

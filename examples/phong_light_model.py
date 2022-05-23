@@ -6,10 +6,13 @@ import math
 from PyQt5 import QtWidgets
 from wgpu.gui.qt import WgpuCanvas
 from pymeshio.pmx import reader
+from pathlib import Path
 
 app = QtWidgets.QApplication([])
 
-pmd_file = reader.read_from_file(r'examples/miku_pmx/blue.pmx')
+p = Path(__file__).parent / "miku_pmx" / "blue.pmx"
+
+pmd_file = reader.read_from_file(p)
 
 positions = []
 normals = []
@@ -51,7 +54,8 @@ camera.position.y = 10
 
 scene = three.Scene()
 
-material = three.MeshStandardMaterial({'color': 0xffffff})
+material = three.MeshStandardMaterial(
+    {'color': 0xffffff, 'shinniness': 32.0, 'emissive': 0x000000})
 
 material.side = three.DoubleSide
 
@@ -87,7 +91,7 @@ def _phong_light_model(inputs, *args):
 
     # ambient
     ambientStrength = 0.1
-    ambientColor = mul(lightColor, ambientStrength)
+    ambientColor = lightColor * ambientStrength
 
     # flat shading
     # normal = add(
@@ -95,17 +99,16 @@ def _phong_light_model(inputs, *args):
 
     # diffuse
     diffuseStrength = max(dot(transformedNormalView, lightDirection), 0)
-    diffuseColor = mul(lightColor, diffuseStrength)
+    diffuseColor = lightColor * diffuseStrength
 
-    # specular
-    viewDirection = normalize(sub(positionView, positionWorld))
-    reflectDirection = reflect(sub(0, lightDirection), normalWorld)
+
+    halfDirection = normalize(positionViewDirection + lightDirection)
     specularStrength = pow(
-        max(dot(viewDirection, reflectDirection), 0.0), 32.0)
-    specularColor = mul(specularStrength, lightColor)
+        max(dot(normalWorld, halfDirection), 0.0), MaterialReferenceNode('shinniness', 'float'))
 
-    total = mul(add(add(ambientColor, diffuseColor),
-                specularColor), materialColor)
+    specularColor = specularStrength * lightColor
+
+    total = (ambientColor + diffuseColor + specularColor) * materialColor
 
     # trick, outlight = directDiffuse + directSpecular + indirectDiffuse + indirectSpecular
     inputs.reflectedLight.directDiffuse.add(total)
@@ -115,7 +118,6 @@ phongLightModel = three.nodes.ShaderNode(_phong_light_model)
 lightingModelContext = three.nodes.LightContextNode(
     allLightsNode, phongLightModel)
 material.lightNode = lightingModelContext
-
 
 control = three.OrbitControls(camera, canvas)
 

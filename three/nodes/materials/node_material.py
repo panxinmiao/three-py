@@ -5,7 +5,7 @@ from ..core.attribute_node import AttributeNode
 
 from ..shader.shader_node_elements import (float, vec3, vec4,
 	assign, label, mul, add, bypass,
-	positionLocal, skinning, instance, modelViewProjection, context, lightContext, colorSpace,
+	positionLocal, skinning, instance, modelViewProjection, lightContext, colorSpace,
 	materialAlphaTest, materialColor, materialOpacity)
 
 class NodeMaterial(ShaderMaterial):
@@ -30,9 +30,9 @@ class NodeMaterial(ShaderMaterial):
         vertex = positionLocal
 
         if self.positionNode:
-            vertex = bypass( vertex, assign( vertex, self.positionNode ) )
+            vertex = bypass(vertex, assign(positionLocal, self.positionNode))
 
-        if object.isInstancedMesh == True and builder.isAvailable( 'instance' ) == True:
+        if object.instanceMatrix and object.instanceMatrix.isInstancedBufferAttribute and builder.isAvailable('instance') == True:
             vertex = bypass( vertex, instance( object ) )
 
 
@@ -101,17 +101,11 @@ class NodeMaterial(ShaderMaterial):
         diffuseColorNode = parameters['diffuseColorNode']
         outgoingLightNode = parameters['outgoingLightNode']
 
-        renderer = builder.renderer
-
         # OUTPUT
         outputNode = vec4( outgoingLightNode, diffuseColorNode.a )
 
-        # TONE MAPPING
-        if renderer.toneMappingNode:
-            outputNode = context( renderer.toneMappingNode, { 'color': outputNode } )
-
         # ENCODING
-        outputNode = colorSpace( outputNode, renderer.outputEncoding )
+        outputNode = colorSpace( outputNode, builder.renderer.outputEncoding )
 
         # FOG
         if builder.fogNode:

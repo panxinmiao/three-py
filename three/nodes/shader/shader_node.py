@@ -16,7 +16,14 @@ class ShaderNode:
         if not callable(func):
             raise ValueError("ShaderNode func must be callable")
         self.func = func
-        
+
+    def build(self, builder, *args):
+        self.call( {}, builder )
+        return ""
+
+    def call(self, *args, **kwds):
+        return self(*args, **kwds)
+
     def __call__(self, *args, **kwds):
         if args:
             inputs = args[0]

@@ -15,7 +15,7 @@ struct VarysStruct {
 };
 @stage( vertex )
 fn main( @builtin( vertex_index ) vertexIndex : u32 ) -> VarysStruct {
-	var Varys: VarysStruct;
+	var Varys : VarysStruct;
 	var pos = array< vec2<f32>, 4 >(
 		vec2<f32>( -1.0,  1.0 ),
 		vec2<f32>(  1.0,  1.0 ),
@@ -35,7 +35,7 @@ fn main( @builtin( vertex_index ) vertexIndex : u32 ) -> VarysStruct {
 '''
 
         mipmapFragmentSource = '''
-@group( 0 ) @binding( 0 ) 
+@group( 0 ) @binding( 0 )
 var imgSampler : sampler;
 
 @group( 0 ) @binding( 1 )
