@@ -1,6 +1,6 @@
 from .node_material import NodeMaterial
 from three.materials import MeshNormalMaterial
-from ...nodes.shader import NormalNode, mul, add
+from ..shader.shader_node_base_elements import NormalNode, mul, add
 
 defaultValues = MeshNormalMaterial()
 
@@ -13,7 +13,7 @@ class MeshNormalNodeMaterial(NodeMaterial):
         #self.colorNode = None
         self.opacityNode = None
         self.alphaTestNode = None
-        self.lightNode = None
+        self.lightsNode = None
         self.positionNode = None
 
         self.fog = False

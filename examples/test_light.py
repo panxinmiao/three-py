@@ -46,8 +46,8 @@ def _light_model(inputs, *args):
 
 customLightingModel = three.nodes.ShaderNode(_light_model)
 
-lightingModelContext = three.nodes.LightContextNode( allLightsNode, customLightingModel )
-materialPoints.lightNode = lightingModelContext
+lightingModelContext = three.nodes.ContextNode(allLightsNode, {"lightingModelNode": {"direct": customLightingModel} })
+materialPoints.lightsNode = lightingModelContext
 
 pointCloud = three.Points( geometryPoints, materialPoints )
 

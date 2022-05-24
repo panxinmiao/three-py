@@ -1,7 +1,18 @@
 from .node_material import NodeMaterial
 from three.materials import MeshStandardMaterial
-from ..functions import PhysicalLightingModel, getRoughness
-from ..shader.shader_node_elements import float, vec3, vec4, context, assign, label, mul, invert, mix, normalView, materialRoughness, materialMetalness
+
+from ..lighting.lights_node import LightsNode
+from ..lighting.environment_light_node import EnvironmentLightNode
+from ..lighting.ao_node import AONode
+from ..functions.material.getRoughness import getRoughness
+from ..functions.physical_lighting_model import PhysicalLightingModel
+
+from ..display.normal_map_node import NormalMapNode
+
+from ..shader.shader_node_elements import (
+        float, vec3, vec4, normalView, add, context,
+        assign, label, mul, invert, mix, texture, uniform,
+        materialRoughness, materialMetalness, materialEmissive)
 
 defaultValues = MeshStandardMaterial()
 
@@ -28,7 +39,7 @@ class MeshStandardNodeMaterial(NodeMaterial):
 
         self.envNode = None
 
-        self.lightNode = None
+        self.lightsNode = None
 
         self.positionNode = None
 
@@ -36,39 +47,39 @@ class MeshStandardNodeMaterial(NodeMaterial):
         self.setValues( parameters )
 
     def build( self, builder ):
-        lightNode = self.lightNode or builder.lightNode  # use scene lights
         main = self.generateMain( builder )
-
         colorNode = main['colorNode']
         diffuseColorNode = main['diffuseColorNode']
 
+        envNode = self.envNode or builder.scene.environmentNode
         diffuseColorNode = self.generateStandardMaterial( builder, { 'colorNode': colorNode, 'diffuseColorNode': diffuseColorNode } )
 
-        outgoingLightNode = self.generateLight( builder, { 'diffuseColorNode': diffuseColorNode, 'lightNode': lightNode } )
+        if self.lightsNode:
+            builder.lightsNode = self.lightsNode
+
+        materialLightsNode = []
+
+        if envNode:
+            materialLightsNode.append(EnvironmentLightNode(envNode))
+
+        if builder.material.aoMap:
+            materialLightsNode.append(AONode(texture(builder.material.aoMap)))
+
+        if len(materialLightsNode)>0:
+            builder.lightsNode = LightsNode( builder.lightsNode.lightNodes + materialLightsNode)
+
+        outgoingLightNode = self.generateLight(builder, {
+                                               'diffuseColorNode': diffuseColorNode, 'lightingModelNode': PhysicalLightingModel})
 
         self.generateOutput( builder, { 'diffuseColorNode': diffuseColorNode, 'outgoingLightNode': outgoingLightNode } )
 
-    def generateLight( self, builder, parameters ):
-
-        diffuseColorNode = parameters['diffuseColorNode']
-        lightNode = parameters['lightNode']
-
-        outgoingLightNode = super().generateLight( builder, { 'diffuseColorNode': diffuseColorNode, 'lightNode': lightNode, 'lightingModelNode': PhysicalLightingModel } )
-
-        # @TODO: add IBL code here
-
-        # TONE MAPPING
-        renderer = builder.renderer
-
-        if renderer.toneMappingNode:
-            outgoingLightNode = context(renderer.toneMappingNode, {'color': outgoingLightNode})
-
-        return outgoingLightNode
 
     def generateStandardMaterial( self, builder, parameters ):
 
         colorNode = parameters['colorNode']
         diffuseColorNode = parameters['diffuseColorNode']
+
+        material = builder.material
 
         # METALNESS
 
@@ -92,12 +103,34 @@ class MeshStandardNodeMaterial(NodeMaterial):
 
         # NORMAL VIEW
 
-        normalNode = vec3( self.normalNode ) if self.normalNode else normalView
-
+        normalNode = vec3(self.normalNode) if self.normalNode else (
+            NormalMapNode(texture(material.normalMap), uniform(material.normalScale)) if material.normalMap else normalView)
+            
         builder.addFlow( 'fragment', label( normalNode, 'TransformedNormalView' ) )
 
         return diffuseColorNode
 
+    def generateLight(self, builder, parameters):
+
+        diffuseColorNode = parameters['diffuseColorNode']
+        lightingModelNode = parameters['lightingModelNode']
+        
+        lightsNode = parameters.get("lightsNode", builder.lightsNode)
+
+        renderer = builder.renderer
+
+        outgoingLightNode = super().generateLight(builder, {
+            'diffuseColorNode': diffuseColorNode, 'lightsNode': lightsNode, 'lightingModelNode': lightingModelNode})
+
+        # EMISSIVE
+        outgoingLightNode = add(
+            vec3(self.emissiveNode or materialEmissive), outgoingLightNode)
+
+        # TONE MAPPING
+        if renderer.toneMappingNode:
+            outgoingLightNode = context(renderer.toneMappingNode, {'color': outgoingLightNode})
+
+        return outgoingLightNode
 
     def copy( self, source: 'MeshStandardNodeMaterial' ):
 
@@ -118,7 +151,7 @@ class MeshStandardNodeMaterial(NodeMaterial):
 
         self.envNode = source.envNode
 
-        self.lightNode = source.lightNode
+        self.lightsNode = source.lightsNode
 
         self.positionNode = source.positionNode
 

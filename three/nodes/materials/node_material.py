@@ -3,10 +3,11 @@ from three.materials import ShaderMaterial
 from ..core.expression_node import ExpressionNode
 from ..core.attribute_node import AttributeNode
 
-from ..shader.shader_node_elements import (float, vec3, vec4,
-	assign, label, mul, add, bypass,
-	positionLocal, skinning, instance, modelViewProjection, lightContext, colorSpace,
-	materialAlphaTest, materialColor, materialOpacity)
+from ..shader.shader_node_elements import (
+    float, vec4,
+   	assign, label, mul, bypass,
+   	positionLocal, skinning, instance, modelViewProjection, lightingContext, colorSpace,
+   	materialAlphaTest, materialColor, materialOpacity)
 
 class NodeMaterial(ShaderMaterial):
     def __init__(self) -> None:
@@ -14,12 +15,16 @@ class NodeMaterial(ShaderMaterial):
         self.lights = True
 
     def build( self, builder ):
-        lightNode = self.lightNode
+        lightsNode = self.lightsNode
         diffuseColorNode = self.generateMain( builder )['diffuseColorNode']
 
-        outgoingLightNode = self.generateLight( builder, { 'diffuseColorNode':diffuseColorNode, 'lightNode':lightNode } )
+        outgoingLightNode = self.generateLight( builder, { 'diffuseColorNode':diffuseColorNode, 'lightsNode':lightsNode } )
 
         self.generateOutput( builder, { 'diffuseColorNode':diffuseColorNode, 'outgoingLightNode': outgoingLightNode } )
+
+    def customProgramCacheKey(self):
+        return self.uuid + '-' + str(self.version)
+
 
     def generateMain( self, builder ):
 
@@ -45,8 +50,8 @@ class NodeMaterial(ShaderMaterial):
         builder.addFlow( 'vertex', modelViewProjection() )
 
         # < FRAGMENT STAGE >
-        if not self.colorNode and self.vertexColors == True:
-            self.colorNode = AttributeNode('color', 'vec3')
+        # if not self.colorNode and self.vertexColors == True:
+        #     self.colorNode = AttributeNode('color', 'vec3')
 
         colorNode = vec4( self.colorNode or materialColor )
 
@@ -79,20 +84,16 @@ class NodeMaterial(ShaderMaterial):
 
     def generateLight( self, builder, parameters:dict ):
         diffuseColorNode = parameters.get('diffuseColorNode')
-        lightNode = parameters.get('lightNode', None)
         lightingModelNode = parameters.get('lightingModelNode', None)
+        lightsNode = parameters.get('lightsNode', builder.lightsNode)
+
         # < ANALYTIC LIGHTS >
 
         # OUTGOING LIGHT
 
         outgoingLightNode = diffuseColorNode.xyz
-        if lightNode and lightNode.hasLight != False:
-            outgoingLightNode = builder.addFlow( 'fragment', label( lightContext( lightNode, lightingModelNode ), 'Light' ) )
-
-        # EMISSIVE
-
-        if self.emissiveNode:
-            outgoingLightNode = add( vec3( self.emissiveNode ), outgoingLightNode )
+        if lightsNode and lightsNode.hasLight != False:
+            outgoingLightNode = builder.addFlow( 'fragment', label( lightingContext( lightsNode, lightingModelNode ), 'Light' ) )
 
         return outgoingLightNode
 

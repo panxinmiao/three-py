@@ -95,15 +95,17 @@ class WgpuNodeBuilder(NodeBuilder):
     def __init__(self, object, renderer) -> None:
         super().__init__(object, renderer, WGSLNodeParser())
 
-        self.lightNode = None
-        self.fogNode = None
-
         self.bindings = {'vertex': [], 'fragment': [], 'compute': []}
         self.bindingsOffset = {'vertex': 0, 'fragment': 0, 'compute': 0}
 
         self.uniformsGroup = {}
 
-        self.builtins = set()
+        self.builtins = {
+            'vertex': {},
+            'fragment': {},
+            'compute': {},
+            'attribute': {}
+        }
 
 
     def build(self):
@@ -133,12 +135,12 @@ class WgpuNodeBuilder(NodeBuilder):
             
             return f'textureLoad( {textureProperty}, repeatWrapping( {uvSnippet}, {dimension} ), 0 )'
 
-    def getSamplerBias( self, textureProperty, uvSnippet, biasSnippet, shaderStage = None ):
+    def getSamplerLevel( self, textureProperty, uvSnippet, biasSnippet, shaderStage = None ):
         if shaderStage is None:
             shaderStage =  self.shaderStage
 
         if shaderStage == 'fragment':
-            return f'textureSampleBias( {textureProperty}, {textureProperty}_sampler, {uvSnippet}, {biasSnippet} )'
+            return f'textureSampleLevel( {textureProperty}, {textureProperty}_sampler, {uvSnippet}, {biasSnippet} )'
 
         else:
             self._include( 'repeatWrapping' )
@@ -150,11 +152,11 @@ class WgpuNodeBuilder(NodeBuilder):
         shaderStage = shaderStage or self.shaderStage
         return self.getSampler( textureProperty, uvSnippet, shaderStage )
 
-    def getTextureBias( self, textureProperty, uvSnippet, biasSnippet, shaderStage = None ):
+    def getTextureLevel( self, textureProperty, uvSnippet, biasSnippet, shaderStage = None ):
         if shaderStage is None:
             shaderStage =  self.shaderStage
 
-        return self.getSamplerBias( textureProperty, uvSnippet, biasSnippet, shaderStage )
+        return self.getSamplerLevel( textureProperty, uvSnippet, biasSnippet, shaderStage )
 
     
     def getCubeTexture( self, textureProperty, uvSnippet, shaderStage = None ):
@@ -162,11 +164,11 @@ class WgpuNodeBuilder(NodeBuilder):
         return self.getSampler( textureProperty, uvSnippet, shaderStage )
 
     
-    def getCubeTextureBias( self, textureProperty, uvSnippet, biasSnippet, shaderStage = None ):
+    def getCubeTextureLevel( self, textureProperty, uvSnippet, biasSnippet, shaderStage = None ):
         if shaderStage is None:
             shaderStage =  self.shaderStage
 
-        return self.getSamplerBias( textureProperty, uvSnippet, biasSnippet, shaderStage )
+        return self.getSamplerLevel( textureProperty, uvSnippet, biasSnippet, shaderStage )
 
 
     def getPropertyName( self, node, shaderStage = None):
@@ -268,22 +270,41 @@ class WgpuNodeBuilder(NodeBuilder):
     def isReference( self, type ):
         return super().isReference( type ) or type == 'texture_2d' or type == 'texture_cube'
 
-    def getInstanceIndex( self, shaderStage = None ):
-        if shaderStage == None:
-            shaderStage = self.shaderStage
+    def getBuiltin(self, name, property, type, shaderStage=None):
 
-        self.builtins.add( 'instance_index' )
+        shaderStage = shaderStage or self.shaderStage
+        map = self.builtins[shaderStage]
+
+        if not name in map:
+            map[name] = {
+                "name": name,
+                "property": property,
+                "type": type
+            }
+
+        return property
+
+    
+    def getInstanceIndex( self ):
+        if self.shaderStage == 'vertex':
+            return self.getBuiltin('instance_index', 'instanceIndex', 'u32', 'attribute')
 
         return 'instanceIndex'
 
+    def getFrontFacing(self):
+        return self.getBuiltin('front_facing', 'isFront', 'bool')
 
     def getAttributes(self, shaderStage ):
         snippets = []
         if shaderStage == 'vertex' or shaderStage == 'compute':
             if shaderStage == 'compute':
-                snippets.append( '@builtin( global_invocation_id ) id : vec3<u32>' )
-            elif 'instance_index' in self.builtins:
-                snippets.append( '@builtin( instance_index ) instanceIndex : u32' )
+                self.getBuiltin('global_invocation_id', 'id', 'vec3<u32>', 'attribute')
+
+            for val in self.builtins["attribute"].values():
+                name = val["name"]
+                property = val["property"]
+                type = val["type"]
+                snippets.append(f'@builtin({name}) {property}: {type}')
 
             attributes = self.attributes
             for index, attribute in enumerate(attributes):
@@ -312,7 +333,8 @@ class WgpuNodeBuilder(NodeBuilder):
     def getVarys(self, shaderStage ):
         snippets = []
         if shaderStage == 'vertex':
-            snippets.append( '@builtin( position ) Vertex: vec4<f32>' )
+            self.getBuiltin('position', 'Vertex', 'vec4<f32>', 'vertex')
+
             varys = self.varys
 
             for index, vary in enumerate(varys):
@@ -322,6 +344,12 @@ class WgpuNodeBuilder(NodeBuilder):
             varys = self.varys
             for index, vary in enumerate(varys):
                 snippets.append( f'@location( {index} ) { vary.name } : { self.getType( vary.type ) }' )
+
+        for val in self.builtins[shaderStage].values():
+            name = val["name"]
+            property = val["property"]
+            type = val["type"]
+            snippets.append(f'@builtin({name}) {property}: {type}')
 
         code = ',\n\t'.join(snippets)
         return self._getWGSLStruct( 'NodeVarysStruct', '\t' + code ) if shaderStage == 'vertex' else code

@@ -1,4 +1,3 @@
-#from three.renderer.nodes import Node, NodeBuilder
 from .node import Node
 from ..math.operator_node import OperatorNode
 from .node_builder import NodeBuilder
@@ -38,22 +37,19 @@ class VarNode(Node):
             return super().getHash( builder )
 
     def getNodeType( self, builder:'NodeBuilder' , *args ):
-        type = super().getNodeType( builder )
-        if type is not None :
-            return type
-        else:
-            return self.node.getNodeType( builder )
+        return self.node.getNodeType( builder )
 
     def generate( self, builder:'NodeBuilder' ):
         node = self.node
-        if node.isTempNode and self.name is None:  # TODO if need special handling for label?
+        name = self.name
+
+        if node.isTempNode and name is None:
             return node.build( builder )
 
-        name = self.name
         type = builder.getVectorType( self.getNodeType( builder ) )
         
-        nodeVar = builder.getVarFromNode( self, type )
         snippet = node.build( builder, type )
+        nodeVar = builder.getVarFromNode( self, type )
 
         if name is not None:
             nodeVar.name = name

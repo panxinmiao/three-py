@@ -37,9 +37,8 @@ class Object3DNode(Node):
 
 
     def update(self, frame ):
-        object:'three.Object3D' = self.object3d if self.object3d else frame.object
+        object:'three.Object3D' = self.object3d
         uniformNode = self._uniformNode
-        camera:'three.Camera' = frame.camera
         scope = self.scope
 
         if scope == Object3DNode.VIEW_MATRIX:
@@ -55,6 +54,7 @@ class Object3DNode(Node):
             uniformNode.value.setFromMatrixPosition( object.matrixWorld )
 
         elif scope == Object3DNode.VIEW_POSITION:
+            camera = frame.camera
             uniformNode.value.setFromMatrixPosition( object.matrixWorld )
             uniformNode.value.applyMatrix4( camera.matrixWorldInverse )
 

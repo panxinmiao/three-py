@@ -2,7 +2,7 @@
 
 from ..core.node import Node
 from ..shader.shader_node import ShaderNode
-from ..shader.shader_node_elements import uv, add, mul, floor, mod, sign
+from ..shader.shader_node_base_elements import uv, add, mul, floor, mod, sign
 
 def __checkerShaderNode(inputs):
 	uv = mul( inputs.uv, 2.0 )

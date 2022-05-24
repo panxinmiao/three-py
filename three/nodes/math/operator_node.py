@@ -40,9 +40,8 @@ class OperatorNode(TempNode):
         else:
             if typeA == 'float' and builder.isMatrix( typeB ):
                 return typeB
-
+    
             elif builder.isMatrix( typeA ) and builder.isVector( typeB ):
-
                 # matrix x vector
                 return builder.getVectorFromMatrix( typeA )
 
@@ -94,7 +93,6 @@ class OperatorNode(TempNode):
 
         a = self.aNode.build( builder, typeA )
         b = self.bNode.build( builder, typeB )
-
         outputLength = builder.getTypeLength( output )
 
         if output != 'void':

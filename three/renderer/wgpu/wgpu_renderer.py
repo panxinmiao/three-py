@@ -137,7 +137,7 @@ class WgpuRenderer(NoneAttribute):
 
         render_texture_format = context.get_preferred_format(device.adapter)
 
-        context.configure( device = device, format = render_texture_format, compositing_alpha_mode= 'opaque')  # GPUTextureFormat.BGRA8Unorm
+        context.configure( device = device, format = render_texture_format, compositing_alpha_mode= 'premultiplied')  # GPUTextureFormat.BGRA8Unorm
 
         self._adapter = adapter
         self._device = device
@@ -281,15 +281,18 @@ class WgpuRenderer(NoneAttribute):
             height = math.floor( sc.height * self._pixelRatio )
             passEncoder.set_scissor_rect( sc.x, sc.y, width, height )
 
-        lightNode = self._currentRenderState.getLightNode()
+        # lights node
+
+        lightsNode = self._currentRenderState.getLightsNode()
         # process render lists
 
         opaqueObjects = self._currentRenderList.opaque
         transparentObjects = self._currentRenderList.transparent
+
         if len(opaqueObjects)> 0:
-            self._renderObjects( opaqueObjects, camera, scene, lightNode, passEncoder )
+            self._renderObjects( opaqueObjects, camera, scene, lightsNode, passEncoder )
         if len(transparentObjects) > 0:
-            self._renderObjects( transparentObjects, camera, scene, lightNode, passEncoder )
+            self._renderObjects( transparentObjects, camera, scene, lightsNode, passEncoder )
         # finish render pass
     
         passEncoder.end()
@@ -311,27 +314,27 @@ class WgpuRenderer(NoneAttribute):
 
 
     def getSize( self, target ):
-        return target.get_physical_size()
+        return target.set(self._width, self._height)
 
-    def setPixelRatio( self, value = 1 ):
-        self._pixelRatio = value
-        self.setSize( self._width, self._height, False )
+    # def setPixelRatio( self, value = 1 ):
+    #     self._pixelRatio = value
+    #     self.setSize( self._width, self._height, False )
 
-    def setDrawingBufferSize( self, width, height, pixelRatio ):
+    # def setDrawingBufferSize( self, width, height, pixelRatio ):
 
-        self._width = width
-        self._height = height
+    #     self._width = width
+    #     self._height = height
 
-        self._pixelRatio = pixelRatio
+    #     self._pixelRatio = pixelRatio
 
-        self._canvas.set_logical_size( width, height)
+    #     self._canvas.set_logical_size( width, height)
 
-        # self.domElement.width = math.floor( width * pixelRatio )
-        # self.domElement.height = math.floor( height * pixelRatio )
+    #     # self.domElement.width = math.floor( width * pixelRatio )
+    #     # self.domElement.height = math.floor( height * pixelRatio )
 
-        self._configureContext()
-        self._setupColorBuffer()
-        self._setupDepthBuffer()
+    #     self._configureContext()
+    #     self._setupColorBuffer()
+    #     self._setupDepthBuffer()
 
     def setSize( self, width, height, updateStyle = True ):
 
@@ -570,7 +573,7 @@ class WgpuRenderer(NoneAttribute):
             self._projectObject( c, camera, groupOrder )
 
 
-    def _renderObjects( self, renderList, camera:'three.Camera', scene, lightNode, passEncoder:wgpu.GPURenderPassEncoder ):
+    def _renderObjects( self, renderList, camera:'three.Camera', scene, lightsNode, passEncoder:wgpu.GPURenderPassEncoder ):
         # process renderable objects
         for renderItem in renderList:
 
@@ -585,8 +588,8 @@ class WgpuRenderer(NoneAttribute):
             self._objects.update( object )
             objectProperties = self._properties.get( object )
 
-            objectProperties.lightNode = lightNode
-            objectProperties.fogNode = scene.fogNode
+            objectProperties.lightsNode = lightsNode
+            objectProperties.scene = scene
 
             if camera.isArrayCamera:
                 cameras:'list[three.Camera]' = camera.cameras
@@ -715,6 +718,7 @@ class WgpuRenderer(NoneAttribute):
                 device= device,
                 format= GPUTextureFormat.BGRA8UnormSRGB,
                 usage= GPUTextureUsage.RENDER_ATTACHMENT,
+                compositing_alpha_mode='premultiplied'
                 # size= {
                 #     'width': math.floor( self._width * self._pixelRatio ),
                 #     'height': math.floor( self._height * self._pixelRatio ),

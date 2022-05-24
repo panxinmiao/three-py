@@ -10,7 +10,7 @@ class MeshBasicNodeMaterial(NodeMaterial):
         self.colorNode = None
         self.opacityNode = None
         self.alphaTestNode = None
-        self.lightNode = None
+        self.lightsNode = None
         self.positionNode = None
 
         self.setDefaultValues( defaultValues )
@@ -20,6 +20,6 @@ class MeshBasicNodeMaterial(NodeMaterial):
         self.colorNode = source.colorNode
         self.opacityNode = source.opacityNode
         self.alphaTestNode = source.alphaTestNode
-        self.lightNode = source.lightNode
+        self.lightsNode = source.lightsNode
         self.positionNode = source.positionNode
         return super().copy( source )

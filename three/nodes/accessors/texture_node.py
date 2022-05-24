@@ -3,11 +3,11 @@ from .uv_node import UVNode
 
 class TextureNode(UniformNode):
 
-    def __init__(self, value, uvNode = None, biasNode = None ) -> None:
+    def __init__(self, value, uvNode=None, levelNode=None) -> None:
         super().__init__(value, 'vec4')
 
         self.uvNode = uvNode or UVNode()
-        self.biasNode = biasNode
+        self.levelNode = levelNode
 
     def getUniformHash( self, *args): #  /*builder*/ 
         return self.value.uuid
@@ -32,11 +32,11 @@ class TextureNode(UniformNode):
             snippet = nodeData.snippet
             if snippet is None:
                 uvSnippet = self.uvNode.build( builder, 'vec2' )
-                biasNode = self.biasNode
+                levelNode = self.levelNode
 
-                if biasNode:
-                    biasSnippet = biasNode.build( builder, 'float' )
-                    snippet = builder.getTexture( textureProperty, uvSnippet, biasSnippet )
+                if levelNode:
+                    levelSnippet = levelNode.build(builder, 'float')
+                    snippet = builder.getTextureLevel( textureProperty, uvSnippet, levelSnippet )
                 else:
                     snippet = builder.getTexture( textureProperty, uvSnippet )
 

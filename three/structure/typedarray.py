@@ -1,6 +1,7 @@
 # from ..bytebuffer import ByteBuffer
 import abc
 import struct, uuid
+from .none_attribute import NoneAttribute
 
 class TypedArray(metaclass=abc.ABCMeta):
 

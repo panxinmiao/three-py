@@ -10,7 +10,6 @@ class FunctionNode(CodeNode):
     def __init__(self, code='') -> None:
         super().__init__(code=code)
         self.inputs = []
-        #self.useKeywords = True
         self.keywords = {}
 
     def getNodeType( self, builder:'NodeBuilder', *args ):

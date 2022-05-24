@@ -3,16 +3,14 @@
 from ..core.node import Node
 from ..core.constants import NodeUpdateType
 from ..shader.shader_node import ShaderNode
-
+from ..shader.shader_node_base_elements import attribute, buffer, mat4, uniform, positionLocal, normalLocal, assign, element, add,  mul, transformDirection
 
 
 class SkinningNode(Node):
 
-    def __skinning_fun( inputs, builder):
+    def __skinning_func( inputs, builder):
         # { position, normal, index, weight, bindMatrix, bindMatrixInverse, boneMatrices } = inputs
-        from ..shader.shader_node_elements import positionLocal, normalLocal, assign, element, add, mul, transformDirection
-        # position = inputs['position']
-        # normal = inputs['normal']
+
         index = inputs['index']
         weight = inputs['weight']
         bindMatrix = inputs['bindMatrix']
@@ -56,10 +54,9 @@ class SkinningNode(Node):
         assign( positionLocal, skinPosition ).build( builder )
         assign( normalLocal, skinNormal ).build( builder )
 
-    __Skinning = ShaderNode(__skinning_fun)
+    __Skinning = ShaderNode(__skinning_func)
 
     def __init__(self, skinnedMesh ) -> None:
-        from ..shader.shader_node_elements import attribute, buffer, mat4, uniform
         super().__init__('void')
         
         self.skinnedMesh = skinnedMesh
@@ -77,8 +74,6 @@ class SkinningNode(Node):
 
     
     def generate( self, builder ):
-
-		# inout nodes
 
         SkinningNode.__Skinning( {
 			'index': self.skinIndexNode,

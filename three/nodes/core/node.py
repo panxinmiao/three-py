@@ -13,6 +13,7 @@ class Node(NoneAttribute):
         self.nodeType = nodeType
         self.updateType = NodeUpdateType.NONE
         self.uuid = uuid.uuid1()
+        self.isNode = True
         global _nodeId
         self.id = _nodeId
         _nodeId += 1
@@ -25,6 +26,11 @@ class Node(NoneAttribute):
 
     def getNodeType(self, *args):  # ( builder )s
         return self.nodeType
+
+    def getReference(self, builder):
+        hash = self.getHash(builder)
+        nodeFromHash = builder.getNodeFromHash(hash)
+        return nodeFromHash or self
     
     def update(self, *args):  # ( builder )
         warnings.warn( 'Abstract function.' )
@@ -35,12 +41,10 @@ class Node(NoneAttribute):
 
 
     def analyze( self, builder:'NodeBuilder' ):
-        hash = self.getHash( builder )
-        sharedNode = builder.getNodeFromHash( hash )
+        refNode = self.getReference(builder)
 
-        if sharedNode and self != sharedNode:
-            return sharedNode.analyze( builder )
-
+        if self != refNode:
+            return refNode.analyze(builder)
 
         nodeData = builder.getDataFromNode( self )
         nodeData.dependenciesCount = 1 if nodeData.dependenciesCount is None else nodeData.dependenciesCount + 1
@@ -52,22 +56,22 @@ class Node(NoneAttribute):
 
 
     def build( self, builder:'NodeBuilder', output = None ):
-        hash = self.getHash( builder )
-        sharedNode = builder.getNodeFromHash( hash )
 
-        if sharedNode and self != sharedNode:
-            return sharedNode.build( builder, output )
+        refNode = self.getReference(builder)
+
+        if self != refNode:
+            return refNode.build(builder, output)
 
         builder.addNode( self )
         builder.addStack( self )
 
+        nodeData = builder.getDataFromNode(self)
         isGenerateOnce = self.generate.__code__.co_argcount == 2
 
         snippet = None
 
         if isGenerateOnce:
             type = self.getNodeType( builder )
-            nodeData = builder.getDataFromNode( self )
             snippet = nodeData.snippet
 
             if snippet == None:

@@ -9,19 +9,18 @@ from .operator_node import OperatorNode
 class MathNode(TempNode):
     # 1 input
 
-    RAD = 'radians'
-    DEG = 'degrees'
+    RADIANS = 'radians'
+    DEGREES = 'degrees'
     EXP = 'exp'
     EXP2 = 'exp2'
     LOG = 'log'
     LOG2 = 'log2'
     SQRT = 'sqrt'
-    INV_SQRT = 'inversesqrt'
+    INVERSE_SQRT = 'inversesqrt'
     FLOOR = 'floor'
     CEIL = 'ceil'
     NORMALIZE = 'normalize'
     FRACT = 'fract'
-    #SATURATE = 'saturate'
     SIN = 'sin'
     COS = 'cos'
     TAN = 'tan'

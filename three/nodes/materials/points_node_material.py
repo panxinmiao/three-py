@@ -15,7 +15,7 @@ class PointsNodeMaterial(NodeMaterial):
 
         self.alphaTestNode = None
 
-        self.lightNode = None
+        self.lightsNode = None
 
         self.sizeNode = None
 
@@ -31,7 +31,7 @@ class PointsNodeMaterial(NodeMaterial):
 
         self.alphaTestNode = source.alphaTestNode
 
-        self.lightNode = source.lightNode
+        self.lightsNode = source.lightsNode
 
         self.sizeNode = source.sizeNode
 
