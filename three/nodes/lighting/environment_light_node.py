@@ -2,8 +2,8 @@ import math
 from .lighting_node import LightingNode
 from ..core.context_node import ContextNode
 from ..utils.max_mip_level_node import MaxMipLevelNode
-from ..shader.shader_node import ShaderNode
-from ..shader.shader_node_base_elements import float, add, mul, div, log2, clamp, roughness, reflect, mix, vec3, positionViewDirection, negate, normalize, transformedNormalView, transformedNormalWorld, transformDirection, cameraViewMatrix
+from ..shadernode.shader_node import ShaderNode
+from ..shadernode.shader_node_base_elements import float, add, mul, div, log2, clamp, roughness, reflect, mix, vec3, positionViewDirection, negate, normalize, transformedNormalView, transformedNormalWorld, transformDirection, cameraViewMatrix
 
 
 def __getSpecularMIPLevel(inputs):

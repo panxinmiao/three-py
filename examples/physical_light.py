@@ -41,7 +41,7 @@ geometry.setAttribute('uv', three.Float32BufferAttribute(uvs, 2))
 geometry.setIndex(pmd_file.indices)
 # geometry.computeVertexNormals()
 
-canvas = WgpuCanvas(size=(640, 480), title="Physical Light")
+canvas = WgpuCanvas(size=(640, 480), max_fps=60, title="Physical Light")
 render = three.WgpuRenderer(canvas, parameters={'antialias': True})
 
 render.init()

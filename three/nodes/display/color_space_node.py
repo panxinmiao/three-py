@@ -1,7 +1,7 @@
 import three
 
-from ..shader.shader_node import ShaderNode
-from ..shader.shader_node_base_elements import vec3, pow, mul, sub, mix, vec4, lessThanEqual
+from ..shadernode.shader_node import ShaderNode
+from ..shadernode.shader_node_base_elements import vec3, pow, mul, sub, mix, vec4, lessThanEqual
 
 from ..core.temp_node import TempNode
 from ..core.node_builder import NodeBuilder

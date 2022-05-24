@@ -1,9 +1,8 @@
 from inspect import isfunction
 from three.materials import ShaderMaterial
 from ..core.expression_node import ExpressionNode
-from ..core.attribute_node import AttributeNode
 
-from ..shader.shader_node_elements import (
+from ..shadernode.shader_node_elements import (
     float, vec4,
    	assign, label, mul, bypass,
    	positionLocal, skinning, instance, modelViewProjection, lightingContext, colorSpace,

@@ -1,5 +1,5 @@
-from ...shader.shader_node import ShaderNode
-from ...shader.shader_node_base_elements import dotNV, vec2, vec4, add, mul, min, exp2
+from ...shadernode.shader_node import ShaderNode
+from ...shadernode.shader_node_base_elements import dotNV, vec2, vec4, add, mul, min, exp2
 
 '''
 Analytical approximation of the DFG LUT, one half of the

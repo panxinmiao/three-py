@@ -1,8 +1,8 @@
 # from three.renderer.nodes import Node, UVNode, ShaderNode, add, mul, floor, mod, sign
 
 from ..core.node import Node
-from ..shader.shader_node import ShaderNode
-from ..shader.shader_node_base_elements import uv, add, mul, floor, mod, sign
+from ..shadernode.shader_node import ShaderNode
+from ..shadernode.shader_node_base_elements import uv, add, mul, floor, mod, sign
 
 def __checkerShaderNode(inputs):
 	uv = mul( inputs.uv, 2.0 )

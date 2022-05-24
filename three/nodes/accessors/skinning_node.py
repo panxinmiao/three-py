@@ -2,8 +2,8 @@
 
 from ..core.node import Node
 from ..core.constants import NodeUpdateType
-from ..shader.shader_node import ShaderNode
-from ..shader.shader_node_base_elements import attribute, buffer, mat4, uniform, positionLocal, normalLocal, assign, element, add,  mul, transformDirection
+from ..shadernode.shader_node import ShaderNode
+from ..shadernode.shader_node_base_elements import attribute, buffer, mat4, uniform, positionLocal, normalLocal, assign, element, add,  mul, transformDirection
 
 
 class SkinningNode(Node):

@@ -9,7 +9,7 @@ from ..functions.physical_lighting_model import PhysicalLightingModel
 
 from ..display.normal_map_node import NormalMapNode
 
-from ..shader.shader_node_elements import (
+from ..shadernode.shader_node_elements import (
         float, vec3, vec4, normalView, add, context,
         assign, label, mul, invert, mix, texture, uniform,
         materialRoughness, materialMetalness, materialEmissive)

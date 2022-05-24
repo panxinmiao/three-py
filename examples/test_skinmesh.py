@@ -91,7 +91,7 @@ def init():
         'halfHeight': halfHeight
     })
 
-    canvas = WgpuCanvas(size=(640, 480), title="Skinmesh")
+    canvas = WgpuCanvas(size=(640, 480), max_fps=60, title="Skinmesh")
 
     render = three.WgpuRenderer(canvas, parameters={'antialias': True})
     render.init()

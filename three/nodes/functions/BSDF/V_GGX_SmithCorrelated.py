@@ -1,5 +1,5 @@
-from ...shader.shader_node import ShaderNode
-from ...shader.shader_node_base_elements import add, sub, mul, div, pow2, max, sqrt, EPSILON
+from ...shadernode.shader_node import ShaderNode
+from ...shadernode.shader_node_base_elements import add, sub, mul, div, pow2, max, sqrt, EPSILON
 
 def __V_GGX_SmithCorrelated(inputs):
     alpha = inputs['alpha']

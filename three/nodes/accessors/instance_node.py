@@ -1,5 +1,5 @@
 from ..core.node import Node
-from ..shader.shader_node_base_elements import vec3, mat3, mul, assign, buffer, element, dot, div, temp, instanceIndex, positionLocal, normalLocal
+from ..shadernode.shader_node_base_elements import vec3, mat3, mul, assign, buffer, element, dot, div, temp, instanceIndex, positionLocal, normalLocal
 
 class InstanceNode(Node):
 

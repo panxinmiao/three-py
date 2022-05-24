@@ -2,7 +2,7 @@ import three, math, time
 import three.nodes
 from wgpu.gui.auto import WgpuCanvas, run
 
-canvas = WgpuCanvas(size=(640, 480), title="Light Test")
+canvas = WgpuCanvas(size=(640, 480), max_fps=60, title="Light Test")
 
 render = three.WgpuRenderer(canvas, parameters={'antialias': True})
 render.init()
