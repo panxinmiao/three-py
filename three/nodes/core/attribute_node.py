@@ -1,5 +1,3 @@
-#from three.renderer.nodes import Node, VaryNode, NodeBuilder
-
 from .node import Node
 from .vary_node import VaryNode
 from .node_builder import NodeBuilder
@@ -11,6 +9,16 @@ class AttributeNode(Node):
 
     def getHash(self, builder ):
         return self.getAttributeName( builder )
+
+    def getNodeType(self, builder):
+        nodeType = super().getNodeType(builder)
+
+        if nodeType is None:
+            attributeName = self.getAttributeName(builder)
+            attribute = builder.geometry.getAttribute(attributeName)
+            nodeType = builder.getTypeFromLength(attribute.itemSize)
+ 
+        return nodeType
 
     def setAttributeName(self, attributeName ):
         self._attributeName = attributeName

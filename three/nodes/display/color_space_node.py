@@ -1,21 +1,21 @@
 import three
 
-# from three.renderer.nodes import TempNode, NodeBuilder, ShaderNode, vec3, pow, mul, sub, mix, join, lessThanEqual
+from ..shader.shader_node import ShaderNode
+from ..shader.shader_node_base_elements import vec3, pow, mul, sub, mix, vec4, lessThanEqual
 
 from ..core.temp_node import TempNode
 from ..core.node_builder import NodeBuilder
-from ..shader.shader_node import ShaderNode
 
 
 def __LinearTosRGB(inputs):
-    from ..shader.shader_node_elements import vec3, pow, mul, sub, mix, join, lessThanEqual
+    
     value = inputs.value
     rgb = value.rgb
     a = sub( mul( pow( value.rgb, vec3( 0.41666 ) ), 1.055 ), vec3( 0.055 ) )
     b = mul( rgb, 12.92 )
     factor = vec3( lessThanEqual( rgb, vec3( 0.0031308 ) ) )
     rgbResult = mix( a, b, factor )
-    return join( rgbResult.r, rgbResult.g, rgbResult.b, value.a )
+    return vec4(rgbResult, value.a)
 
 
 LinearToLinear = ShaderNode(lambda inputs : inputs.value )
@@ -37,11 +37,8 @@ class ColorSpaceNode(TempNode):
         super().__init__('vec4')
         self.method = method
         self.node = node
-        #self.factor = None
-
 
     def fromEncoding(self, encoding ):
-        #components = __getEncodingComponents( encoding )
         method = None
         if encoding == three.LinearEncoding:
             method = 'Linear'
@@ -49,7 +46,6 @@ class ColorSpaceNode(TempNode):
             method = 'sRGB'
 
         self.method = 'LinearTo' + method
-        #self.factor = components[ 1 ]
 
         return self
 

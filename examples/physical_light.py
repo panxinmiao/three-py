@@ -4,9 +4,13 @@ import math
 from PyQt5 import QtWidgets
 from wgpu.gui.qt import WgpuCanvas
 from pymeshio.pmx import reader
+from pathlib import Path
+
 app = QtWidgets.QApplication([])
 
-pmd_file = reader.read_from_file(r'examples/miku_pmx/blue.pmx')
+p = Path(__file__).parent / "miku_pmx" / "blue.pmx"
+
+pmd_file = reader.read_from_file(p)
 
 positions = []
 normals = []
@@ -57,11 +61,19 @@ mesh.rotation.y = math.pi/6 * 5
 
 scene.add(mesh)
 
-light = three.PointLight(three.Color(0xffffff), 2, 1000)
-light.position.set(10, 20, 0)
 sp = three.SphereGeometry(0.5, 16, 8)
-light.add(three.Mesh(sp, three.MeshBasicMaterial({'color': 0xffffff})))
-scene.add(light)
+
+light1 = three.PointLight(0xffaa00, 2)
+light1.add(three.Mesh(sp, three.MeshBasicMaterial({'color': 0xffaa00})))
+scene.add(light1)
+
+light2 = three.PointLight(0x0040ff, 2)
+light2.add(three.Mesh(sp, three.MeshBasicMaterial({'color': 0x0040ff})))
+scene.add(light2)
+
+light3 = three.PointLight(0x80ff80, 2)
+light3.add(three.Mesh(sp, three.MeshBasicMaterial({'color': 0x80ff80})))
+scene.add(light3)
 
 control = three.OrbitControls(camera, canvas)
 
@@ -80,10 +92,19 @@ canvas.add_event_handler(on_resize, 'resize')
 
 def loop():
     t = time.time() * 0.5
+    scale = 10
 
-    light.position.x = math.sin(t) * 10
-    light.position.y = math.sin(t) * 5 + 15
-    light.position.z = math.cos(t) * 10
+    light1.position.x = math.sin(t) * scale
+    light1.position.y = math.sin(t) * 5 + 15
+    light1.position.z = math.cos(t) * scale
+
+    light2.position.x = math.sin(t + math.pi * 2/3) * scale
+    light2.position.y = math.sin(t + math.pi * 1/3) * 5 + 15
+    light2.position.z = math.cos(t + math.pi * 2/3) * scale
+
+    light3.position.x = math.sin(t + math.pi * 4/3) * scale
+    light3.position.y = math.sin(t + math.pi * 2/3) * 5 + 15
+    light3.position.z = math.cos(t + math.pi * 4/3) * scale
 
     render.render(scene, camera)
 

@@ -1,5 +1,5 @@
 from ..core.node import Node
-from ..shader import nodeObject, normalWorld, positionWorld, cameraPosition, sub, normalize, join, negate, reflect
+from ..shader.shader_node_base_elements import nodeObject, transformedNormalView, positionViewDirection, transformDirection, negate, reflect, vec3, cameraViewMatrix
 
 class ReflectNode(Node):
     VECTOR = 'vector'
@@ -16,14 +16,14 @@ class ReflectNode(Node):
         scope = self.scope
 
         if scope == ReflectNode.VECTOR:
-            cameraToFrag = normalize( sub( positionWorld, cameraPosition ) )
-            reflectVec = reflect( cameraToFrag, normalWorld )
+            reflectView = reflect( negate( positionViewDirection ), transformedNormalView )
+            reflectVec = transformDirection(reflectView, cameraViewMatrix)
 
             return reflectVec.build( builder )
 
         elif scope == ReflectNode.CUBE:
             reflectVec = nodeObject( ReflectNode( ReflectNode.VECTOR ) )
-            cubeUV = join( negate( reflectVec.x ), reflectVec.yz )
+            cubeUV = vec3( negate( reflectVec.x ), reflectVec.yz )
 
             return cubeUV.build( builder )
 

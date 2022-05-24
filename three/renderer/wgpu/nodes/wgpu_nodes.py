@@ -18,12 +18,14 @@ class WgpuNodes:
         nodeBuilder = objectProperties.nodeBuilder
 
         if nodeBuilder is None:
-            fogNode = objectProperties.fogNode
-            lightNode = objectProperties.lightNode
+            scene = objectProperties.scene
+            lightsNode = objectProperties.lightsNode
 
             nodeBuilder = WgpuNodeBuilder( object, self.renderer )
-            nodeBuilder.lightNode = lightNode
-            nodeBuilder.fogNode = fogNode
+
+            nodeBuilder.lightsNode = lightsNode
+            nodeBuilder.fogNode = scene.fogNode if scene else None
+            nodeBuilder.scene = scene
             nodeBuilder.build()
 
             objectProperties.nodeBuilder = nodeBuilder

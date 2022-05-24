@@ -20,19 +20,7 @@ class CodeNode(Node):
 
 
     def generate(self, builder:'NodeBuilder' ):
-        # if self.useKeywords:
-        #     contextKeywords = builder.getContextValue( 'keywords' )
-
-        #     if contextKeywords:
-        #         nodeData = builder.getDataFromNode( self, builder.shaderStage )
-                
-        #         if nodeData.keywords is None:
-        #             nodeData.keywords = []
-
-        #         if contextKeywords not in nodeData.keywords:
-        #             contextKeywords.include( builder, self.code )
-        #             nodeData.keywords.append( contextKeywords )
-
+        
         includes = self.getIncludes( builder )
 
         for include in includes:

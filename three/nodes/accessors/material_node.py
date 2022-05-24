@@ -1,16 +1,16 @@
-# Node, OperatorNode, MaterialReferenceNode
-
 from ..core.node import Node
 from ..math.operator_node import OperatorNode
 from .material_reference_node import MaterialReferenceNode
+from .texture_node import TextureNode
+from ..utils.split_node import SplitNode
 
 class MaterialNode(Node):
     ALPHA_TEST = 'alphaTest'
     COLOR = 'color'
     OPACITY = 'opacity'
-    SPECULAR = 'specular'
     ROUGHNESS = 'roughness'
     METALNESS = 'metalness'
+    EMISSIVE = 'emissive'
 
     def __init__(self, scope = COLOR) -> None:
         super().__init__()
@@ -27,7 +27,7 @@ class MaterialNode(Node):
         elif scope == MaterialNode.OPACITY:
             return 'float'
 
-        elif scope == MaterialNode.SPECULAR:
+        elif scope == MaterialNode.EMISSIVE:
             return 'vec3'
 
         elif scope == MaterialNode.ROUGHNESS or scope == MaterialNode.METALNESS:
@@ -44,7 +44,8 @@ class MaterialNode(Node):
             colorNode = MaterialReferenceNode( 'color', 'color' )
 
             if material.map and material.map.isTexture:
-                node = OperatorNode( '*', colorNode, MaterialReferenceNode( 'map', 'texture' ) )
+                map = TextureNode(material.map)
+                node = OperatorNode('*', colorNode, map)
             else:
                 node = colorNode
 
@@ -56,14 +57,25 @@ class MaterialNode(Node):
             else:
                 node = opacityNode
 
-        elif scope == MaterialNode.SPECULAR:
-            specularTintNode = MaterialReferenceNode( 'specularTint', 'color' )
-
-            if material.specularTintMap and material.specularTintMap.isTexture:
-                node = OperatorNode( '*', specularTintNode, MaterialReferenceNode( 'specularTintMap', 'texture' ) )
+        elif scope == MaterialNode.ROUGHNESS:
+            roughnessNode = MaterialReferenceNode('roughness', 'float')
+            if material.roughnessMap and material.roughnessMap.isTexture:
+                node = OperatorNode('*', roughnessNode, SplitNode(TextureNode(material.roughnessMap), 'g'))
             else:
-                node = specularTintNode
+                node = roughnessNode
 
+        elif scope == MaterialNode.METALNESS:
+            metalnessNode = MaterialReferenceNode('metalness', 'float')
+            if material.metalnessMap and material.metalnessMap.isTexture:
+                node = OperatorNode('*', metalnessNode, SplitNode(TextureNode(material.metalnessMap), 'b'))
+            else:
+                node = metalnessNode
+        elif scope == MaterialNode.EMISSIVE:
+            emissiveNode = MaterialReferenceNode('emissive', 'color')
+            if material.emissiveMap and material.emissiveMap.isTexture:
+                node = OperatorNode('*', emissiveNode, TextureNode(material.emissiveMap) )
+            else:
+                node = emissiveNode
         else:
             outputType = self.getNodeType( builder )
             node = MaterialReferenceNode( scope, outputType )

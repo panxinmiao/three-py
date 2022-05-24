@@ -54,7 +54,7 @@ camera.position.y = 10
 
 scene = three.Scene()
 
-material = three.MeshStandardMaterial(
+material = three.MeshBasicMaterial(
     {'color': 0xffffff, 'shinniness': 32.0, 'emissive': 0x000000})
 
 material.side = three.DoubleSide
@@ -66,15 +66,15 @@ scene.add(mesh)
 
 sp = three.SphereGeometry(0.5, 16, 8)
 
-light1 = three.PointLight(0xffaa00, 2)
+light1 = three.PointLight(0xffaa00)
 light1.add(three.Mesh(sp, three.MeshBasicMaterial({'color': 0xffaa00})))
 scene.add(light1)
 
-light2 = three.PointLight(0x0040ff, 2)
+light2 = three.PointLight(0x0040ff)
 light2.add(three.Mesh(sp, three.MeshBasicMaterial({'color': 0x0040ff})))
 scene.add(light2)
 
-light3 = three.PointLight(0x80ff80, 2)
+light3 = three.PointLight(0x80ff80)
 light3.add(three.Mesh(sp, three.MeshBasicMaterial({'color': 0x80ff80})))
 scene.add(light3)
 
@@ -89,6 +89,8 @@ def _phong_light_model(inputs, *args):
     lightDirection = inputs['lightDirection']
     lightColor = inputs['lightColor']
 
+    lightColor = lightColor * math.pi
+
     # ambient
     ambientStrength = 0.1
     ambientColor = lightColor * ambientStrength
@@ -101,23 +103,23 @@ def _phong_light_model(inputs, *args):
     diffuseStrength = max(dot(transformedNormalView, lightDirection), 0)
     diffuseColor = lightColor * diffuseStrength
 
-
     halfDirection = normalize(positionViewDirection + lightDirection)
     specularStrength = pow(
         max(dot(normalWorld, halfDirection), 0.0), MaterialReferenceNode('shinniness', 'float'))
 
     specularColor = specularStrength * lightColor
 
-    total = (ambientColor + diffuseColor + specularColor) * materialColor
-
-    # trick, outlight = directDiffuse + directSpecular + indirectDiffuse + indirectSpecular
+    total = (ambientColor + diffuseColor+ specularColor) * materialColor
     inputs.reflectedLight.directDiffuse.add(total)
+    
+
 
 
 phongLightModel = three.nodes.ShaderNode(_phong_light_model)
-lightingModelContext = three.nodes.LightContextNode(
-    allLightsNode, phongLightModel)
-material.lightNode = lightingModelContext
+lightingModelContext = three.nodes.ContextNode(
+    allLightsNode, {"lightingModelNode": {"direct": phongLightModel}})
+
+material.lightsNode = lightingModelContext
 
 control = three.OrbitControls(camera, canvas)
 

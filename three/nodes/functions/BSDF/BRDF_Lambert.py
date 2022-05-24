@@ -1,5 +1,5 @@
 from ...shader.shader_node import ShaderNode
-from ...shader.shader_node_elements import mul
+from ...shader.shader_node_base_elements import mul
 import math
 
 def __BRDF_Lambert(inputs):

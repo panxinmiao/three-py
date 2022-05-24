@@ -14,7 +14,7 @@ class LineBasicNodeMaterial(NodeMaterial):
 
         self.alphaTestNode = None
 
-        self.lightNode = None
+        self.lightsNode = None
 
         self.positionNode = None
 
@@ -29,7 +29,7 @@ class LineBasicNodeMaterial(NodeMaterial):
 
         self.alphaTestNode = source.alphaTestNode
 
-        self.lightNode = source.lightNode
+        self.lightsNode = source.lightsNode
 
         self.positionNode = source.positionNode
 

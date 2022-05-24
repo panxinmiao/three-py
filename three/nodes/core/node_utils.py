@@ -1,12 +1,11 @@
 from three import Color, Matrix3, Matrix4, Vector2, Vector3, Vector4
 
 def getNodesKeys( object:'object' ):
+    from .node import Node
     props = []
-
     for name in object.__dict__:
         value = object.__dict__[ name ]
-        from ..core.node import Node
-        if value and isinstance(value, Node) == True:
+        if value and isinstance(value, Node):
             props.append( name )
 
     return props
@@ -37,48 +36,6 @@ def getValueType( value ):
         return 'color'
 
     return None
-
-#  const getValueFromType = ( type, ...params ) => {
-
-# 	const last4 = type?.slice( -4 );
-
-# 	if ( type === 'color' ) {
-
-# 		return new Color( ...params );
-
-# 	} else if ( last4 === 'vec2' ) {
-
-# 		return new Vector2( ...params );
-
-# 	} else if ( last4 === 'vec3' ) {
-
-# 		return new Vector3( ...params );
-
-# 	} else if ( last4 === 'vec4' ) {
-
-# 		return new Vector4( ...params );
-
-# 	} else if ( last4 === 'mat3' ) {
-
-# 		return new Matrix3( ...params );
-
-# 	} else if ( last4 === 'mat4' ) {
-
-# 		return new Matrix4( ...params );
-
-# 	} else if ( type === 'bool' ) {
-
-# 		return false;
-
-# 	} else if ( ( type === 'float' ) || ( type === 'int' ) || ( type === 'uint' ) ) {
-
-# 		return 0;
-
-# 	}
-
-# 	return null;
-
-# };
 
 def getValueFromType(type, *params):
     if type is None:

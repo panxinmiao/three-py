@@ -1,10 +1,9 @@
 from ..core.node import Node
-
+from ..shader.shader_node_base_elements import vec3, mat3, mul, assign, buffer, element, dot, div, temp, instanceIndex, positionLocal, normalLocal
 
 class InstanceNode(Node):
 
     def __init__(self, instanceMesh ) -> None:
-        from ..shader.shader_node_elements import vec3, mat3, mul, assign, buffer, element, dot, div, temp, instanceIndex, positionLocal, normalLocal
         super().__init__('void')
         self.instanceMesh = instanceMesh
 
@@ -12,7 +11,6 @@ class InstanceNode(Node):
         self.instanceMatrixNode = temp( element( instanceBufferNode, instanceIndex ) )
 
     def generate(self, builder):
-        from ..shader.shader_node_elements import vec3, mat3, mul, assign, buffer, element, dot, div, temp, instanceIndex, positionLocal, normalLocal
         instanceMatrixNode = self.instanceMatrixNode
 
         # POSITION

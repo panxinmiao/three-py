@@ -1,11 +1,13 @@
 #from three.renderer.nodes import Node, LightNode
-
+from weakref import WeakKeyDictionary
 from ..core.node import Node
-from .light_node import LightNode
+from .lighting_node import LightingNode
 
+references = WeakKeyDictionary()
 
 def sortLights( lights:'list' ):
-    lights.sort(key='id')
+    lights.sort(key=lambda light: light.id)
+    return lights
 
 
 class LightsNode(Node):
@@ -26,8 +28,6 @@ class LightsNode(Node):
 
         for lightNode in lightNodes:
             lightNode.build( builder )
-
-        return 'vec3( 0.0 )'
 
 
     def getHash(self, *args ):
@@ -61,10 +61,15 @@ class LightsNode(Node):
     def fromLights( self, lights ):
         lightNodes = []
 
+        lights = sortLights(lights)
+
         for light in lights:
             lightNode = self.getLightNodeByHash( light.uuid )
             if lightNode is None:
-                lightNode  = LightNode( light )
+                lightClass = light.__class__
+                lightNodeClass = references.get(lightClass, LightingNode)
+ 
+                lightNode = lightNodeClass(light)
             
             lightNodes.append( lightNode )
 
@@ -72,3 +77,9 @@ class LightsNode(Node):
         self._hash = None
 
         return self
+
+
+    @staticmethod
+    def setReference(lightClass, lightNodeClass):
+        references[lightClass] = lightNodeClass
+

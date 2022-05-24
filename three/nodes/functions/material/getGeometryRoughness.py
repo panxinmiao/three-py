@@ -1,5 +1,5 @@
 from ...shader.shader_node import ShaderNode
-from ...shader.shader_node_elements import max, abs, dFdx, dFdy, normalGeometry
+from ...shader.shader_node_base_elements import max, abs, dFdx, dFdy, normalGeometry
 
 def __getGeometryRoughness():
     dxy = max( abs( dFdx( normalGeometry ) ), abs( dFdy( normalGeometry ) ) )

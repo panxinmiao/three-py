@@ -27,7 +27,7 @@ class CondNode(Node):
 
         type = self.getNodeType( builder )
 
-        context = { 'temp': False }
+        context = {'tempWrite': False}
         nodeProperty = PropertyNode( None, type ).build( builder )
 
         nodeSnippet = ContextNode( self.condNode ).build( builder, 'bool' )

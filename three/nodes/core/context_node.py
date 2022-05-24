@@ -1,4 +1,3 @@
-#from three.renderer.nodes import Node
 from .node import Node
 from three.structure import Dict
 
@@ -6,14 +5,7 @@ class ContextNode(Node):
     def __init__(self, node, context=None) -> None:
         super().__init__()
         self.node = node
-        self.context = context or Dict()
-
-    # def setContextValue(self, name, value ):
-    #     self.context[ name ] = value
-    #     return self
-
-    # def getContextValue( self, name ):
-    #     return self.context[ name ]
+        self.context = Dict(context) if context else Dict()
 
     def getNodeType( self, builder , *args ):
         return self.node.getNodeType( builder )

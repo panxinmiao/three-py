@@ -1,8 +1,8 @@
 from ..core.temp_node import TempNode
 from ..shader.shader_node import ShaderNode
-from ..shader.shader_node_elements import mul, float
+from ..shader.shader_node_base_elements import mul, float
 
-from three import LinearToneMapping
+from ...constants import LinearToneMapping
 
 LinearToneMappingNode = ShaderNode(
     lambda inputs: mul(inputs['color'], inputs['exposure'])

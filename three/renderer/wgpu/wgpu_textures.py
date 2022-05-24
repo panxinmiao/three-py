@@ -288,7 +288,7 @@ class WgpuTextures:
 
         elif texture.isCubeTexture:
             if len(image) == 6:
-                self._copyCubeMapToTexture( image, texture, textureGPU, textureGPUDescriptor, needsMipmaps )
+                self._copyCubeMapToTexture( image, format, texture, textureGPU, textureGPUDescriptor, needsMipmaps )
 
         else:
             if image is not None:
@@ -305,7 +305,7 @@ class WgpuTextures:
         return needsUpdate
 
 
-    def _copyBufferToTexture( self, image, format, textureGPU ):
+    def _copyBufferToTexture( self, image, format, textureGPU, origin = (0, 0, 0) ):
 
         # @TODO: Consider to use GPUCommandEncoder.copyBufferToTexture()
 		# @TODO: Consider to support valid buffer layouts with other formats like RGB
@@ -320,7 +320,8 @@ class WgpuTextures:
         queue.write_texture(
             {
 				'texture': textureGPU,
-				'mip_level': 0
+				'mip_level': 0,
+                'origin': origin
 			},
             data,
             {
@@ -330,23 +331,28 @@ class WgpuTextures:
             (image.width, image.height, image.depth if image.depth is not None else 1)
         )
 
-    def _copyCubeMapToTexture( self, images, texture, textureGPU, textureGPUDescriptor, needsMipmaps ):
+    def _copyCubeMapToTexture( self, images, format, texture, textureGPU, textureGPUDescriptor, needsMipmaps ):
         
-        i = 5
-        while i >= 0:
+        for i in range(6):
             image = images[ i ]
-            imageBitmap = self._getImageBitmap( image, texture )
-            self._copyExternalImageToTexture( imageBitmap, textureGPU )
+            if image.isDataTexture:
+                self._copyBufferToTexture( image.image, format, textureGPU, (0, 0, i) )
+            else:
+                imageBitmap = self._getImageBitmap( image, texture )
+                self._copyExternalImageToTexture( imageBitmap, textureGPU, (0, 0, i) )
+
             if needsMipmaps:
-                self._generateMipmaps( textureGPU, textureGPUDescriptor, i, 0 if i > 0 else 1 )
+                self._generateMipmaps( textureGPU, textureGPUDescriptor, i )
 
-            i-=1
 
-    def _copyExternalImageToTexture( self, image, textureGPU, origin = { 'x': 0, 'y': 0, 'z': 0 } ):
+    def _copyExternalImageToTexture( self, image, textureGPU, origin = (0, 0, 0) ):
+        # TODO use _copyBufferToTexture() instead
+         
+        raise NotImplementedError()
 
-        raise NotImplementedError
-        #queue: wgpu.GPUQueue = self.device.queue
+        # queue: wgpu.GPUQueue = self.device.queue
 
+        # queue.copy_external_image_to_texture()
         #queue.copy_external_image_to_texture()
 		# this.device.queue.copyExternalImageToTexture(
 		# 	{
@@ -515,8 +521,11 @@ class WgpuTextures:
         image = texture.image
 
         if texture.isCubeTexture:
-            width = image[ 0 ].width if len(image) > 0 else 1
-            height = image[ 0 ].height if len(image) > 0 else 1
+            faceImage = image[0].image or image[0] if len(image) > 0 else None
+
+            width = faceImage.width if faceImage else 1
+            height = faceImage.height if faceImage else 1
+
             depth = 6 # one image for each side of the cube map
 
         elif image is not None:

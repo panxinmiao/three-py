@@ -4,13 +4,13 @@ from ..core.constants import NodeUpdateType
 
 class ComputeNode(Node):
 
-    def __init__(self, computeNode, count, workgroupSize=[64]) -> None:
+    def __init__(self, computeNode, count, workgroupSize=None) -> None:
         super().__init__('void')
 
         self.computeNode = computeNode
 
         self.count = count
-        self.workgroupSize = workgroupSize
+        self.workgroupSize = workgroupSize or [64]
         self.dispatchCount = 0
 
         self.updateType = NodeUpdateType.Object

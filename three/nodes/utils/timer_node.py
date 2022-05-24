@@ -8,11 +8,11 @@ class TimerNode(UniformNode):
     GLOBAL = 'global'
     DELTA = 'delta'
 
-    def __init__(self, scope = LOCAL) -> None:
+    def __init__(self, scope = LOCAL, scale = 1) -> None:
         super().__init__(0)
 
         self.scope = scope
-        self.scale = 1
+        self.scale = scale
         self.updateType = NodeUpdateType.Frame
 
     def update( self, frame ):

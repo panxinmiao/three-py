@@ -23,11 +23,8 @@ def fromType( type ):
     if type in materialLib:
         return materialLib[type]()
 
-    #return fromTypeFunction.call( this, type )
-
 def fromMaterial( material ):
     type = material.type.replace( 'Material', 'NodeMaterial' )
-
     if not type in materialLib:
         return material # is already a node material or cannot be converted
 

@@ -1,8 +1,7 @@
 from ...shader.shader_node import ShaderNode
-from ...shader.shader_node_elements import add, sub, mul, exp2
+from ...shader.shader_node_base_elements import add, sub, mul, exp2
 
 def __F_Schlick( inputs ):
-    #{ f0, f90, dotVH } = inputs
     f0 = inputs['f0']
     f90 = inputs['f90']
     dotVH = inputs['dotVH']

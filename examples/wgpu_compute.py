@@ -7,7 +7,7 @@ from three.nodes import (ShaderNode, compute,
                     temp, assign, add, sub, cond, abs, negate, max, min, length, vec3, color,
                     greaterThanEqual, lessThanEqual, instanceIndex)
 
-canvas = WgpuCanvas(size=(640, 480), title="wgpu_renderer")
+canvas = WgpuCanvas(size=(640, 640), title="wgpu_renderer")
 
 render = three.WgpuRenderer(canvas, parameters={'antialias': True})
 render.init()
@@ -30,10 +30,8 @@ velocityArray = three.Float32Array(particleNum * particleSize)
 for i in range(particleNum):
     r = random() * 0.01 + 0.005
     degree = random() * 360
-    velocityArray[i * particleSize + 0] = r * math.sin(degree * math.pi / 180)
-    # x
-    velocityArray[i * particleSize + 1] = r * math.cos(degree * math.pi / 180)
-    # y
+    velocityArray[i * particleSize + 0] = r * math.sin(degree * math.pi / 180) # x
+    velocityArray[i * particleSize + 1] = r * math.cos(degree * math.pi / 180) # y
 
 
 # create buffers

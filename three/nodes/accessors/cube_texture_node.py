@@ -4,14 +4,15 @@ from .reflect_node import ReflectNode
 
 class CubeTextureNode(TextureNode):
 
-    def __init__(self, value, uvNode=None, biasNode=None) -> None:
-        super().__init__(value, uvNode or ReflectNode(), biasNode)
+    def __init__(self, value, uvNode=None, levelNode=None) -> None:
+        super().__init__(value, uvNode or ReflectNode(), levelNode)
 
     def getInputType(self, *args):
         return 'cubeTexture'
 
     def generate(self, builder, output):
         texture = self.value
+        uvNode = self.uvNode or builder.context.uvNode or ReflectNode()
 
         if not texture or texture.isCubeTexture != True:
             raise Exception('CubeTextureNode: value must be a CubeTexture')
@@ -29,16 +30,20 @@ class CubeTextureNode(TextureNode):
 
             snippet = nodeData.snippet
 
-            if snippet is None:
-                uvSnippet = self.uvNode.build( builder, 'vec3' )
-                biasNode = self.biasNode
+            if builder.context.tempRead == False or snippet is None:
+                uvSnippet = uvNode.build(builder, 'vec3')
+                levelNode = self.levelNode or builder.context.levelNode
 
-                if biasNode:
-                    biasSnippet = biasNode.build( builder, 'float' )
-                    snippet = builder.getCubeTextureBias( textureProperty, uvSnippet, biasSnippet )
+                if levelNode and levelNode.isNode:
+                    levelOutNode = builder.context.levelShaderNode(
+                        {'texture': texture, 'levelNode': levelNode}, builder) if builder.context.levelShaderNode else levelNode
 
+                    levelSnippet = levelOutNode.build(builder, 'float')
+
+                    snippet = builder.getCubeTextureLevel(textureProperty, uvSnippet, levelSnippet)
+                
                 else:
-                    snippet = builder.getCubeTexture( textureProperty, uvSnippet )
+                    snippet = builder.getCubeTexture(textureProperty, uvSnippet)
 
                 nodeData.snippet = snippet
 

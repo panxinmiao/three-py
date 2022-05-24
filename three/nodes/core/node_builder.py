@@ -12,7 +12,6 @@ from .node_vary import NodeVary
 from .node_keywords import NodeKeywords
 
 defaultShaderStages = ['fragment', 'vertex']
-
 shaderStages = [*defaultShaderStages, 'compute']
 
 typeFromLength = {
@@ -31,12 +30,17 @@ class NodeBuilder(NoneAttribute):
     def __init__(self, object, renderer, parser) -> None:
         self.object = object
         self.material = object.material
+        self.geometry = object.geometry
         self.renderer = renderer
         self.parser = parser
 
         self.nodes = []
         self.updateNodes = []
         self.hashNodes = Dict({})
+
+        self.scene = None
+        self.lightNode = None
+        self.fogNode = None
 
         self.vertexShader = None
         self.fragmentShader = None
@@ -79,7 +83,7 @@ class NodeBuilder(NoneAttribute):
     def setHashNode( self, node, hash ):
         self.hashNodes[ hash ] = node
 
-    def addNode(self, node:'three.Node' ):
+    def addNode(self, node):
         if node not in self.nodes:
             updateType = node.getUpdateType( self )
             if updateType != NodeUpdateType.NONE:
@@ -87,7 +91,6 @@ class NodeBuilder(NoneAttribute):
             
             self.nodes.append( node )
             self.setHashNode( node, node.getHash( self ) )
-            #self.hashNodes[ node.getHash( self ) ] = node
 
 
     def getMethod(self, method ):
@@ -118,11 +121,14 @@ class NodeBuilder(NoneAttribute):
         # /*shaderStage*/
         warnings.warn( 'Abstract function.' )
 
+    def getFrontFacing(self, *args):
+        warnings.warn('Abstract function.')
+
     def getTexture(self, *args ):
         '''/* textureProperty, uvSnippet */'''
         warnings.warn( 'Abstract function.' )
 
-    def getTextureBias(self, *args):
+    def getTextureLevel(self, *args):
         '''/* textureProperty, uvSnippet, biasSnippet */'''
         warnings.warn( 'Abstract function.' )
 
@@ -130,7 +136,7 @@ class NodeBuilder(NoneAttribute):
         '''textureProperty, uvSnippet'''
         warnings.warn( 'Abstract function.' )
 
-    def getCubeTextureBias(self, *args):
+    def getCubeTextureLevel(self, *args):
         ''' /* textureProperty, uvSnippet, biasSnippet */ '''
         warnings.warn( 'Abstract function.' )
 
@@ -142,7 +148,7 @@ class NodeBuilder(NoneAttribute):
         if type == 'int':
             return f'{ round( value ) }'
         if type == 'uint':
-            return f'{ round( value ) }' if value > 0 else '0'
+            return f'{ round( value ) }u' if value > 0 else '0u'
         if type == 'bool':
             return 'true' if value else 'false'
         if type == 'color':
@@ -164,15 +170,6 @@ class NodeBuilder(NoneAttribute):
         elif typeLength > 4:
             return f'{ self.getType( type ) }()'
 
-        # if type == 'vec2':
-        #     return f"{ self.getType( 'vec2' ) }( {float(value.x)}, {float(value.y)} )"
-        # if type == 'vec3':
-        #     return f"{ self.getType( 'vec3' ) }( {float(value.x)}, {float(value.y)}, {float(value.z)} )"
-        # if type == 'vec4':
-        #     return f"{ self.getType( 'vec4' ) }( {float(value.x)}, {float(value.y)}, {float(value.z)}, {float(value.w)} )"
-        # if type == 'color':
-        #     return f"{ self.getType( 'vec3' ) }( {float(value.r)}, {float(value.g)}, {float(value.b)} )"
-        
         raise Exception(f"NodeBuilder: Type '{type}' not found in generate constant attempt." )
 
 
@@ -395,14 +392,6 @@ class NodeBuilder(NoneAttribute):
 
     def getAttributes(self, shaderStage ):
         warnings.warn( 'Abstract function.' )
-        # snippet = ''
-        # if shaderStage == 'vertex':
-        #     attributes = self.attributes
-        #     for index ,attribute in enumerate(attributes):
-        #         attribute = attributes[ index ]
-        #         snippet += f'layout(location = {index}) in {attribute.type} {attribute.name}; '
-
-        # return snippet
 
     def getVarys(self,  shaderStage):
         warnings.warn( 'Abstract function.' )
@@ -480,9 +469,6 @@ class NodeBuilder(NoneAttribute):
         fromTypeLength = self.getTypeLength( fromType )
         toTypeLength = self.getTypeLength( toType )
         if fromTypeLength > 4: # fromType is matrix-like
-
-            # vectorType = self.getVectorFromMatrix( fromType )
-            # return self.format( f'( { snippet } * { self.getType( vectorType ) }( 1.0 ) )', vectorType, toType )
 
             # ignore for now
             return snippet

@@ -85,7 +85,7 @@ fn main( @location( 0 ) vTex : vec2<f32> ) -> @location( 0 ) vec4<f32> {
         return pipeline
 
     
-    def generateMipmaps( self, textureGPU:'wgpu.GPUTexture', textureGPUDescriptor, baseArrayLayer = 0, mipLevelOffset = 1 ):
+    def generateMipmaps( self, textureGPU:'wgpu.GPUTexture', textureGPUDescriptor, baseArrayLayer = 0 ):
         
         pipeline = self.getMipmapPipeline( textureGPUDescriptor.format )
 
@@ -93,13 +93,9 @@ fn main( @location( 0 ) vTex : vec2<f32> ) -> @location( 0 ) vec4<f32> {
         # bindGroupLayout = pipeline.getBindGroupLayout( 0 ); # @TODO: Consider making this static.
         bindGroupLayout = pipeline.get_bind_group_layout(0)
 
-        srcView = textureGPU.create_view(base_mip_level= 0 , mip_level_count= 1)
+        srcView = textureGPU.create_view(base_mip_level=0, mip_level_count=1, base_array_layer=baseArrayLayer)
 
-        #for i = 1; i < textureGPUDescriptor.mipLevelCount; i ++ ) {
-        
-        i = mipLevelOffset
-        while i < textureGPUDescriptor.mipLevelCount:
-
+        for i in range(1, textureGPUDescriptor.mipLevelCount):
 
             dstView = textureGPU.create_view(base_mip_level= i, mip_level_count= 1, base_array_layer = baseArrayLayer)
 
@@ -125,7 +121,7 @@ fn main( @location( 0 ) vTex : vec2<f32> ) -> @location( 0 ) vec4<f32> {
             passEncoder.set_pipeline( pipeline )
             passEncoder.set_bind_group( 0, bindGroup )
             passEncoder.draw( 4, 1, 0, 0 )
-            passEncoder.end_pass()
+            passEncoder.end()
             
             srcView = dstView
 
