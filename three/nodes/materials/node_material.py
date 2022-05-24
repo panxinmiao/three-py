@@ -1,6 +1,7 @@
 from inspect import isfunction
 from three.materials import ShaderMaterial
 from ..core.expression_node import ExpressionNode
+from ..core.attribute_node import AttributeNode
 
 from ..shadernode.shader_node_elements import (
     float, vec4,
@@ -49,8 +50,8 @@ class NodeMaterial(ShaderMaterial):
         builder.addFlow( 'vertex', modelViewProjection() )
 
         # < FRAGMENT STAGE >
-        # if not self.colorNode and self.vertexColors == True:
-        #     self.colorNode = AttributeNode('color', 'vec3')
+        if not self.colorNode and self.vertexColors == True:
+            self.colorNode = AttributeNode('color', 'vec3')
 
         colorNode = vec4( self.colorNode or materialColor )
 
