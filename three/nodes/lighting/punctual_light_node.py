@@ -2,7 +2,7 @@ from .analytic_light_node import AnalyticLightNode
 from .lights_node import LightsNode
 from ..accessors.object3d_node import Object3DNode
 from ..functions.light.getDistanceAttenuation import getDistanceAttenuation
-from ..shader.shader_node_base_elements import uniform, mul, normalize, length, sub, positionView
+from ..shadernode.shader_node_base_elements import uniform, mul, normalize, length, sub, positionView
 
 from ...lights import PointLight
 

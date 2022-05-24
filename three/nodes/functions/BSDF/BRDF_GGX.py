@@ -1,9 +1,8 @@
 from .F_Schlick import F_Schlick
 from .V_GGX_SmithCorrelated import V_GGX_SmithCorrelated
 from .D_GGX import D_GGX
-from ...shader.shader_node import ShaderNode
-
-from ...shader.shader_node_base_elements import dotNV, add, mul, saturate, dot, pow2, normalize, transformedNormalView, positionViewDirection
+from ...shadernode.shader_node import ShaderNode
+from ...shadernode.shader_node_base_elements import dotNV, add, mul, saturate, dot, pow2, normalize, transformedNormalView, positionViewDirection
 
 def __BRDF_GGX( inputs ):
     #const { lightDirection, f0, f90, roughness } = inputs

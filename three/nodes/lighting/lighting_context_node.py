@@ -1,5 +1,5 @@
 from ..core.context_node import ContextNode
-from ..shader.shader_node_base_elements import float, vec3, add, temp
+from ..shadernode.shader_node_base_elements import float, vec3, add, temp
 
 class LightingContextNode(ContextNode):
 

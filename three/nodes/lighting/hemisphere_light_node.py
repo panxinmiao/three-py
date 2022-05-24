@@ -1,7 +1,7 @@
 from .analytic_light_node import AnalyticLightNode
 from .lights_node import LightsNode
 from ..accessors.object3d_node import Object3DNode
-from ..shader.shader_node_base_elements import uniform, add, mul, dot, mix, normalize, normalView
+from ..shadernode.shader_node_base_elements import uniform, add, mul, dot, mix, normalize, normalView
 
 from three import Color
 

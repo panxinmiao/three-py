@@ -1,6 +1,6 @@
 from .lighting_node import LightingNode
 from ..core.constants import NodeUpdateType
-from ..shader.shader_node_base_elements import uniform
+from ..shadernode.shader_node_base_elements import uniform
 
 from three import Color
 

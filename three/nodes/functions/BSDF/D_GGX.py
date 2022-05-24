@@ -1,6 +1,6 @@
-from ...shader.shader_node import ShaderNode
-from ...shader.shader_node_base_elements import add, sub, mul, div, pow2
 import math
+from ...shadernode.shader_node import ShaderNode
+from ...shadernode.shader_node_base_elements import add, sub, mul, div, pow2
 
 '''
 Microfacet Models for Refraction through Rough Surfaces - equation(33)

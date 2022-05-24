@@ -1,8 +1,7 @@
 
-# from three.renderer.nodes import Node, TimerNode, abs, fract, round, sin, add, sub, mul, PI2
 import math
 from ..core.node import Node
-from ..shader.shader_node_base_elements import abs, fract, round, sin, add, sub, mul
+from ..shadernode.shader_node_base_elements import abs, fract, round, sin, add, sub, mul
 from .timer_node import TimerNode
 
 class OscNode(Node):

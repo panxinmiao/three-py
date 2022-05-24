@@ -1,7 +1,7 @@
 import math
 from ...structure import Dict
-from ..shader.shader_node import ShaderNode
-from ..shader.shader_node_base_elements import (
+from ..shadernode.shader_node import ShaderNode
+from ..shadernode.shader_node_base_elements import (
     vec3, mul, saturate, add, sub, dot, div, transformedNormalView,
     pow, exp2, dotNV,
     diffuseColor, specularColor, roughness, temp)

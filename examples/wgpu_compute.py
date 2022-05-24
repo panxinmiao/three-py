@@ -7,7 +7,7 @@ from three.nodes import (ShaderNode, compute,
                     temp, assign, add, sub, cond, abs, negate, max, min, length, vec3, color,
                     greaterThanEqual, lessThanEqual, instanceIndex)
 
-canvas = WgpuCanvas(size=(640, 640), title="wgpu_renderer")
+canvas = WgpuCanvas(size=(640, 640), max_fps=60, title="wgpu_renderer")
 
 render = three.WgpuRenderer(canvas, parameters={'antialias': True})
 render.init()

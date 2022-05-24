@@ -107,5 +107,5 @@ from .materials import *
 # from .materials.points_node_material import PointsNodeMaterial
 
 # shader node
-from .shader.shader_node import ShaderNode
-from .shader.shader_node_elements import *
+from .shadernode.shader_node import ShaderNode
+from .shadernode.shader_node_elements import *

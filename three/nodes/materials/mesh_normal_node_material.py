@@ -1,6 +1,6 @@
 from .node_material import NodeMaterial
 from three.materials import MeshNormalMaterial
-from ..shader.shader_node_base_elements import NormalNode, mul, add
+from ..shadernode.shader_node_base_elements import NormalNode, mul, add
 
 defaultValues = MeshNormalMaterial()
 

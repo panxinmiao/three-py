@@ -1,6 +1,6 @@
 
 from ..core.temp_node import TempNode
-from ..shader.shader_node_base_elements import vec2, vec3, negate, normalize, cross, dot, mul, add, transformedNormalView, positionViewDirection
+from ..shadernode.shader_node_base_elements import vec2, vec3, negate, normalize, cross, dot, mul, add, transformedNormalView, positionViewDirection
 
 class MatcapUVNode(TempNode):
 

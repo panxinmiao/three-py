@@ -1,6 +1,6 @@
 from ..core.temp_node import TempNode
-from ..shader.shader_node import ShaderNode
-from ..shader.shader_node_base_elements import mul, float
+from ..shadernode.shader_node import ShaderNode
+from ..shadernode.shader_node_base_elements import mul, float
 
 from ...constants import LinearToneMapping
 

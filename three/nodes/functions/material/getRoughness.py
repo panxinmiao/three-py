@@ -1,7 +1,7 @@
 from .getGeometryRoughness import getGeometryRoughness
 
-from ...shader.shader_node import ShaderNode
-from ...shader.shader_node_base_elements import add, max, min
+from ...shadernode.shader_node import ShaderNode
+from ...shadernode.shader_node_base_elements import add, max, min
 
 def __getRoughness(inputs):
     roughness = inputs['roughness']

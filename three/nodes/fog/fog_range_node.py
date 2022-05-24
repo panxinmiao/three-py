@@ -1,5 +1,5 @@
 from .fog_node import FogNode
-from ..shader.shader_node_base_elements import smoothstep, negate, positionView
+from ..shadernode.shader_node_base_elements import smoothstep, negate, positionView
 
 class FogRangeNode(FogNode):
 

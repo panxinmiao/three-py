@@ -1,5 +1,5 @@
 from ..core.node import Node
-from ..shader.shader_node_base_elements import nodeObject, transformedNormalView, positionViewDirection, transformDirection, negate, reflect, vec3, cameraViewMatrix
+from ..shadernode.shader_node_base_elements import nodeObject, transformedNormalView, positionViewDirection, transformDirection, negate, reflect, vec3, cameraViewMatrix
 
 class ReflectNode(Node):
     VECTOR = 'vector'
