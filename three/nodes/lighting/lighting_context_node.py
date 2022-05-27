@@ -26,7 +26,7 @@ class LightingContextNode(ContextNode):
                 "directSpecular": directSpecular,
                 "indirectDiffuse": indirectDiffuse,
                 "indirectSpecular": indirectSpecular,
-                "total": add(directDiffuse, directSpecular,indirectDiffuse, indirectSpecular)
+                "total": add(directDiffuse, directSpecular, indirectDiffuse, indirectSpecular)
             }
 
             context.radiance = temp(vec3())

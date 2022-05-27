@@ -19,7 +19,7 @@ class TextureNode(UniformNode):
         texture = self.value
 
         if texture is None or texture.isTexture != True:
-            raise Exception( 'TextureNode: Need a three.js texture.' )
+            raise Exception( 'TextureNode: Need a three texture.' )
         
         textureProperty = super().generate( builder, 'texture' )
 

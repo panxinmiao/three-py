@@ -4,13 +4,13 @@ from ..constants import CubeReflectionMapping
 
 class CubeTexture(Texture):
 
-    def __init__(self, images=None, mapping=..., wrapS=..., wrapT=..., magFilter=..., minFilter=..., format=..., type=..., anisotropy=1, encoding=...) -> None:
+    def __init__(self, images=None, mapping=CubeReflectionMapping, *args, **kwargs) -> None:
         
         images = images if images else []
 
-        mapping = mapping if mapping else CubeReflectionMapping
+        # mapping = mapping if mapping else CubeReflectionMapping
 
-        super().__init__(images, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy, encoding)
+        super().__init__(images, mapping, *args, **kwargs)
 
         self.flipY = False
 

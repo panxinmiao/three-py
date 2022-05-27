@@ -26,7 +26,7 @@ class NodeFrame(NoneAttribute):
     def updateNode( self, node ):
         if node.updateType == NodeUpdateType.Frame:
             if self.updateMap.get( node ) != self.frameId:
-                self.updateMap.set( node, self.frameId )
+                self.updateMap[node] = self.frameId
                 node.update( self )
 
         elif node.updateType == NodeUpdateType.Object:

@@ -1,8 +1,9 @@
 # from ..bytebuffer import ByteBuffer
 import abc
 import struct, uuid
-from .none_attribute import NoneAttribute
+from typing import Iterable
 
+# TODO use numpy arrays
 class TypedArray(metaclass=abc.ABCMeta):
 
     @classmethod
@@ -63,7 +64,7 @@ class TypedArray(metaclass=abc.ABCMeta):
         if type(__initializer) == int:
             self._length = __initializer
             self._buffer = bytearray(__initializer * self.bytes_per_element)
-        elif type(__initializer) == list:
+        elif isinstance(__initializer, Iterable):
             self._length = len(__initializer)
             bytes = struct.pack(f'{self._length}{self.struct_symbol}', *__initializer)
             self._buffer = bytearray(bytes)
@@ -147,6 +148,8 @@ class TypedArray(metaclass=abc.ABCMeta):
         if isinstance(n, int):
             if n >= self.length:
                 raise ValueError(f"index out of range ({self.length})")
+            if not isinstance(v, (int, float)):
+                v = float(v)
             if not isinstance(v, (int, float)):
                 raise ValueError(f"a number is required (got type {v.__class__.__name__})")
             src_offset = self._byteOffset + n * self.bytes_per_element

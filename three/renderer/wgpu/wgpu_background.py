@@ -4,7 +4,7 @@ from .constants import GPULoadOp, GPUStoreOp
 
 class WgpuBackground:
 
-    _clearAlpha = None
+    _clearAlpha = 1
     _clearColor = Color()
 
     def __init__( self, renderer) -> None:

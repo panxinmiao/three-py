@@ -19,7 +19,7 @@ class Node(NoneAttribute):
         _nodeId += 1
 
     def getHash(self, *args):       # ( builder )
-        return self.uuid
+        return str(self.uuid)
 
     def getUpdateType(self, *args):  # ( builder )
         return self.updateType

@@ -311,7 +311,6 @@ class WgpuNodeBuilder(NodeBuilder):
                 name = attribute.name
                 type = self.getType( attribute.type )
                 snippets.append(f'@location( {index} ) { name } : { type }')
-
         return  ',\n\t'.join(snippets)
 
 

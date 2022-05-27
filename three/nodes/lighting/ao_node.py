@@ -10,5 +10,4 @@ class AONode(LightingNode):
     def generate(self, builder):
         aoIntensity = 1
         aoNode = add( mul( sub( float( self.aoNode ), 1.0 ), aoIntensity ), 1.0 )
-
         builder.context.ambientOcclusion.mul( aoNode )

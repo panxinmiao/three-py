@@ -17,6 +17,10 @@ class WgpuSampledTexture(WgpuBinding):
     def getTexture( self ):
         return self.texture
 
+    @property
+    def isSampledTexture(self):
+        return True
+
 class WgpuSampledArrayTexture(WgpuSampledTexture):
 
     def __init__(self, name, texture = None) -> None:

@@ -577,7 +577,7 @@ class WgpuRenderPipeline():
                     'binding': bindingPoint,
                     'visibility': binding.visibility,
                     "sampler": {
-                        "type": binding.type
+                        "type": "filtering"   # TODO : filtering, comparison
                     }
                 })
 
@@ -586,7 +586,7 @@ class WgpuRenderPipeline():
                     'binding': bindingPoint,
                     'visibility': binding.visibility,
                     "texture": {
-                        "type": binding.type
+                        "view_dimension": binding.dimension
                     }
                 })
 	
