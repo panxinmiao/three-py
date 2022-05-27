@@ -13,7 +13,7 @@ class AnalyticLightNode(LightingNode):
         self.colorNode = uniform( Color())
 
     def getHash(self, *args):
-        return self.light.uuid
+        return str(self.light.uuid)
 
     def update(self, *args):
         self.colorNode.value.copy(self.light.color).multiplyScalar(self.light.intensity)

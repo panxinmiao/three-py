@@ -12,7 +12,7 @@ class MaxMipLevelNode(UniformNode):
         self.updateType = NodeUpdateType.Frame
 
     
-    def update(self):
+    def update(self, *args):
 
         image = (self.texture.images[0].image or self.texture.images[0]) if self.texture.images else self.texture.image
 

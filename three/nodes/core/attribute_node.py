@@ -12,11 +12,11 @@ class AttributeNode(Node):
 
     def getNodeType(self, builder):
         nodeType = super().getNodeType(builder)
-
         if nodeType is None:
             attributeName = self.getAttributeName(builder)
             attribute = builder.geometry.getAttribute(attributeName)
             nodeType = builder.getTypeFromLength(attribute.itemSize)
+            print(attributeName, attribute, nodeType)
  
         return nodeType
 

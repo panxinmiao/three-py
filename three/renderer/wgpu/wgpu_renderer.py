@@ -135,9 +135,9 @@ class WgpuRenderer(NoneAttribute):
 
         context:'wgpu.GPUCanvasContext' = parameters.context if parameters.context is not None else self._canvas.get_context()
 
-        render_texture_format = context.get_preferred_format(device.adapter)
+        # render_texture_format = context.get_preferred_format(device.adapter)
 
-        context.configure( device = device, format = render_texture_format, compositing_alpha_mode= 'premultiplied')  # GPUTextureFormat.BGRA8Unorm
+        context.configure( device = device, format = GPUTextureFormat.BGRA8Unorm, compositing_alpha_mode= 'premultiplied')  # GPUTextureFormat.BGRA8Unorm
 
         self._adapter = adapter
         self._device = device
@@ -403,7 +403,7 @@ class WgpuRenderer(NoneAttribute):
             'maxDepth': maxDepth
         })
 
-    
+    # TODO: combine encoding and color format
     def getCurrentEncoding(self):
         renderTarget = self.getRenderTarget()
         return renderTarget.texture.encoding if renderTarget is not None else self.outputEncoding
@@ -418,8 +418,8 @@ class WgpuRenderer(NoneAttribute):
             renderTargetProperties = self._properties.get( renderTarget )
             format = renderTargetProperties.colorTextureFormat
         else:
-            # format = GPUTextureFormat.BGRA8UnormSRGB  # default context format
-            format = self._context.get_preferred_format(self._device.adapter)
+            format = GPUTextureFormat.BGRA8Unorm  # default context format
+            #format = self._context.get_preferred_format(self._device.adapter)
 
         return format
 
@@ -689,7 +689,7 @@ class WgpuRenderer(NoneAttribute):
 					'depth_or_array_layers': 1
 				},
                 sample_count = self._parameters.sampleCount,
-                format= GPUTextureFormat.BGRA8UnormSRGB,
+                format= GPUTextureFormat.BGRA8Unorm,
 				usage= GPUTextureUsage.RENDER_ATTACHMENT
             )
 
@@ -716,7 +716,7 @@ class WgpuRenderer(NoneAttribute):
         if device:
             self._context.configure(
                 device= device,
-                format= GPUTextureFormat.BGRA8UnormSRGB,
+                format= GPUTextureFormat.BGRA8Unorm,
                 usage= GPUTextureUsage.RENDER_ATTACHMENT,
                 compositing_alpha_mode='premultiplied'
                 # size= {

@@ -10,7 +10,11 @@ from .source import Source
 _texture_id = 0
 
 class Texture(EventDispatcher):
-    def __init__(self, image = None, mapping = UVMapping, wrapS = ClampToEdgeWrapping, 
+
+    DEFAULT_IMAGE = None
+    DEFAULT_MAPPING = UVMapping
+
+    def __init__(self, image=DEFAULT_IMAGE, mapping = DEFAULT_MAPPING, wrapS = ClampToEdgeWrapping,
                     wrapT = ClampToEdgeWrapping, magFilter = LinearFilter, minFilter = LinearMipmapLinearFilter, 
                     format = RGBAFormat, type = UnsignedByteType, anisotropy = 1, encoding = LinearEncoding) -> None:
 
@@ -20,7 +24,6 @@ class Texture(EventDispatcher):
         self.uuid = uuid.uuid1()
 
         self.name = ''
-
         self.source = Source(image)
         self.mipmaps = []
 
@@ -156,11 +159,11 @@ class Texture(EventDispatcher):
 
     @property
     def needsUpdate( self ):
-        return self.source.needsUpdate
+        return None
 
     @needsUpdate.setter
     def needsUpdate( self, value):
-        if value:
+        if value == True:
             self.version += 1
             self.source.needsUpdate = True
 

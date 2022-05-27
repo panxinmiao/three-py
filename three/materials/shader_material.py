@@ -61,8 +61,8 @@ class ShaderMaterial(Material):
         self.fragmentShader = source.fragmentShader
         self.vertexShader = source.vertexShader
 
-        from ..renderer.shaders.uniforms_util import cloneUniforms
-        self.uniforms = cloneUniforms( source.uniforms )
+        # from ..renderer.shaders.uniforms_util import cloneUniforms
+        # self.uniforms = cloneUniforms( source.uniforms )
 
         self.defines = source.defines.copy()
 

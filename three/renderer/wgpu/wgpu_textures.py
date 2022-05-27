@@ -2,6 +2,7 @@ import wgpu
 import math
 from warnings import warn
 
+from ...structure import Dict
 from ...materials import Texture, CubeTexture
 from ...constants import (NearestFilter, NearestMipmapNearestFilter, NearestMipmapLinearFilter, LinearFilter, RepeatWrapping, MirroredRepeatWrapping,
             RGBAFormat, RedFormat, RGFormat, RGBA_S3TC_DXT1_Format, RGBA_S3TC_DXT3_Format, RGBA_S3TC_DXT5_Format, UnsignedByteType, FloatType, HalfFloatType, sRGBEncoding)
@@ -75,18 +76,13 @@ class WgpuTextures:
         textureProperties = self.properties.get( texture )
 
         if texture.version > 0 and textureProperties.version != texture.version:
-
+            
             image = texture.image
             if not image:
-                warn( 'THREE.WebGPURenderer: Texture marked for update but image is undefined.' )
-
-            elif image.complete == False:
-                warn( 'THREE.WebGPURenderer: Texture marked for update but image is incomplete.' )
+                warn( 'THREE.WebGPURenderer: Texture marked for update but image is None.' )
 
             else:
-
-				# texture init
-
+                # texture init
                 if textureProperties.initialized is None:
                     textureProperties.initialized = True
                     disposeCallback = self.onTextureDispose
@@ -100,8 +96,8 @@ class WgpuTextures:
                 needsUpdate = self._uploadTexture( texture )
 
 
-		# if the texture is used for RTT, it's necessary to init it once so the binding
-		# group's resource definition points to the respective GPUTexture
+        # if the texture is used for RTT, it's necessary to init it once so the binding
+        # group's resource definition points to the respective GPUTexture
 
         if textureProperties.initializedRTT == False:
             textureProperties.initializedRTT = True
@@ -120,22 +116,21 @@ class WgpuTextures:
         array.append( texture.minFilter )
         array.append( texture.anisotropy )
 
-        key = ','.join(array)
+        key = ','.join( map( str, array ) )
         
         samplerGPU = self.samplerCache.get( key )
-
         if samplerGPU is None:
-            self.device.create_sampler(
-                addressModeU = self._convertAddressMode( texture.wrapS ),
-                addressModeV = self._convertAddressMode( texture.wrapT ),
-                addressModeW = self._convertAddressMode( texture.wrapR ),
-				magFilter = self._convertFilterMode( texture.magFilter ),
-				minFilter = self._convertFilterMode( texture.minFilter ),
-				mipmapFilter = self._convertFilterMode( texture.minFilter ),
-				maxAnisotropy = texture.anisotropy
+            samplerGPU = self.device.create_sampler(
+                address_mode_u = self._convertAddressMode( texture.wrapS ),
+                address_mode_v = self._convertAddressMode( texture.wrapT ),
+                address_mode_w = self._convertAddressMode( texture.wrapR ),
+                mag_filter = self._convertFilterMode( texture.magFilter ),
+                min_filter = self._convertFilterMode( texture.minFilter ),
+                mipmap_filter = self._convertFilterMode( texture.minFilter ),
+                max_anisotropy = texture.anisotropy
             )
 
-            self.samplerCache.set( key, samplerGPU )
+            self.samplerCache[key] = samplerGPU
         
         textureProperties = self.properties.get( texture )
         textureProperties.samplerGPU = samplerGPU
@@ -155,10 +150,10 @@ class WgpuTextures:
 
             colorTextureGPU = device.create_texture(
                 size={
-					'width': width,
-					'height': height,
-					'depth_or_array_layers': 1
-				},
+                    'width': width,
+                    'height': height,
+                    'depth_or_array_layers': 1
+                },
                 format=colorTextureFormat,
                 usage=GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING
             )
@@ -168,10 +163,10 @@ class WgpuTextures:
             renderTargetProperties.colorTextureGPU = colorTextureGPU
             renderTargetProperties.colorTextureFormat = colorTextureFormat
 
-			# When the ".texture" or ".depthTexture" property of a render target is used as a map,
-			# the renderer has to find the respective GPUTexture objects to setup the bind groups.
-			# Since it's not possible to see just from a texture object whether it belongs to a render
-			# target or not, we need the initializedRTT flag.
+            # When the ".texture" or ".depthTexture" property of a render target is used as a map,
+            # the renderer has to find the respective GPUTexture objects to setup the bind groups.
+            # Since it's not possible to see just from a texture object whether it belongs to a render
+            # target or not, we need the initializedRTT flag.
 
             textureProperties = properties.get( renderTarget.texture )
             textureProperties.textureGPU = colorTextureGPU
@@ -182,12 +177,12 @@ class WgpuTextures:
 
                 depthTextureGPU = device.create_texture(
                     size =  {
-						'width': width,
-						'height': height,
-						'depth_or_array_layers': 1
-					},
-					format = depthTextureFormat,
-					usage= GPUTextureUsage.RENDER_ATTACHMENT
+                        'width': width,
+                        'height': height,
+                        'depth_or_array_layers': 1
+                    },
+                    format = depthTextureFormat,
+                    usage= GPUTextureUsage.RENDER_ATTACHMENT
                 )
 
                 self.info.memory.textures += 1
@@ -248,24 +243,24 @@ class WgpuTextures:
         usage = GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST
 
         if needsMipmaps == True:
-			# current mipmap generation requires RENDER_ATTACHMENT
+            # current mipmap generation requires RENDER_ATTACHMENT
             usage |= GPUTextureUsage.RENDER_ATTACHMENT
 
 
-        textureGPUDescriptor = {
-			'size': {
-				'width': width,
-				'height': height,
-				'depth_or_array_layers': depth,
-			},
-			'mip_level_count': mipLevelCount,
-			'sample_count': 1,
-			'dimension': dimension,
-			'format': format,
-			'usage': usage
-		}
+        textureGPUDescriptor = Dict({
+            'size': {
+                'width': width,
+                'height': height,
+                'depth_or_array_layers': depth,
+            },
+            'mip_level_count': mipLevelCount,
+            'sample_count': 1,
+            'dimension': dimension,
+            'format': format,
+            'usage': usage
+        })
 
-		# texture creation
+        # texture creation
 
         textureGPU = textureProperties.textureGPU
 
@@ -277,6 +272,7 @@ class WgpuTextures:
 
         # transfer texture data
 
+        # always dataTexture at present
         if texture.isDataTexture or texture.isDataTexture2DArray or texture.isDataTexture3D:
             self._copyBufferToTexture( image, format, textureGPU )
 
@@ -292,9 +288,7 @@ class WgpuTextures:
 
         else:
             if image is not None:
-                imageBitmap = self._getImageBitmap( image, texture )
-
-                self._copyExternalImageToTexture( imageBitmap, textureGPU )
+                self._copyBufferToTexture(image, format, textureGPU)
 
                 if needsMipmaps == True:
                     self._generateMipmaps( textureGPU, textureGPUDescriptor )
@@ -304,14 +298,40 @@ class WgpuTextures:
 
         return needsUpdate
 
+    # def _copyBufferToTexture(self, image, format, textureGPU, origin=(0, 0, 0)):
+
+    #     # @TODO: Consider to use GPUCommandEncoder.copyBufferToTexture()
+    #     # @TODO: Consider to support valid buffer layouts with other formats like RGB
+
+    #     data = image.data
+
+    #     bytesPerTexel = self._getBytesPerTexel(format)
+    #     bytesPerRow = math.ceil(image.width * bytesPerTexel / 256) * 256
+
+    #     queue: wgpu.GPUQueue = self.device.queue
+
+    #     commandEncoder: wgpu.GPUCommandEncoder = self.device.create_command_encoder()
+    #     commandEncoder.copy_buffer_to_texture(
+    #         {
+    #             'buffer': data,
+    #             'offset': 0,
+    #             'bytes_per_row': bytesPerRow
+    #         },
+    #         {
+    #             'texture': textureGPU,
+    #             'mip_level': 0,
+    #             'origin': origin
+    #         },
+    #         (image.width, image.height, image.depth if image.depth is not None else 1)
+    #     )
+    #     queue.submit([commandEncoder.finish()])
+
 
     def _copyBufferToTexture( self, image, format, textureGPU, origin = (0, 0, 0) ):
 
         # @TODO: Consider to use GPUCommandEncoder.copyBufferToTexture()
-		# @TODO: Consider to support valid buffer layouts with other formats like RGB
-
+        # @TODO: Consider to support valid buffer layouts with other formats like RGB
         data = image.data
-
         bytesPerTexel = self._getBytesPerTexel( format )
         bytesPerRow = math.ceil( image.width * bytesPerTexel / 256 ) * 256
 
@@ -319,15 +339,15 @@ class WgpuTextures:
 
         queue.write_texture(
             {
-				'texture': textureGPU,
-				'mip_level': 0,
+                'texture': textureGPU,
+                'mip_level': 0,
                 'origin': origin
-			},
+            },
             data,
             {
-				'offset': 0,
-				'bytes_per_row': bytesPerRow
-			},
+                'offset': 0,
+                'bytes_per_row': bytesPerRow
+            },
             (image.width, image.height, image.depth if image.depth is not None else 1)
         )
 
@@ -335,38 +355,11 @@ class WgpuTextures:
         
         for i in range(6):
             image = images[ i ]
-            if image.isDataTexture:
-                self._copyBufferToTexture( image.image, format, textureGPU, (0, 0, i) )
-            else:
-                imageBitmap = self._getImageBitmap( image, texture )
-                self._copyExternalImageToTexture( imageBitmap, textureGPU, (0, 0, i) )
+            self._copyBufferToTexture( image, format, textureGPU, (0, 0, i) )
 
             if needsMipmaps:
                 self._generateMipmaps( textureGPU, textureGPUDescriptor, i )
 
-
-    def _copyExternalImageToTexture( self, image, textureGPU, origin = (0, 0, 0) ):
-        # TODO use _copyBufferToTexture() instead
-         
-        raise NotImplementedError()
-
-        # queue: wgpu.GPUQueue = self.device.queue
-
-        # queue.copy_external_image_to_texture()
-        #queue.copy_external_image_to_texture()
-		# this.device.queue.copyExternalImageToTexture(
-		# 	{
-		# 		source: image
-		# 	}, {
-		# 		texture: textureGPU,
-		# 		mipLevel: 0,
-		# 		origin: origin
-		# 	}, {
-		# 		width: image.width,
-		# 		height: image.height,
-		# 		depthOrArrayLayers: 1
-		# 	}
-		# )
 
     def _copyCompressedBufferToTexture(self, mipmaps, format, textureGPU ):
 
@@ -385,23 +378,23 @@ class WgpuTextures:
 
             queue.write_texture(
                 {
-					'texture': textureGPU,
-					'mipLevel': i
-				},
-				mipmap.data,
-				{
-					'offset': 0,
-					'bytes_per_row': bytesPerRow
-				},
+                    'texture': textureGPU,
+                    'mipLevel': i
+                },
+                mipmap.data,
+                {
+                    'offset': 0,
+                    'bytes_per_row': bytesPerRow
+                },
                 (math.ceil( width / blockData.width ) * blockData.width, math.ceil( height / blockData.width ) * blockData.width, 1)
             )
 
-    def _generateMipmaps( self, textureGPU, textureGPUDescriptor, baseArrayLayer, mipLevelOffset ):
+    def _generateMipmaps(self, textureGPU, textureGPUDescriptor, baseArrayLayer=0):
         
         if self.utils is None:
             self.utils = WgpuTextureUtils( self.device );  # only create this helper if necessary
 
-        self.utils.generateMipmaps( textureGPU, textureGPUDescriptor, baseArrayLayer, mipLevelOffset )
+        self.utils.generateMipmaps( textureGPU, textureGPUDescriptor, baseArrayLayer)
 
     
     def _getBlockData( self, format ):
@@ -510,7 +503,7 @@ class WgpuTextures:
 
         elif needsMipmaps == True:
 
-            return math.floor( math.log2( math.max( width, height ) ) ) + 1
+            return math.floor( math.log2( max( width, height ) ) ) + 1
 
         else:
             
@@ -585,7 +578,3 @@ class WgpuTextures:
 
         self.info.memory.textures -= 1
 
-
-    
-
- 

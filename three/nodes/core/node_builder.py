@@ -339,7 +339,7 @@ class NodeBuilder(NoneAttribute):
         if nodeCode is None:
             codes = self.codes[ shaderStage ]
             index = len(codes)
-            nodeCode = NodeCode( 'nodeCode' + index, type )
+            nodeCode = NodeCode( 'nodeCode' + str(index), type )
             codes.append( nodeCode )
             nodeData.code = nodeCode
 

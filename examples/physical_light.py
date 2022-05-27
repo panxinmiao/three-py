@@ -8,7 +8,7 @@ from pathlib import Path
 
 app = QtWidgets.QApplication([])
 
-p = Path(__file__).parent / "miku_pmx" / "blue.pmx"
+p = Path(__file__).parent / "models" / "miku_pmx" / "blue.pmx"
 
 pmd_file = reader.read_from_file(p)
 
@@ -43,6 +43,7 @@ geometry.setIndex(pmd_file.indices)
 
 canvas = WgpuCanvas(size=(640, 480), max_fps=60, title="Physical Light")
 render = three.WgpuRenderer(canvas, parameters={'antialias': True})
+render.outputEncoding = three.sRGBEncoding
 
 render.init()
 
@@ -63,15 +64,15 @@ scene.add(mesh)
 
 sp = three.SphereGeometry(0.5, 16, 8)
 
-light1 = three.PointLight(0xffaa00, 2)
+light1 = three.PointLight(0xffaa00, 2*math.pi)
 light1.add(three.Mesh(sp, three.MeshBasicMaterial({'color': 0xffaa00})))
 scene.add(light1)
 
-light2 = three.PointLight(0x0040ff, 2)
+light2 = three.PointLight(0x0040ff, 2*math.pi)
 light2.add(three.Mesh(sp, three.MeshBasicMaterial({'color': 0x0040ff})))
 scene.add(light2)
 
-light3 = three.PointLight(0x80ff80, 2)
+light3 = three.PointLight(0x80ff80, 2*math.pi)
 light3.add(three.Mesh(sp, three.MeshBasicMaterial({'color': 0x80ff80})))
 scene.add(light3)
 

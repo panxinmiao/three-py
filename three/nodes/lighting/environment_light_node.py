@@ -6,7 +6,7 @@ from ..shadernode.shader_node import ShaderNode
 from ..shadernode.shader_node_base_elements import float, add, mul, div, log2, clamp, roughness, reflect, mix, vec3, positionViewDirection, negate, normalize, transformedNormalView, transformedNormalWorld, transformDirection, cameraViewMatrix
 
 
-def __getSpecularMIPLevel(inputs):
+def __getSpecularMIPLevel(inputs, *args):
     texture = inputs['texture']
     levelNode = inputs['levelNode']
 

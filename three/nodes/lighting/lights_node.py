@@ -30,7 +30,7 @@ class LightsNode(Node):
             lightNode.build( builder )
 
 
-    def getHash(self, *args ):
+    def getHash(self, builder, *args ):
 
         if self._hash is None:
 
@@ -39,7 +39,7 @@ class LightsNode(Node):
 
             for lightNode in lightNodes:
 
-                hash += lightNode.light.uuid + ' '
+                hash += lightNode.getHash(builder) + ' '
 
             self._hash = hash
 

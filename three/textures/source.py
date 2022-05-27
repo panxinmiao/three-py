@@ -9,16 +9,13 @@ class Source(NoneAttribute):
         self.data = data
         self.version = 0
 
-        self._needsUpdate = False
-
     @property
     def needsUpdate(self):
-        return self._needsUpdate
+        return None
 
     @needsUpdate.setter
     def needsUpdate(self, value):
-        self._needsUpdate = value
-        if value:
+        if value == True:
             self.version += 1
 
 

@@ -47,7 +47,7 @@ fn main( @location( 0 ) vTex : vec2<f32> ) -> @location( 0 ) vec4<f32> {
 }
 '''
 
-        self.sampler = device.create_sampler(minFilter = GPUFilterMode.Linear)
+        self.sampler = device.create_sampler(min_filter = GPUFilterMode.Linear)
 
 		# We'll need a new pipeline for every texture format used.
         self.pipelines = {}
@@ -59,14 +59,16 @@ fn main( @location( 0 ) vTex : vec2<f32> ) -> @location( 0 ) vec4<f32> {
     
     def getMipmapPipeline( self, format ) -> 'wgpu.GPURenderPipeline':
 
-        pipeline = self.pipelines[ format ]
+        pipeline = self.pipelines.get(format, None)
 
         if pipeline is None:
 
             pipeline = self.device.create_render_pipeline(
+                layout=self._create_pipeline_layout(),
                 vertex= {
                     'module': self.mipmapVertexShaderModule,
-                    'entry_point': 'main'
+                    'entry_point': 'main',
+                    'buffers': []
                 },
                 fragment={
                     'module': self.mipmapFragmentShaderModule,
@@ -85,6 +87,34 @@ fn main( @location( 0 ) vTex : vec2<f32> ) -> @location( 0 ) vec4<f32> {
         return pipeline
 
     
+    def _create_pipeline_layout(self):
+        bind_group_layouts = []
+
+        entries = []
+        entries.append({
+            'binding': 0,
+            'visibility': wgpu.ShaderStage.FRAGMENT,
+            "sampler": {
+                "type": "filtering"
+            }
+        })
+
+        entries.append({
+            'binding': 1,
+            'visibility': wgpu.ShaderStage.FRAGMENT,
+            "texture": {
+                "multisampled": False
+            }
+        })
+
+        bind_group_layout = self.device.create_bind_group_layout(
+            entries=entries)
+        bind_group_layouts.append(bind_group_layout)
+        pipeline_layout = self.device.create_pipeline_layout(
+            bind_group_layouts=bind_group_layouts)
+        return pipeline_layout
+
+    
     def generateMipmaps( self, textureGPU:'wgpu.GPUTexture', textureGPUDescriptor, baseArrayLayer = 0 ):
         
         pipeline = self.getMipmapPipeline( textureGPUDescriptor.format )
@@ -95,7 +125,8 @@ fn main( @location( 0 ) vTex : vec2<f32> ) -> @location( 0 ) vec4<f32> {
 
         srcView = textureGPU.create_view(base_mip_level=0, mip_level_count=1, base_array_layer=baseArrayLayer)
 
-        for i in range(1, textureGPUDescriptor.mipLevelCount):
+
+        for i in range(1, textureGPUDescriptor.mip_level_count):
 
             dstView = textureGPU.create_view(base_mip_level= i, mip_level_count= 1, base_array_layer = baseArrayLayer)
 
@@ -119,7 +150,7 @@ fn main( @location( 0 ) vTex : vec2<f32> ) -> @location( 0 ) vec4<f32> {
             )
 
             passEncoder.set_pipeline( pipeline )
-            passEncoder.set_bind_group( 0, bindGroup )
+            passEncoder.set_bind_group( 0, bindGroup, [], 0, 99 )
             passEncoder.draw( 4, 1, 0, 0 )
             passEncoder.end()
             

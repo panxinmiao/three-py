@@ -92,7 +92,7 @@ class NodeMaterial(ShaderMaterial):
         # OUTGOING LIGHT
 
         outgoingLightNode = diffuseColorNode.xyz
-        if lightsNode and lightsNode.hasLight != False:
+        if lightsNode: # and lightsNode.hasLight != False:  # TODO if show basic color when no lights?
             outgoingLightNode = builder.addFlow( 'fragment', label( lightingContext( lightsNode, lightingModelNode ), 'Light' ) )
 
         return outgoingLightNode
