@@ -104,8 +104,6 @@ def load_gltf(path):
         uv = visual.uv
         uv = uv * np.array([1, -1]) + np.array([0, 1])   # uv.y = 1 - uv.y
         geometry.setAttribute('uv', three.Float32BufferAttribute(uv.flatten(), 2))
-        uvs = geometry.attributes.uv.array
-        geometry.setAttribute('uv2', three.Float32BufferAttribute(uvs, 2))
         material = __parse_material(visual.material)
         return three.Mesh(geometry, material)
 
@@ -150,6 +148,12 @@ def init_scene():
     render.outputEncoding = three.sRGBEncoding
 
     three.OrbitControls(camera, canvas)
+
+    def on_resize(event):
+        camera.aspect = event['width'] / event['height']
+        camera.updateProjectionMatrix()
+
+    canvas.add_event_handler(on_resize, 'resize')
 
     def loop():
         render.render(scene, camera)

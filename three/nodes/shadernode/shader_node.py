@@ -230,7 +230,7 @@ class ConvertType:
         if len(params) == 0:
             return nodeObject( ConstNode( getValueFromType( type ), type ) )
         else:
-            if type == 'color' and isinstance( params[ 0 ], Node):
+            if type == 'color' and not isinstance( params[ 0 ], Node):
                 params = [ getValueFromType( type, *params ) ]
 
             if len(params) == 1 and self.cacheMap is not None and params[ 0 ] in self.cacheMap:
