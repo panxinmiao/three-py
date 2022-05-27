@@ -77,15 +77,13 @@ computeNode = compute(fnNode, particleNum)
 particleNode = attribute('particle', 'vec2')
 
 pointsGeometry = three.BufferGeometry()
-pointsGeometry.setAttribute('position', three.BufferAttribute(three.Float32Array(3), 3))
-# single vertex(not triangle)
-pointsGeometry.setAttribute('particle', particleBuffer)
-# dummy the position points as instances
+pointsGeometry.setAttribute('position', three.BufferAttribute(three.Float32Array(3), 3)) # single vertex(not triangle)
+pointsGeometry.setAttribute('particle', particleBuffer) # dummy the position points as instances
 pointsGeometry.drawRange.count = 1
 # force render points as instances(not triangle)
 
 pointsMaterial = nodes.PointsNodeMaterial()
-pointsMaterial.colorNode = add(particleNode, color(0xFFFFFF))
+pointsMaterial.colorNode = add(particleNode, color(0xffffff))
 pointsMaterial.positionNode = particleNode
 
 mesh = three.Points(pointsGeometry, pointsMaterial)

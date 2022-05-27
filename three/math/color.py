@@ -271,6 +271,9 @@ class Color(NoneAttribute):
     def __eq__(self, __o: object) -> bool:
         return isinstance(__o, Color) and  self.equals(__o)
 
+    def __hash__(self) -> int:
+        return hash( ( self.r, self.g, self.b ) )
+
     def fromArray(self, array, offset = 0 ):
         self.r = array[ offset ]
         self.g = array[ offset + 1 ]
