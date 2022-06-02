@@ -57,21 +57,25 @@ class NodeBuilder(NoneAttribute):
         self.stack = []
 
         self.context = Dict({
-			'keywords': NodeKeywords(),
-			'material': object.material
-		})
+            'keywords': NodeKeywords(),
+            'material': object.material
+        })
 
         self.nodesData = weakref.WeakKeyDictionary()
         self.flowsData = weakref.WeakKeyDictionary()
 
         self.shaderStage = None
-        self.node = None
+        self.buildStage = None
+
+    @property
+    def node(self):
+        return self.stack[- 1]
 
     def addStack(self, node ):
         '''
         if ( this.stack.indexOf( node ) !== - 1 ) {
-			console.warn( 'Recursive node: ', node );
-		}
+            console.warn( 'Recursive node: ', node );
+        }
         '''
         self.stack.append( node )
 
@@ -182,12 +186,12 @@ class NodeBuilder(NoneAttribute):
     def getAttribute(self, name, type ):
         attributes = self.attributes
 
-		#find attribute
+        #find attribute
         for attribute in attributes:
             if attribute.name == name:
                 return attribute
 
-		#create a new if no exist
+        #create a new if no exist
         attribute = NodeAttribute( name, type )
         attributes.append( attribute )
 
@@ -282,6 +286,18 @@ class NodeBuilder(NoneAttribute):
 
         return nodeData[ shaderStage ] if shaderStage is not None else nodeData
 
+    def getNodeProperties(self, node, shaderStage=None):
+        shaderStage = shaderStage or self.shaderStage
+
+        nodeData = self.getDataFromNode(self, shaderStage)
+        constructHash = node.getConstructHash(self)
+
+        nodeData.setdefault("properties", Dict())
+        nodeData.properties.setdefault( constructHash, Dict({"outputNode": None}) )
+
+        return nodeData.properties[constructHash]
+
+
     def getUniformFromNode(self, node, shaderStage, type ):
 
         nodeData = self.getDataFromNode( node, shaderStage )
@@ -348,15 +364,13 @@ class NodeBuilder(NoneAttribute):
     def addFlowCode(self, code ):
         self.flow.code += code
 
-    def getFlowData(self, shaderStage, node ):
+    def getFlowData(self, node, *args):
         return self.flowsData.get( node )
 
     def flowNode( self, node, *args ):
-        self.node = node
         output = node.getNodeType( self )
         flowData = self.flowChildNode( node, output )
         self.flowsData[node] = flowData
-        self.node = None
 
         return flowData
 
@@ -365,8 +379,8 @@ class NodeBuilder(NoneAttribute):
         previousFlow = self.flow
 
         flow = Dict({
-			'code': '',
-		})
+            'code': '',
+        })
 
         self.flow = flow
 
@@ -400,8 +414,7 @@ class NodeBuilder(NoneAttribute):
     def getVars(self, shaderStage ):
         snippet = ''
         vars = self.vars[ shaderStage ]
-        for index, variable in enumerate(vars):
-            variable = vars[ index ]
+        for variable in vars:
             snippet += f'{variable.type} {variable.name}; '
 
         return snippet
@@ -422,38 +435,59 @@ class NodeBuilder(NoneAttribute):
     def getHash( self ):
         return self.vertexShader + self.fragmentShader + self.computeShader
 
+    def setShaderStage(self, shaderStage):
+        self.shaderStage = shaderStage
+
     def getShaderStage( self ):
         return self.shaderStage
 
-    def setShaderStage(self, shaderStage ):
-        self.shaderStage = shaderStage
+    def setBuildStage(self, buildStage):
+        self.buildStage = buildStage
+
+    def getBuildStage(self):
+        return self.buildStage
 
     def buildCode(self):
         warnings.warn( 'Abstract function.' )
 
 
     def build(self):
-        # stage 1: analyze nodes to possible optimization and validation        
+        # stage 1: generate shader node
+        self.setBuildStage('construct')
         for shaderStage in shaderStages:
             self.setShaderStage( shaderStage )
             flowNodes = self.flowNodes[ shaderStage ]
             for node in flowNodes:
-                node.analyze( self )
+                node.build( self )
 
-        # stage 2: pre-build vertex code used in fragment shader
+        # stage 2: analyze nodes to possible optimization and validation
+        self.setBuildStage('analyze')
+
+        for shaderStage in shaderStages:
+            self.setShaderStage(shaderStage)
+            flowNodes = self.flowNodes[shaderStage]
+            for node in flowNodes:
+                node.build(self)
+
+        # stage 3: pre-build vertex code used in fragment shader
+        self.setBuildStage('generate')
+
         if self.context.vertex and self.context.vertex.isNode:
             self.flowNodeFromShaderStage( 'vertex', self.context.vertex )
 
-        # stage 3: generate shader
+        # stage 4: generate shader
+        self.setBuildStage( 'generate' )
+
         for shaderStage in shaderStages:
             self.setShaderStage( shaderStage )
             flowNodes = self.flowNodes[ shaderStage ]
             for node in flowNodes:
-                self.flowNode( node, shaderStage )
+                self.flowNode( node)
 
+        self.setBuildStage( None )
         self.setShaderStage( None )
 
-        # stage 4: build code for a specific output
+        # stage 5: build code for a specific output
         self.buildCode()
 
         return self
@@ -473,7 +507,7 @@ class NodeBuilder(NoneAttribute):
             # ignore for now
             return snippet
 
-        if toTypeLength > 4: # toType is matrix-like
+        if toTypeLength > 4 or toTypeLength == 0: # toType is matrix-like or unknown
             # ignore for now
             #return `${ this.getType( toType ) }( ${ snippet } )`;
             return snippet

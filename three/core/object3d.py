@@ -294,9 +294,9 @@ class Object3D(EventDispatcher):
 
     def attach( self, object:'Object3D' ):
 
-		# adds object as a child of self, while maintaining the object's world transform
+        # adds object as a child of self, while maintaining the object's world transform
 
-		# Note: This method does not support scene graphs having non-uniformly-scaled nodes(s)
+        # Note: This method does not support scene graphs having non-uniformly-scaled nodes(s)
 
         self.updateWorldMatrix( True, False )
         _m1.copy( self.matrixWorld ).invert()

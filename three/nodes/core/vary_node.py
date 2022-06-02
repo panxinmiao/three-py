@@ -18,7 +18,7 @@ class VaryNode(Node):
 
     def getNodeType( self, builder:'NodeBuilder' , *args ):
 
-		# VaryNode is auto type
+        # VaryNode is auto type
         return self.node.getNodeType( builder )
 
     def generate( self, builder:'NodeBuilder' ):
@@ -33,7 +33,7 @@ class VaryNode(Node):
 
         propertyName = builder.getPropertyName( nodeVary, NodeShaderStage.Vertex)
 
-		# force nodeVary.snippet work in vertex stage
+        # force nodeVary.snippet work in vertex stage
         builder.flowNodeFromShaderStage( NodeShaderStage.Vertex, node, type, propertyName )
 
         return builder.getPropertyName( nodeVary )

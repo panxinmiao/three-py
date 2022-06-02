@@ -7,7 +7,7 @@ __declarationRegexp = re.compile(r'^[fn]*\s*([a-z_0-9]+)?\s*\(([\s\S]*?)\)\s*[\-
 __propertiesRegexp = re.compile(r'[a-z_0-9]+', flags=re.I)
 
 wgslTypeLib = {
-	'f32': 'float'
+    'f32': 'float'
 }
 
 def _parse( source: str ):

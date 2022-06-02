@@ -9,7 +9,7 @@ from .buffer_attribute import BufferAttribute, Uint32BufferAttribute, Uint16Buff
 
 def arrayNeedsUint32( array ):
 
-	# assumes larger values usually on last
+    # assumes larger values usually on last
     
     i = len(array)-1
 
@@ -275,7 +275,7 @@ class Geometry(EventDispatcher):
                 _vector.fromBufferAttribute( position, i )
                 maxRadiusSq = max( maxRadiusSq, center.distanceToSquared( _vector ) )
 
-			# process morph attributes if present
+            # process morph attributes if present
 
             if morphAttributesPosition:
                 for i in range(len(morphAttributesPosition)):

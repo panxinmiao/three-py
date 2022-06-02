@@ -46,7 +46,7 @@ class FunctionNode(CodeNode):
         nodeCode = builder.getCodeFromNode( self, type )
 
         if name != '' :
-			# use a custom property name
+            # use a custom property name
             nodeCode.name = self.name
 
 

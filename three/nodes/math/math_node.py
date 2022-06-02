@@ -73,7 +73,7 @@ class MathNode(TempNode):
         aType = self.aNode.getNodeType( builder )
         bType = self.bNode.getNodeType( builder ) if self.bNode else None
         cType = self.cNode.getNodeType( builder ) if self.cNode else None
-		
+
         aLen = 0 if aType and builder.isMatrix( aType ) else builder.getTypeLength( aType )
         bLen = 0 if bType and builder.isMatrix( bType ) else builder.getTypeLength( bType )
         cLen = 0 if cType and builder.isMatrix( cType ) else builder.getTypeLength( cType )
@@ -125,8 +125,8 @@ class MathNode(TempNode):
 
         if method == MathNode.TRANSFORM_DIRECTION:
 
-			# dir can be either a direction vector or a normal vector
-			# upper-left 3x3 of matrix is assumed to be orthogonal
+            # dir can be either a direction vector or a normal vector
+            # upper-left 3x3 of matrix is assumed to be orthogonal
 
             tA = a
             tB = b
@@ -162,34 +162,34 @@ class MathNode(TempNode):
 
             if method == MathNode.CROSS:
                 params.extend([
-					a.build( builder, type ),
-					b.build( builder, type )
+                    a.build( builder, type ),
+                    b.build( builder, type )
                 ])
 
             elif method == MathNode.STEP:
                 params.extend([
-					a.build( builder, 'float' if builder.getTypeLength( a.getNodeType( builder ) ) == 1 else inputType ), 
-					b.build( builder, inputType )
+                    a.build( builder, 'float' if builder.getTypeLength( a.getNodeType( builder ) ) == 1 else inputType ), 
+                    b.build( builder, inputType )
                 ])
 
             elif (isWebGL and (method == MathNode.MIN or method == MathNode.MAX)) or method == MathNode.MOD:
                 params.extend([
-					a.build( builder, inputType ),
-					b.build( builder, 'float' if builder.getTypeLength( b.getNodeType( builder ) ) == 1 else inputType )
+                    a.build( builder, inputType ),
+                    b.build( builder, 'float' if builder.getTypeLength( b.getNodeType( builder ) ) == 1 else inputType )
                 ])
 
             elif method == MathNode.REFRACT:
                 params.extend([
-					a.build( builder, inputType ),
-					b.build( builder, inputType ),
-					c.build( builder, 'float' )
+                    a.build( builder, inputType ),
+                    b.build( builder, inputType ),
+                    c.build( builder, 'float' )
                 ])
 
             elif method == MathNode.MIX:
                 params.extend([
-					a.build( builder, inputType ),
-					b.build( builder, inputType ),
-					c.build( builder, 'float' if builder.getTypeLength( c.getNodeType( builder ) ) == 1 else inputType )
+                    a.build( builder, inputType ),
+                    b.build( builder, inputType ),
+                    c.build( builder, 'float' if builder.getTypeLength( c.getNodeType( builder ) ) == 1 else inputType )
                 ])
 
             else:

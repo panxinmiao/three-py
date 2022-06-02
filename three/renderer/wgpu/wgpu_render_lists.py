@@ -4,20 +4,20 @@ from functools import cmp_to_key
 
 
 def painterSortStable( a, b ):
-	if a.groupOrder != b.groupOrder:
-		return a.groupOrder - b.groupOrder
+    if a.groupOrder != b.groupOrder:
+        return a.groupOrder - b.groupOrder
 
-	elif a.renderOrder != b.renderOrder:
-		return a.renderOrder - b.renderOrder
+    elif a.renderOrder != b.renderOrder:
+        return a.renderOrder - b.renderOrder
 
-	elif a.material.id != b.material.id:
-		return a.material.id - b.material.id
+    elif a.material.id != b.material.id:
+        return a.material.id - b.material.id
 
-	elif a.z != b.z :
-		return a.z - b.z
+    elif a.z != b.z :
+        return a.z - b.z
 
-	else:
-		return a.id - b.id
+    else:
+        return a.id - b.id
 
 
 def reversePainterSortStable( a, b ):
@@ -57,15 +57,15 @@ class WgpuRenderList:
         if renderItem is None:
             
             renderItem = Dict({
-				'id': object.id,
-				'object': object,
-				'geometry': geometry,
-				'material': material,
-				'groupOrder': groupOrder,
-				'renderOrder': object.renderOrder,
-				'z': z,
-				'group': group
-			})
+                'id': object.id,
+                'object': object,
+                'geometry': geometry,
+                'material': material,
+                'groupOrder': groupOrder,
+                'renderOrder': object.renderOrder,
+                'z': z,
+                'group': group
+            })
             
             self.renderItems[ self.renderItemsIndex ] = renderItem
 
@@ -109,7 +109,7 @@ class WgpuRenderList:
 
 
     def finish(self):
-		# Clear references from inactive renderItems in the list
+        # Clear references from inactive renderItems in the list
 
         i = self.renderItemsIndex
         il = len(self.renderItems)

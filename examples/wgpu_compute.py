@@ -9,7 +9,7 @@ from three.nodes import (ShaderNode, compute,
 
 canvas = WgpuCanvas(size=(640, 640), max_fps=60, title="wgpu_renderer")
 
-render = three.WgpuRenderer(canvas, parameters={'antialias': True})
+render = three.WgpuRenderer(canvas)
 render.init()
 
 camera = three.OrthographicCamera(- 1.0, 1.0, 1.0, - 1.0, 0, 1)
@@ -117,4 +117,5 @@ def loop():
 
 render.setAnimationLoop(loop)
 
-run()
+if __name__ == '__main__':
+    run()

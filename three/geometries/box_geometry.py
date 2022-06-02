@@ -27,7 +27,7 @@ class BoxGeometry(BufferGeometry):
         heightSegments = math.floor( heightSegments )
         depthSegments = math.floor( depthSegments )
 
-		# buffers
+        # buffers
 
         indices = []
         vertices = []
@@ -110,11 +110,11 @@ class BoxGeometry(BufferGeometry):
 
 
 
-			# indices
+            # indices
 
-			# 1. you need three indices to draw a single face
-			# 2. a single segment consists of two faces
-			# 3. so we need to generate six (2*3) indices per segment
+            # 1. you need three indices to draw a single face
+            # 2. a single segment consists of two faces
+            # 3. so we need to generate six (2*3) indices per segment
 
             for iy in range(gridY):
             # for ( let iy = 0 iy < gridY iy ++ ) {

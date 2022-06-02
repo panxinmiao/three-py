@@ -56,7 +56,7 @@ class Box2(NoneAttribute):
 
     def isEmpty(self) -> 'bool':
 
-		# self is a more robust check for empty than ( volume <= 0 ) because volume can get positive with two negative axes
+        # self is a more robust check for empty than ( volume <= 0 ) because volume can get positive with two negative axes
         return ( self.max.x < self.min.x ) or ( self.max.y < self.min.y )
 
     def getCenter( self, target ) -> 'Vector2':
@@ -100,9 +100,9 @@ class Box2(NoneAttribute):
         # This can potentially have a divide by zero if the box
         # has a size dimension of 0.
         return target.set(
-			( point.x - self.min.x ) / ( self.max.x - self.min.x ),
-			( point.y - self.min.y ) / ( self.max.y - self.min.y )
-		)
+            ( point.x - self.min.x ) / ( self.max.x - self.min.x ),
+            ( point.y - self.min.y ) / ( self.max.y - self.min.y )
+        )
 
 
     def intersectsBox( self, box ) -> 'bool':

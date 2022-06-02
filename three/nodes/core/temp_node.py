@@ -8,23 +8,26 @@ class TempNode(Node):
         super().__init__(type)
 
     def build( self, builder:'NodeBuilder', output = None ):
-        type = builder.getVectorType( self.getNodeType( builder, output ) )
-        nodeData = builder.getDataFromNode( self )
 
-        if builder.context.tmpRead != False and nodeData.propertyName:
-            return builder.format(nodeData.propertyName, type, output)
-        elif builder.context.tempWrite != False and type != 'void ' and output != 'void' and nodeData.dependenciesCount and nodeData.dependenciesCount > 1:
+        buildStage = builder.getBuildStage()
 
-            snippet = super().build( builder, type )
+        if buildStage == 'generate':
+            type = builder.getVectorType(self.getNodeType(builder, output))
+            nodeData = builder.getDataFromNode(self)
+            if builder.context.tmpRead != False and nodeData.propertyName:
+                return builder.format(nodeData.propertyName, type, output)
 
-            nodeVar = builder.getVarFromNode( self, type )
-            propertyName = builder.getPropertyName( nodeVar )
+            elif builder.context.tempWrite != False and type != 'void ' and output != 'void' and nodeData.dependenciesCount and nodeData.dependenciesCount > 1:
 
-            builder.addFlowCode( f'{propertyName} = {snippet}' )
+                snippet = super().build( builder, type )
 
-            nodeData.snippet = snippet
-            nodeData.propertyName = propertyName
+                nodeVar = builder.getVarFromNode( self, type )
+                propertyName = builder.getPropertyName( nodeVar )
+                builder.addFlowCode( f'{propertyName} = {snippet}' )
 
-            return builder.format( nodeData.propertyName, type, output )
+                nodeData.snippet = snippet
+                nodeData.propertyName = propertyName
+
+                return builder.format( nodeData.propertyName, type, output )
         
         return super().build( builder, output )

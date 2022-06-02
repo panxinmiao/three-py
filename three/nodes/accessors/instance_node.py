@@ -17,7 +17,7 @@ class InstanceNode(Node):
 
         instancePosition = mul( instanceMatrixNode, positionLocal ).xyz
 
-		# NORMAL
+        # NORMAL
         m = mat3( instanceMatrixNode[ 0 ].xyz, instanceMatrixNode[ 1 ].xyz, instanceMatrixNode[ 2 ].xyz )
         transformedNormal = div( normalLocal, vec3( dot( m[ 0 ], m[ 0 ] ), dot( m[ 1 ], m[ 1 ] ), dot( m[ 2 ], m[ 2 ] ) ) )
         instanceNormal = mul( m, transformedNormal ).xyz

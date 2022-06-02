@@ -10,15 +10,15 @@ class CylinderGeometry(BufferGeometry):
         super().__init__()
 
         self.parameters = {
-			radiusTop: radiusTop,
-			radiusBottom: radiusBottom,
-			height: height,
-			radialSegments: radialSegments,
-			heightSegments: heightSegments,
-			openEnded: openEnded,
-			thetaStart: thetaStart,
-			thetaLength: thetaLength
-		}
+            radiusTop: radiusTop,
+            radiusBottom: radiusBottom,
+            height: height,
+            radialSegments: radialSegments,
+            heightSegments: heightSegments,
+            openEnded: openEnded,
+            thetaStart: thetaStart,
+            thetaLength: thetaLength
+        }
 
         #scope = self
 

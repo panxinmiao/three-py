@@ -6,8 +6,6 @@ class WgpuTextureRenderer:
     def __init__(self, renderer, options = {}) -> None:
         self.renderer = renderer
 
-		# @TODO: Consider to introduce WebGPURenderTarget or rename WebGLRenderTarget to just RenderTarget
-
         self.renderTarget = RenderTarget( options )
 
     

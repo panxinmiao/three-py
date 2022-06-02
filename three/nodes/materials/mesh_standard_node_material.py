@@ -2,7 +2,7 @@ from .node_material import NodeMaterial
 from three.materials import MeshStandardMaterial
 
 from ..lighting.lights_node import LightsNode
-from ..lighting.environment_light_node import EnvironmentLightNode
+from ..lighting.environment_node import EnvironmentNode
 from ..lighting.ao_node import AONode
 from ..functions.material.getRoughness import getRoughness
 from ..functions.physical_lighting_model import PhysicalLightingModel
@@ -60,7 +60,7 @@ class MeshStandardNodeMaterial(NodeMaterial):
         materialLightsNode = []
 
         if envNode:
-            materialLightsNode.append(EnvironmentLightNode(envNode))
+            materialLightsNode.append(EnvironmentNode(envNode))
 
         if builder.material.aoMap:
             materialLightsNode.append(AONode(texture(builder.material.aoMap)))

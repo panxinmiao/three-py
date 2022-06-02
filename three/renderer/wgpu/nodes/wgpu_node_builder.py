@@ -18,62 +18,62 @@ from three.nodes.materials import fromMaterial
 _flow_p = re.compile(r'.*;\s*$')
 
 gpuShaderStageLib = {
-	'vertex': GPUShaderStage.VERTEX,
-	'fragment': GPUShaderStage.FRAGMENT,
-	'compute': GPUShaderStage.COMPUTE
+    'vertex': GPUShaderStage.VERTEX,
+    'fragment': GPUShaderStage.FRAGMENT,
+    'compute': GPUShaderStage.COMPUTE
 }
 
 supports = {
-	'instance': True
+    'instance': True
 }
 
 wgslTypeLib = {
-	'float': 'f32',
-	'int': 'i32',
+    'float': 'f32',
+    'int': 'i32',
     'uint': 'u32',
-	'bool': 'bool',
+    'bool': 'bool',
 
-	'vec2': 'vec2<f32>',
+    'vec2': 'vec2<f32>',
     'ivec2': 'vec2<i32>',
-	'uvec2': 'vec2<u32>',
-	'bvec2': 'vec2<bool>',
+    'uvec2': 'vec2<u32>',
+    'bvec2': 'vec2<bool>',
 
-	'vec3': 'vec3<f32>',
+    'vec3': 'vec3<f32>',
     'ivec3': 'vec3<i32>',
-	'uvec3': 'vec3<u32>',
-	'bvec3': 'vec3<bool>',
+    'uvec3': 'vec3<u32>',
+    'bvec3': 'vec3<bool>',
 
-	'vec4': 'vec4<f32>',
+    'vec4': 'vec4<f32>',
     'ivec4': 'vec4<i32>',
-	'uvec4': 'vec4<u32>',
-	'bvec4': 'vec4<bool>',
+    'uvec4': 'vec4<u32>',
+    'bvec4': 'vec4<bool>',
 
-	'mat3': 'mat3x3<f32>',
+    'mat3': 'mat3x3<f32>',
     'imat3': 'mat3x3<i32>',
-	'umat3': 'mat3x3<u32>',
-	'bmat3': 'mat3x3<bool>',
+    'umat3': 'mat3x3<u32>',
+    'bmat3': 'mat3x3<bool>',
 
-	'mat4': 'mat4x4<f32>',
+    'mat4': 'mat4x4<f32>',
     'imat4': 'mat4x4<i32>',
-	'umat4': 'mat4x4<u32>',
-	'bmat4': 'mat4x4<bool>'
+    'umat4': 'mat4x4<u32>',
+    'bmat4': 'mat4x4<bool>'
 }
 
 wgslMethods = {
-	'dFdx': 'dpdx',
-	'dFdy': 'dpdy',
+    'dFdx': 'dpdx',
+    'dFdy': 'dpdy',
     'inversesqrt': 'inverseSqrt'
 }
 
 wgslPolyfill = {
-	'lessThanEqual': CodeNode( '''
+    'lessThanEqual': CodeNode( '''
 fn lessThanEqual( a : vec3<f32>, b : vec3<f32> ) -> vec3<bool> {
-	return vec3<bool>( a.x <= b.x, a.y <= b.y, a.z <= b.z );
+    return vec3<bool>( a.x <= b.x, a.y <= b.y, a.z <= b.z );
 }
 ''' ),
-	'mod': CodeNode( '''
+    'mod': CodeNode( '''
 fn mod( x : f32, y : f32 ) -> f32 {
-	return x - y * floor( x / y );
+    return x - y * floor( x / y );
 }
 ''' ),
 #     'smoothstep':  CodeNode( '''
@@ -82,10 +82,10 @@ fn mod( x : f32, y : f32 ) -> f32 {
 #     return t * t * ( 3.0 - 2.0 * t );
 # }
 # ''' ),
-	'repeatWrapping': CodeNode( '''
+    'repeatWrapping': CodeNode( '''
 fn repeatWrapping( uv : vec2<f32>, dimension : vec2<i32> ) -> vec2<i32> {
-	let uvScaled = vec2<i32>( uv * vec2<f32>( dimension ) );
-	return ( ( uvScaled % dimension ) + dimension ) % dimension;
+    let uvScaled = vec2<i32>( uv * vec2<f32>( dimension ) );
+    return ( ( uvScaled % dimension ) + dimension ) % dimension;
 }
 ''' )
 }
@@ -433,7 +433,7 @@ class WgpuNodeBuilder(NodeBuilder):
             mainNode = flowNodes[ - 1 ]
 
             for node in flowNodes:
-                flowSlotData = self.getFlowData( shaderStage, node )
+                flowSlotData = self.getFlowData( node )
                 slotName = node.name
 
                 if slotName:
@@ -519,16 +519,16 @@ class WgpuNodeBuilder(NodeBuilder):
 @stage( vertex )
 fn main( {shaderData.attributes} ) -> NodeVarysStruct {{
 
-	// system
-	var NodeVarys: NodeVarysStruct;
+    // system
+    var NodeVarys: NodeVarysStruct;
 
-	// vars
-	{shaderData.vars}
+    // vars
+    {shaderData.vars}
 
-	// flow
-	{shaderData.flow}
+    // flow
+    {shaderData.flow}
 
-	return NodeVarys;
+    return NodeVarys;
 
 }}
 '''
@@ -545,11 +545,11 @@ fn main( {shaderData.attributes} ) -> NodeVarysStruct {{
 @stage( fragment )
 fn main( {shaderData.varys} ) -> @location( 0 ) vec4<f32> {{
 
-	// vars
-	{shaderData.vars}
+    // vars
+    {shaderData.vars}
 
-	// flow
-	{shaderData.flow}
+    // flow
+    {shaderData.flow}
 }}
 '''
 
@@ -567,12 +567,12 @@ var<private> instanceIndex : u32;
 
 @stage( compute ) @workgroup_size( {workgroupSize} )
 fn main( {shaderData.attributes} ) {{
-	// system
-	instanceIndex = id.x;
-	// vars
-	{shaderData.vars}
-	// flow
-	{shaderData.flow}
+    // system
+    instanceIndex = id.x;
+    // vars
+    {shaderData.vars}
+    // flow
+    {shaderData.flow}
 }}        
 '''
 

@@ -67,22 +67,22 @@ class WgpuAttributes:
         )
 
         # buffer = self.device.createBuffer( {
-		# 	'size': size,
-		# 	'usage': usage | GPUBufferUsage.COPY_DST,
-		# 	'mappedAtCreation': True,
-		# } )
+        #    'size': size,
+        #    'usage': usage | GPUBufferUsage.COPY_DST,
+        #    'mappedAtCreation': True,
+        # } )
 
         #buffer.get_mapped_range()
         # array.constructor( buffer.getMappedRange() ).set( ary )
-		# buffer.unmap()
+        # buffer.unmap()
 
         attribute.onUploadCallback()
         
         return Dict({
-			'version': attribute.version,
-			'buffer': buffer,
-			'usage': usage
-		})
+            'version': attribute.version,
+            'buffer': buffer,
+            'usage': usage
+        })
 
 
     def _writeBuffer( self, buffer, attribute: three.BufferAttribute ):
@@ -93,19 +93,19 @@ class WgpuAttributes:
             
             # Not using update ranges
             self.device.queue.write_buffer(
-				buffer,
-				0,
-				array.buffer,
+                buffer,
+                0,
+                array.buffer,
                 0
-			)
+            )
 
         else:
             self.device.queue.write_buffer(
-				buffer,
-				0,
-				array.buffer,
-				updateRange.offset * array.bytes_per_element,
-				updateRange.count * array.bytes_per_element
-			)
+                buffer,
+                0,
+                array.buffer,
+                updateRange.offset * array.bytes_per_element,
+                updateRange.count * array.bytes_per_element
+            )
             
             updateRange.count = - 1; # reset range

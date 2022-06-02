@@ -78,9 +78,9 @@ class WgpuRenderPipelines:
         self.pipelines = []
         self.objectCache = WeakKeyDictionary()
         self.shaderModules = {
-			'vertex': {},
-			'fragment': {}
-		}
+            'vertex': {},
+            'fragment': {}
+        }
 
     def _acquirePipeline( self, stageVertex, stageFragment, object, nodeBuilder ):
         pipelines = self.pipelines

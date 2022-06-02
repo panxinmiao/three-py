@@ -80,7 +80,7 @@ class OrbitControls(EventDispatcher):
         self.enablePan = True
         self.panSpeed = 1.0
         self.screenSpacePanning = True # if false, pan orthogonal to world-space direction camera.up
-        self.keyPanSpeed = 7.0	# pixels moved per arrow key push
+        self.keyPanSpeed = 7.0  # pixels moved per arrow key push
 
         # Set to true to automatically rotate around the target
         # If auto-rotate is enabled, you must call controls.update() in your animation loop
@@ -271,9 +271,9 @@ class OrbitControls(EventDispatcher):
         
         # scope.domElement.addEventListener( 'contextmenu', onContextMenu );
 
-		# scope.domElement.addEventListener( 'pointerdown', onPointerDown );
-		# scope.domElement.addEventListener( 'pointercancel', onPointerCancel );
-		# scope.domElement.addEventListener( 'wheel', onMouseWheel, { passive: false } );
+        # scope.domElement.addEventListener( 'pointerdown', onPointerDown );
+        # scope.domElement.addEventListener( 'pointercancel', onPointerCancel );
+        # scope.domElement.addEventListener( 'wheel', onMouseWheel, { passive: false } );
 
         self.bindEvent( self.__onPointerDown, 'pointer_down' )
         self.bindEvent( self.__onPointerCancel, 'pointer_cancel' )

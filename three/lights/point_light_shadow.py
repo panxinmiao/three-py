@@ -51,7 +51,7 @@ class PointLightShadow(LightShadow):
 
         self._cubeUps = [
             Vector3( 0, 1, 0 ), Vector3( 0, 1, 0 ), Vector3( 0, 1, 0 ),
-            Vector3( 0, 1, 0 ), Vector3( 0, 0, 1 ),	Vector3( 0, 0, - 1 )
+            Vector3( 0, 1, 0 ), Vector3( 0, 0, 1 ), Vector3( 0, 0, - 1 )
         ]
 
     def updateMatrices( self, light, viewportIndex = 0 ):

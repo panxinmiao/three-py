@@ -85,24 +85,24 @@ def __parse(source:str):
         headerCode = source[:pragmaMainIndex] if has_pragma_main else ''
 
         return (
-			type,
-			inputs,
-			name,
-			presicion,
-			inputsCode,
-			blockCode,
-			headerCode
+            type,
+            inputs,
+            name,
+            presicion,
+            inputsCode,
+            blockCode,
+            headerCode
         )
 
         # return {
-		# 	'type' : type,
-		# 	'inputs' : inputs,
-		# 	'name' : name,
-		# 	'presicion': presicion,
-		# 	'inputsCode': inputsCode,
-		# 	'blockCode': blockCode,
-		# 	'headerCode': headerCode
-		# }
+        #    'type' : type,
+        #    'inputs' : inputs,
+        #    'name' : name,
+        #    'presicion': presicion,
+        #    'inputsCode': inputsCode,
+        #    'blockCode': blockCode,
+        #    'headerCode': headerCode
+        # }
 
     else:
         raise Exception( 'FunctionNode: Function is not a GLSL code.' )

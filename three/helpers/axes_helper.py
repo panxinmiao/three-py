@@ -8,15 +8,15 @@ class AxesHelper(LineSegments):
     def __init__(self, size = 1):
         
         vertices = [
-            0, 0, 0,	size, 0, 0,
-            0, 0, 0,	0, size, 0,
-            0, 0, 0,	0, 0, size
+            0, 0, 0,    size, 0, 0,
+            0, 0, 0,    0, size, 0,
+            0, 0, 0,    0, 0, size
         ]
 
         colors = [
-            1, 0, 0,	1, 0.6, 0,
-            0, 1, 0,	0.6, 1, 0,
-            0, 0, 1,	0, 0.6, 1
+            1, 0, 0,    1, 0.6, 0,
+            0, 1, 0,    0.6, 1, 0,
+            0, 0, 1,    0, 0.6, 1
         ]
 
         geometry = BufferGeometry()

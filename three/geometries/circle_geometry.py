@@ -19,19 +19,19 @@ class CircleGeometry(BufferGeometry):
 
         segments = max( 3, segments )
 
-		# buffers
+        # buffers
 
         indices = []
         vertices = []
         normals = []
         uvs = []
 
-		# helper variables
+        # helper variables
 
         vertex = Vector3()
         uv = Vector2()
 
-		# center point
+        # center point
 
         vertices.extend( [0, 0, 0] )
         normals.extend( [0, 0, 1] )

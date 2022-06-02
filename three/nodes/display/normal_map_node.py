@@ -44,9 +44,9 @@ class NormalMapNode(TempNode):
         self.scaleNode = scaleNode
         self.normalMapType = three.TangentSpaceNormalMap
 
-    def generate( self, builder:'NodeBuilder'):
+    def construct(self, builder):
 
-        type = self.getNodeType( builder )
+        # type = self.getNodeType( builder )
 
         normalMapType = self.normalMapType
         scaleNode = self.scaleNode
@@ -58,20 +58,20 @@ class NormalMapNode(TempNode):
             normalMapScale = mul( normalMap.xy, scaleNode )
             normalMap = vec3( normalMapScale, normalMap.z )
 
+        outputNode = None
+
         if normalMapType == three.ObjectSpaceNormalMap:
             vertexNormalNode = mul( ModelNode( ModelNode.NORMAL_MATRIX ), normalMap )
-            normal = normalize( vertexNormalNode )
-
-            return normal.build( builder, type )
+            outputNode = normalize(vertexNormalNode)
 
         elif normalMapType == three.TangentSpaceNormalMap:
             
-            perturbNormal2ArbCall = perturbNormal2ArbNode( {
+            outputNode = perturbNormal2ArbNode({
                 'eye_pos': positionView,
                 'surf_norm': normalView,
                 'mapN': normalMap,
                 'uv': uv()
             } )
         
-            return perturbNormal2ArbCall.build( builder, type )
+        return outputNode
 

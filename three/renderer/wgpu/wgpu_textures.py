@@ -399,7 +399,7 @@ class WgpuTextures:
     
     def _getBlockData( self, format ):
 
-		# this method is only relevant for compressed texture formats
+        # this method is only relevant for compressed texture formats
         if format == GPUTextureFormat.BC1RGBAUnorm or format == GPUTextureFormat.BC1RGBAUnormSRGB:
             return { 'byteLength': 8, 'width': 4, 'height': 4 }; # DXT1
         if format == GPUTextureFormat.BC2RGBAUnorm or format == GPUTextureFormat.BC2RGBAUnormSRGB:

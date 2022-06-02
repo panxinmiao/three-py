@@ -14,6 +14,6 @@ class WgpuProgrammableStage:
         self.usedTimes = 0
 
         self.stage = Dict({
-			'module': device.create_shader_module( code = code ),
-			'entry_point': 'main'
-		})
+            'module': device.create_shader_module( code = code ),
+            'entry_point': 'main'
+        })

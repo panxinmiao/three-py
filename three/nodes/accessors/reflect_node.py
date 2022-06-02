@@ -10,23 +10,22 @@ class ReflectNode(Node):
         self.scope = scope
 
     def getHash(self, *args, **kwargs):
-        return f'reflect-${self.scope}'
+        return f'reflect-{self.scope}'
 
-    def generate(self, builder):
+    def construct(self, builder):
         scope = self.scope
-
+        outputNode = None
         if scope == ReflectNode.VECTOR:
             reflectView = reflect( negate( positionViewDirection ), transformedNormalView )
             reflectVec = transformDirection(reflectView, cameraViewMatrix)
-
-            return reflectVec.build( builder )
+            outputNode = reflectVec
 
         elif scope == ReflectNode.CUBE:
             reflectVec = nodeObject( ReflectNode( ReflectNode.VECTOR ) )
             cubeUV = vec3( negate( reflectVec.x ), reflectVec.yz )
+            outputNode = cubeUV
 
-            return cubeUV.build( builder )
-
+        return outputNode
 
     def serialize( self, data ):
         super().serialize( data )

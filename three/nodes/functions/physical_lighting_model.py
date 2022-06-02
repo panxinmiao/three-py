@@ -98,8 +98,8 @@ RE_AmbientOcclusion_Physical = ShaderNode(__RE_AmbientOcclusion_Physical)
 
 
 PhysicalLightingModel = Dict({
-	"direct": RE_Direct_Physical,
-	"indirectDiffuse": RE_IndirectDiffuse_Physical,
-	"indirectSpecular": RE_IndirectSpecular_Physical,
-	"ambientOcclusion": RE_AmbientOcclusion_Physical
+    "direct": RE_Direct_Physical,
+    "indirectDiffuse": RE_IndirectDiffuse_Physical,
+    "indirectSpecular": RE_IndirectSpecular_Physical,
+    "ambientOcclusion": RE_AmbientOcclusion_Physical
 })

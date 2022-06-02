@@ -236,8 +236,8 @@ class Ray(NoneAttribute):
         if ( ( tmin > tymax ) or ( tymin > tmax ) ):
             return None
 
-		# These lines also handle the case where tmin or tmax is NaN
-		# (result of 0 * Infinity). x !== x returns true if x is NaN
+        # These lines also handle the case where tmin or tmax is NaN
+        # (result of 0 * Infinity). x !== x returns true if x is NaN
 
         if tymin > tmin or tmin != tmin:
             tmin = tymin
@@ -262,7 +262,7 @@ class Ray(NoneAttribute):
         if tzmax < tmax or tmax != tmax:
             tmax = tzmax
 
-		# return point closest to the ray (positive side)
+        # return point closest to the ray (positive side)
 
         if tmax < 0 :
             return None

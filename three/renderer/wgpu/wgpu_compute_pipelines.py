@@ -11,8 +11,8 @@ class WgpuComputePipelines:
         self.nodes = nodes
         self.pipelines = WeakKeyDictionary()
         self.stages = Dict({
-			'compute': {}
-		})
+            'compute': {}
+        })
 
     def get(self, computeNode):
 
@@ -41,7 +41,7 @@ class WgpuComputePipelines:
 
             pipeline = device.create_compute_pipeline(
                 layout=_layout,
-				compute = stageCompute.stage
+                compute = stageCompute.stage
             )
 
             self.pipelines[computeNode]=pipeline
@@ -51,8 +51,8 @@ class WgpuComputePipelines:
     def dispose(self):
         self.pipelines = WeakKeyDictionary()
         self.stages = Dict({
-			'compute': WeakKeyDictionary()
-		})
+            'compute': WeakKeyDictionary()
+        })
 
     def _getPeplineLayout(self, bindings):
         bind_group_layouts = []

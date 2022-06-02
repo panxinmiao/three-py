@@ -4,7 +4,7 @@ from ..constants import TangentSpaceNormalMap
 
 class MeshStandardMaterial(Material):
 
-    def __init__(self, parameters = None) -> None:
+    def __init__(self, parameters = {}, **kwargs) -> None:
 
         '''
         parameters = {
@@ -105,6 +105,11 @@ class MeshStandardMaterial(Material):
 
         self.flatShading = False
 
+        if not isinstance(parameters, dict):
+            parameters = parameters.__dict__
+            
+        parameters = parameters.copy()
+        parameters.update(kwargs)
         self.setValues( parameters )
 
     def copy( self, source: 'Material'):

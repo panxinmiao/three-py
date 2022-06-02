@@ -22,8 +22,7 @@ class PunctualLightNode(AnalyticLightNode):
         self.decayExponentNode.value = light.decay
 
 
-
-    def generate(self, builder):
+    def construct(self, builder):
         colorNode = self.colorNode
         cutoffDistanceNode = self.cutoffDistanceNode
         decayExponentNode = self.decayExponentNode

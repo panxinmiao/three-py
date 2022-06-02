@@ -35,9 +35,11 @@ class CondNode(Node):
         elseSnippet = ContextNode( self.elseNode, context ).build( builder, type )
 
         builder.addFlowCode(
-f'''if ( {nodeSnippet} ) {{
-\t\t{nodeProperty} = {ifSnippet};
-\t}} else {{
-\t\t{nodeProperty} = {elseSnippet};
-\t}}''' )
+f'''
+if ( {nodeSnippet} ) {{
+    {nodeProperty} = {ifSnippet};
+}} else {{
+    {nodeProperty} = {elseSnippet};
+}}
+''')
         return nodeProperty

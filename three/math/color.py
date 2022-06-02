@@ -25,10 +25,10 @@ def hue2rgb( p, q, t ):
     return p
 
 def toComponents( source, target ):
-	target.r = source.r
-	target.g = source.g
-	target.b = source.b
-	return target
+    target.r = source.r
+    target.g = source.g
+    target.b = source.b
+    return target
 
 # @TODO ColorSpace
 class Color(NoneAttribute):

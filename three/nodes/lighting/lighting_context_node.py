@@ -1,5 +1,6 @@
 from ..core.context_node import ContextNode
 from ..shadernode.shader_node_base_elements import float, vec3, add, temp
+from three.structure import Dict
 
 class LightingContextNode(ContextNode):
 
@@ -10,36 +11,39 @@ class LightingContextNode(ContextNode):
     def getNodeType(self, *args ):
         return 'vec3'
 
-    def generate( self, builder ):
-
+    def construct( self, builder ):
         lightingModelNode = self.lightingModelNode
+        self.context = Dict()  # reset context
         context = self.context
+        properties = builder.getNodeProperties( self )
 
-        if context.reflectedLight is None:
-            directDiffuse = temp(vec3())
-            directSpecular = temp(vec3())
-            indirectDiffuse = temp(vec3())
-            indirectSpecular = temp(vec3())
+        directDiffuse = temp(vec3())
+        directSpecular = temp(vec3())
+        indirectDiffuse = temp(vec3())
+        indirectSpecular = temp(vec3())
+        total = add( directDiffuse, directSpecular, indirectDiffuse, indirectSpecular )
 
-            context.reflectedLight = {
-                "directDiffuse": directDiffuse,
-                "directSpecular": directSpecular,
-                "indirectDiffuse": indirectDiffuse,
-                "indirectSpecular": indirectSpecular,
-                "total": add(directDiffuse, directSpecular, indirectDiffuse, indirectSpecular)
-            }
+        reflectedLight = {
+            "directDiffuse": directDiffuse,
+            "directSpecular": directSpecular,
+            "indirectDiffuse": indirectDiffuse,
+            "indirectSpecular": indirectSpecular,
+            "total": total
+        }
 
-            context.radiance = temp(vec3())
-            context.irradiance = temp(vec3())
-            context.iblIrradiance = temp(vec3())
-            context.ambientOcclusion = temp(float(1))
+        lighting = {
+            "radiance": temp(vec3()),
+            "irradiance": temp(vec3()),
+            "iblIrradiance": temp(vec3()),
+            "ambientOcclusion": temp(float(1))
+        }
 
+        properties.update( reflectedLight )
+        properties.update( lighting )
+        context.update( lighting )
+
+        context.reflectedLight = reflectedLight
         context.lightingModelNode = lightingModelNode or context.lightingModelNode
-
-
-        type = self.getNodeType( builder )
-
-        super().generate( builder, type )
 
         if lightingModelNode and lightingModelNode.indirectDiffuse:
             lightingModelNode.indirectDiffuse.call(context)
@@ -50,6 +54,13 @@ class LightingContextNode(ContextNode):
         if lightingModelNode and lightingModelNode.ambientOcclusion:
             lightingModelNode.ambientOcclusion.call(context)
 
+        return super().construct(builder)
+
+    def generate( self, builder ):
+        context = self.context
+        type = self.getNodeType( builder )
+
+        super().generate( builder, type )
         return context.reflectedLight.total.build( builder, type )
 
 

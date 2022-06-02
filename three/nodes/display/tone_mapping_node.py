@@ -18,14 +18,17 @@ class ToneMappingNode(TempNode):
         self.exposureNode = exposureNode
         self.colorNode = colorNode
 
-    def generate( self, builder ):
-        type = self.getNodeType( builder )
+    def construct(self, builder):
+
         colorNode = self.color or builder.context.color
 
         toneMapping = self.toneMapping
         toneMappingParams = { 'exposure': self.exposureNode, 'color': colorNode }
 
+        outputNode = None
         if toneMapping == LinearToneMapping:
-            return LinearToneMappingNode( toneMappingParams ).build( builder, type )
+            outputNode = LinearToneMappingNode( toneMappingParams )
         else:
-            return self.colorNode.build( builder, type )
+            outputNode = self.colorNode
+        
+        return outputNode

@@ -123,7 +123,7 @@ def init_scene():
 
     canvas = WgpuCanvas(size=(640, 480), max_fps=60, title="wgpu_renderer")
 
-    render = three.WgpuRenderer(canvas, parameters={'antialias': True})
+    render = three.WgpuRenderer(canvas, antialias = True)
     render.init()
 
     camera = three.PerspectiveCamera(45, 640 / 480, 0.25, 20)

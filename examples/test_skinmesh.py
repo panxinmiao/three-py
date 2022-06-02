@@ -93,7 +93,7 @@ def init():
 
     canvas = WgpuCanvas(size=(640, 480), max_fps=60, title="Skinmesh")
 
-    render = three.WgpuRenderer(canvas, parameters={'antialias': True})
+    render = three.WgpuRenderer(canvas, antialias = True)
     render.init()
 
     camera = three.PerspectiveCamera(75, 640 / 480, 0.1, 200 )
