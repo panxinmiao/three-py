@@ -44,7 +44,7 @@ geometry.setIndex(pmd_file.indices)
 # geometry.computeVertexNormals()
 
 canvas = WgpuCanvas(size=(640, 480),  max_fps=60, title="Phong Light Model")
-render = three.WgpuRenderer(canvas, parameters={'antialias': True})
+render = three.WgpuRenderer(canvas,  antialias = True)
 #render.outputEncoding = three.sRGBEncoding
 
 render.init()
@@ -55,8 +55,7 @@ camera.position.y = 10
 
 scene = three.Scene()
 
-material = three.MeshBasicMaterial(
-    {'color': 0xffffff, 'shinniness': 32.0, 'emissive': 0x000000})
+material = three.MeshBasicMaterial(color = 0xffffff, shinniness = 32.0)
 
 material.side = three.DoubleSide
 
@@ -155,7 +154,7 @@ def loop():
 
     render.render(scene, camera)
 
-
 render.setAnimationLoop(loop)
 
-app.exec_()
+if __name__ == '__main__':
+    app.exec_()

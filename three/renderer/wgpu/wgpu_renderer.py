@@ -26,8 +26,10 @@ _projScreenMatrix = Matrix4()
 _vector3 = Vector3()
 
 class WgpuRenderer(NoneAttribute):
-    def __init__(self, canvas:'wgpu.WgpuCanvasInterface', parameters = {}) -> None:
+    def __init__(self, canvas:'wgpu.WgpuCanvasInterface', parameters:dict={}, **kwargs) -> None:
 
+        parameters = parameters.copy()
+        parameters.update(kwargs)
         parameters = Dict(parameters)
         # public
 
@@ -111,8 +113,8 @@ class WgpuRenderer(NoneAttribute):
         parameters = self._parameters
 
         # adapterOptions = {
-		# 	'powerPreference': parameters.powerPreference
-		# }
+        #     'powerPreference': parameters.powerPreference
+        # }
 
         adapter = wgpu.request_adapter(
             canvas = self._canvas, power_preference = parameters.powerPreference
@@ -125,9 +127,9 @@ class WgpuRenderer(NoneAttribute):
 
 
         deviceDescriptor = {
-			'required_features': parameters.requiredFeatures,
-			'required_limits': parameters.requiredLimits
-		}
+            'required_features': parameters.requiredFeatures,
+            'required_limits': parameters.requiredLimits
+        }
 
         # device = await adapter.requestDevice( deviceDescriptor );
 
@@ -307,7 +309,7 @@ class WgpuRenderer(NoneAttribute):
         return self._context
 
     def getPixelRatio(self):
-        return self._pixelRatio
+        return self._canvas.get_pixel_ratio()
 
     def getDrawingBufferSize( self, target ):
         return target.set( self._width * self._pixelRatio, self._height * self._pixelRatio ).floor()
@@ -370,11 +372,11 @@ class WgpuRenderer(NoneAttribute):
             self._scissor = None
         else:
             self._scissor = Dict({
-				'x': x,
-				'y': y,
-				'width': width,
-				'height': height
-			})
+                'x': x,
+                'y': y,
+                'width': width,
+                'height': height
+            })
 
 
     def getViewport( self, target ):
@@ -531,7 +533,7 @@ class WgpuRenderer(NoneAttribute):
             elif object.isLight:
                 currentRenderState.pushLight( object )
                 if object.castShadow:
-					# currentRenderState.pushShadow( object );
+                    # currentRenderState.pushShadow( object );
                     pass
 
             elif object.isSprite:
@@ -684,13 +686,13 @@ class WgpuRenderer(NoneAttribute):
 
             self._colorBuffer = self._device.create_texture(
                 size={
-					'width': max(1, math.floor( self._width * self._pixelRatio )),
-					'height': max(1, math.floor( self._height * self._pixelRatio )),
-					'depth_or_array_layers': 1
-				},
+                    'width': max(1, math.floor( self._width * self._pixelRatio )),
+                    'height': max(1, math.floor( self._height * self._pixelRatio )),
+                    'depth_or_array_layers': 1
+                },
                 sample_count = self._parameters.sampleCount,
                 format= GPUTextureFormat.BGRA8Unorm,
-				usage= GPUTextureUsage.RENDER_ATTACHMENT
+                usage= GPUTextureUsage.RENDER_ATTACHMENT
             )
 
     def _setupDepthBuffer(self):
@@ -701,14 +703,14 @@ class WgpuRenderer(NoneAttribute):
 
             self._depthBuffer = self._device.create_texture(
                 size={
-					'width': max(1, math.floor( self._width * self._pixelRatio )),
-					'height': max(1, math.floor( self._height * self._pixelRatio )),
-					'depth_or_array_layers': 1
-				},
+                    'width': max(1, math.floor( self._width * self._pixelRatio )),
+                    'height': max(1, math.floor( self._height * self._pixelRatio )),
+                    'depth_or_array_layers': 1
+                },
 
-				sample_count= self._parameters.sampleCount,
-				format= GPUTextureFormat.Depth24PlusStencil8,
-				usage= GPUTextureUsage.RENDER_ATTACHMENT
+                sample_count= self._parameters.sampleCount,
+                format= GPUTextureFormat.Depth24PlusStencil8,
+                usage= GPUTextureUsage.RENDER_ATTACHMENT
             )
 
     def _configureContext(self):

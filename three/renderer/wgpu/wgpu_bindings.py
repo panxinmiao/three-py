@@ -37,10 +37,10 @@ class WgpuBindings:
             bindGroup = self._createBindGroup( bindings, bindLayout )
 
             data = Dict({
-				'layout': bindLayout,
-				'group': bindGroup,
-				'bindings': bindings
-			})
+                'layout': bindLayout,
+                'group': bindGroup,
+                'bindings': bindings
+            })
             self.uniformsData[object] = data
 
         return data
@@ -63,10 +63,10 @@ class WgpuBindings:
             bindGroup = self._createBindGroup( bindings, bindLayout )
 
             data = Dict({
-				'layout': bindLayout,
-				'group': bindGroup,
-				'bindings': bindings
-			})
+                'layout': bindLayout,
+                'group': bindGroup,
+                'bindings': bindings
+            })
 
         self.uniformsData[param] = data
 
@@ -147,9 +147,9 @@ class WgpuBindings:
                     byteLength = binding.getByteLength()
                     
                     binding.bufferGPU = self.device.create_buffer(
-						size = byteLength,
-						usage = binding.usage
-					)
+                        size = byteLength,
+                        usage = binding.usage
+                    )
                 entries.append( { 'binding': bindingPoint, 'resource': { 'buffer': binding.bufferGPU, "offset": 0, 'size': binding.getByteLength()} } )
 
             elif binding.isStorageBuffer:
@@ -178,12 +178,12 @@ class WgpuBindings:
 
                 entries.append( { 'binding': bindingPoint, 'resource': binding.textureGPU.create_view( dimension = binding.dimension ) } )
 
-	
+
             bindingPoint += 1
 
 
         return self.device.create_bind_group(
-			layout = layout,
-			entries = entries
-		)
+            layout = layout,
+            entries = entries
+        )
 

@@ -3,7 +3,7 @@ from ..math import Color
 from ..constants import MultiplyOperation
 
 class MeshBasicMaterial(Material):
-    def __init__(self, parameters = None) -> None:
+    def __init__(self, parameters = {}, **kwargs) -> None:
         '''
         parameters = {
             color: <hex>,
@@ -59,6 +59,12 @@ class MeshBasicMaterial(Material):
         self.wireframeLinewidth = 1
         self.wireframeLinecap = 'round'
         self.wireframeLinejoin = 'round'
+
+        if not isinstance(parameters, dict):
+            parameters = parameters.__dict__
+            
+        parameters = parameters.copy()
+        parameters.update(kwargs)
 
         self.setValues(parameters)
 

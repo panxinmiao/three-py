@@ -60,7 +60,7 @@ class Skeleton(NoneAttribute):
         for i, bone in enumerate(self.bones):
             bone.matrixWorld.copy(self.boneInverses[i]).invert()
 
-		# compute the local matrices, positions, rotations and scales
+        # compute the local matrices, positions, rotations and scales
         for bone in self.bones:
             if bone:
                 if bone.parent and bone.parent.isBone:
@@ -77,7 +77,7 @@ class Skeleton(NoneAttribute):
         boneMatrices = self.boneMatrices
         boneTexture = self.boneTexture
 
-		# flatten bone matrices to array
+        # flatten bone matrices to array
         for i, bone in enumerate(bones):
 
             matrix = bone.matrixWorld if bone else _identityMatrix

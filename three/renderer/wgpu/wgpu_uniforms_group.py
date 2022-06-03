@@ -45,7 +45,7 @@ class WgpuUniformsGroup(WgpuUniformBuffer):
             chunkOffset = offset % GPUChunkSize
             remainingSizeInChunk = GPUChunkSize - chunkOffset
 
-        	# conformance tests
+            # conformance tests
 
             if chunkOffset != 0 and ( remainingSizeInChunk - uniform.boundary ) < 0:
 

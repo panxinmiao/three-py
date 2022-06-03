@@ -10,11 +10,11 @@ from .points_node_material import PointsNodeMaterial
 # ]
 
 materialLib = {
-	'NodeMaterial': NodeMaterial,
-	'LineBasicNodeMaterial': LineBasicNodeMaterial,
-	'MeshBasicNodeMaterial': MeshBasicNodeMaterial,
-	'MeshStandardNodeMaterial': MeshStandardNodeMaterial,
-	'PointsNodeMaterial': PointsNodeMaterial,
+    'NodeMaterial': NodeMaterial,
+    'LineBasicNodeMaterial': LineBasicNodeMaterial,
+    'MeshBasicNodeMaterial': MeshBasicNodeMaterial,
+    'MeshStandardNodeMaterial': MeshStandardNodeMaterial,
+    'PointsNodeMaterial': PointsNodeMaterial,
     'MeshNormalNodeMaterial': MeshNormalNodeMaterial
 
 }

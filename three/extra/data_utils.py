@@ -115,5 +115,5 @@ for i in range(33, 63):
 _exponentTable[ 63 ] = 0xc7800000
 
 for i in range(1, 64):
-	if i != 32:
-		_offsetTable[ i ] = 1024
+    if i != 32:
+        _offsetTable[ i ] = 1024

@@ -48,7 +48,7 @@ class SphericalHarmonics3(NoneAttribute):
 
     def getIrradianceAt( self, normal, target:'Vector3' ):
 
-		# normal is assumed to be unit length
+        # normal is assumed to be unit length
 
         x = normal.x
         y = normal.y
@@ -131,7 +131,7 @@ class SphericalHarmonics3(NoneAttribute):
     @staticmethod
     def getBasisAt( normal, shBasis ):
 
-		# normal is assumed to be unit length
+        # normal is assumed to be unit length
 
         x = normal.x
         y = normal.y

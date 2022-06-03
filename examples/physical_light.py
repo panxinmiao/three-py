@@ -42,7 +42,7 @@ geometry.setIndex(pmd_file.indices)
 # geometry.computeVertexNormals()
 
 canvas = WgpuCanvas(size=(640, 480), max_fps=60, title="Physical Light")
-render = three.WgpuRenderer(canvas, parameters={'antialias': True})
+render = three.WgpuRenderer(canvas, antialias = True)
 render.outputEncoding = three.sRGBEncoding
 
 render.init()
@@ -53,7 +53,7 @@ camera.position.y = 10
 
 scene = three.Scene()
 
-material = three.MeshStandardMaterial({'color': 0x0ffffff})
+material = three.MeshStandardMaterial(color = 0x0ffffff)
 
 material.side = three.DoubleSide
 
@@ -109,6 +109,7 @@ def loop():
 
     render.render(scene, camera)
 
-
 render.setAnimationLoop(loop)
-app.exec_()
+
+if __name__ == '__main__':
+    app.exec_()

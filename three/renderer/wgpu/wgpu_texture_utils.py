@@ -1,4 +1,4 @@
-from .constants import GPUIndexFormat, GPUFilterMode, GPUPrimitiveTopology, GPULoadOp, GPUStoreOp
+from .constants import GPUTextureViewDimension, GPUIndexFormat, GPUFilterMode, GPUPrimitiveTopology, GPULoadOp, GPUStoreOp
 import wgpu
 
 
@@ -10,27 +10,27 @@ class WgpuTextureUtils:
 
         mipmapVertexSource = '''
 struct VarysStruct {
-	@builtin( position ) Position: vec4<f32>,
+    @builtin( position ) Position: vec4<f32>,
     @location( 0 ) vTex : vec2<f32>
 };
 @stage( vertex )
 fn main( @builtin( vertex_index ) vertexIndex : u32 ) -> VarysStruct {
-	var Varys : VarysStruct;
-	var pos = array< vec2<f32>, 4 >(
-		vec2<f32>( -1.0,  1.0 ),
-		vec2<f32>(  1.0,  1.0 ),
-		vec2<f32>( -1.0, -1.0 ),
-		vec2<f32>(  1.0, -1.0 )
-	);
-	var tex = array< vec2<f32>, 4 >(
-		vec2<f32>( 0.0, 0.0 ),
-		vec2<f32>( 1.0, 0.0 ),
-		vec2<f32>( 0.0, 1.0 ),
-		vec2<f32>( 1.0, 1.0 )
-	);
-	Varys.vTex = tex[ vertexIndex ];
-	Varys.Position = vec4<f32>( pos[ vertexIndex ], 0.0, 1.0 );
-	return Varys;
+    var Varys : VarysStruct;
+    var pos = array< vec2<f32>, 4 >(
+        vec2<f32>( -1.0,  1.0 ),
+        vec2<f32>(  1.0,  1.0 ),
+        vec2<f32>( -1.0, -1.0 ),
+        vec2<f32>(  1.0, -1.0 )
+    );
+    var tex = array< vec2<f32>, 4 >(
+        vec2<f32>( 0.0, 0.0 ),
+        vec2<f32>( 1.0, 0.0 ),
+        vec2<f32>( 0.0, 1.0 ),
+        vec2<f32>( 1.0, 1.0 )
+    );
+    Varys.vTex = tex[ vertexIndex ];
+    Varys.Position = vec4<f32>( pos[ vertexIndex ], 0.0, 1.0 );
+    return Varys;
 }
 '''
 
@@ -43,13 +43,13 @@ var img : texture_2d<f32>;
 
 @stage( fragment )
 fn main( @location( 0 ) vTex : vec2<f32> ) -> @location( 0 ) vec4<f32> {
-	return textureSample( img, imgSampler, vTex );
+    return textureSample( img, imgSampler, vTex );
 }
 '''
 
         self.sampler = device.create_sampler(min_filter = GPUFilterMode.Linear)
 
-		# We'll need a new pipeline for every texture format used.
+        # We'll need a new pipeline for every texture format used.
         self.pipelines = {}
 
         self.mipmapVertexShaderModule = device.create_shader_module(code = mipmapVertexSource)
@@ -72,8 +72,8 @@ fn main( @location( 0 ) vTex : vec2<f32> ) -> @location( 0 ) vec4<f32> {
                 },
                 fragment={
                     'module': self.mipmapFragmentShaderModule,
-					'entry_point': 'main',
-					'targets': [ { 'format':  format} ]
+                    'entry_point': 'main',
+                    'targets': [ { 'format':  format} ]
                 },
                 primitive={
                     'topology': GPUPrimitiveTopology.TriangleStrip,
@@ -123,12 +123,21 @@ fn main( @location( 0 ) vTex : vec2<f32> ) -> @location( 0 ) vec4<f32> {
         # bindGroupLayout = pipeline.getBindGroupLayout( 0 ); # @TODO: Consider making this static.
         bindGroupLayout = pipeline.get_bind_group_layout(0)
 
-        srcView = textureGPU.create_view(base_mip_level=0, mip_level_count=1, base_array_layer=baseArrayLayer)
+        srcView = textureGPU.create_view(
+            base_mip_level=0,
+            mip_level_count=1,
+            dimension = GPUTextureViewDimension.TwoD,
+            base_array_layer=baseArrayLayer
+        )
 
 
         for i in range(1, textureGPUDescriptor.mip_level_count):
 
-            dstView = textureGPU.create_view(base_mip_level= i, mip_level_count= 1, base_array_layer = baseArrayLayer)
+            dstView = textureGPU.create_view(
+                base_mip_level= i,
+                mip_level_count= 1,
+                dimension=GPUTextureViewDimension.TwoD,
+                base_array_layer = baseArrayLayer)
 
             passEncoder:'wgpu.GPURenderPassEncoder' = commandEncoder.begin_render_pass(color_attachments=[{
                 'view': dstView,
@@ -141,10 +150,10 @@ fn main( @location( 0 ) vTex : vec2<f32> ) -> @location( 0 ) vec4<f32> {
                 layout=bindGroupLayout,
                 entries=[{
                     'binding': 0,
-					'resource': self.sampler
+                    'resource': self.sampler
                 },{
                     'binding': 1,
-					'resource': srcView
+                    'resource': srcView
                 }]
 
             )

@@ -5,9 +5,9 @@ from ..core.attribute_node import AttributeNode
 
 from ..shadernode.shader_node_elements import (
     float, vec4,
-   	assign, label, mul, bypass,
-   	positionLocal, skinning, instance, modelViewProjection, lightingContext, colorSpace,
-   	materialAlphaTest, materialColor, materialOpacity)
+    assign, label, mul, bypass,
+    positionLocal, skinning, instance, modelViewProjection, lightingContext, colorSpace,
+    materialAlphaTest, materialColor, materialOpacity)
 
 class NodeMaterial(ShaderMaterial):
     def __init__(self) -> None:
@@ -120,8 +120,8 @@ class NodeMaterial(ShaderMaterial):
 
     def setDefaultValues( self, values ):
 
-		# This approach is to reuse the native refreshUniforms*
-		# and turn available the use of features like transmission and environment in core
+        # This approach is to reuse the native refreshUniforms*
+        # and turn available the use of features like transmission and environment in core
 
         for property in values.__dict__:
             value = values.__dict__[ property ]

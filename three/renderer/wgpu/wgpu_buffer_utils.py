@@ -2,8 +2,8 @@ from .constants import GPUChunkSize
 
 
 def getFloatLength( floatLength ):
-	# ensure chunk size alignment (STD140 layout)
-	return floatLength + ( ( GPUChunkSize - ( floatLength % GPUChunkSize ) ) % GPUChunkSize )
+    # ensure chunk size alignment (STD140 layout)
+    return floatLength + ( ( GPUChunkSize - ( floatLength % GPUChunkSize ) ) % GPUChunkSize )
 
 
 def getVectorLength( count, vectorLength = 4 ):

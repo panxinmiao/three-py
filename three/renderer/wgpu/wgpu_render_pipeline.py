@@ -45,9 +45,9 @@ class WgpuRenderPipeline():
             stepMode = GPUInputStepMode.Instance if geometryAttribute and geometryAttribute.isInstancedBufferAttribute else GPUInputStepMode.Vertex
 
             vertexBuffers.append( {
-            	'array_stride': attribute.arrayStride,
-            	'attributes': [ { 'shader_location': attribute.slot, 'offset': 0, 'format': attribute.format } ],
-            	'step_mode': stepMode
+                'array_stride': attribute.arrayStride,
+                'attributes': [ { 'shader_location': attribute.slot, 'offset': 0, 'format': attribute.format } ],
+                'step_mode': stepMode
             } )
 
 
@@ -79,11 +79,11 @@ class WgpuRenderPipeline():
         
         if material.stencilWrite == True:
             stencilFront = {
-				'compare': self._getStencilCompare( material ),
-				'fail_op': self._getStencilOperation( material.stencilFail ),
-				'depth_fail_op': self._getStencilOperation( material.stencilZFail ),
-				'pass_op': self._getStencilOperation( material.stencilZPass )
-			}
+                'compare': self._getStencilCompare( material ),
+                'fail_op': self._getStencilOperation( material.stencilFail ),
+                'depth_fail_op': self._getStencilOperation( material.stencilZFail ),
+                'pass_op': self._getStencilOperation( material.stencilZPass )
+            }
 
         primitiveState = self._getPrimitiveState( object, material )
         colorWriteMask = self._getColorWriteMask( material )
@@ -96,13 +96,13 @@ class WgpuRenderPipeline():
         
         _fragment = {}
         _fragment.update(stageFragment.stage,  targets = [ {
-				'format': colorFormat,
-				'blend': {
-					'alpha': alphaBlend,
-					'color': colorBlend
-				},
-				'write_mask': colorWriteMask
-			} ] )
+            'format': colorFormat,
+            'blend': {
+                'alpha': alphaBlend,
+                'color': colorBlend
+            },
+            'write_mask': colorWriteMask
+        } ] )
 
         depth_stencil ={
             'format': depthStencilFormat,
@@ -114,7 +114,7 @@ class WgpuRenderPipeline():
             'stencil_write_mask': material.stencilWriteMask
         }
     
-        _layout= self._getPeplineLayout(bindings)
+        _layout= self._getPipelineLayout(bindings)
         
         self.pipeline = self._device.create_render_pipeline(
             layout= _layout,
@@ -130,7 +130,7 @@ class WgpuRenderPipeline():
 
     def _getArrayStride( self, type, bytesPerElement ):
 
-		# @TODO: This code is GLSL specific. We need to update when we switch to WGSL.
+        # @TODO: This code is GLSL specific. We need to update when we switch to WGSL.
 
         if type == 'float' or type == 'int' or type == 'uint':
              return bytesPerElement
@@ -381,8 +381,8 @@ class WgpuRenderPipeline():
 
     
     def _getStencilCompare( self, material ):
-
-		#let stencilCompare;
+        
+        #let stencilCompare;
 
         stencilFunc = material.stencilFunc
 
@@ -467,7 +467,7 @@ class WgpuRenderPipeline():
             else:
                 return GPUVertexFormat.Float32x4
 
-		#int
+        #int
         if type == 'int':
             return GPUVertexFormat.Sint32
 
@@ -491,7 +491,7 @@ class WgpuRenderPipeline():
             else:
                 return GPUVertexFormat.Sint32x4
 
-		#uint
+        #uint
         if type == 'uint':
             return GPUVertexFormat.Uint32
 
@@ -535,15 +535,15 @@ class WgpuRenderPipeline():
             format = self._getVertexFormat( type, bytesPerElement )
 
             attributes.append( Dict({
-            	'name':name,
-            	'arrayStride':arrayStride,
-            	'format':format,
-            	'slot':slot,
+                'name':name,
+                'arrayStride':arrayStride,
+                'format':format,
+                'slot':slot,
             }) )
 
         return attributes
 
-    def _getPeplineLayout( self, bindings ):
+    def _getPipelineLayout( self, bindings ):
         bind_group_layouts = []
 
         bindingPoint = 0
@@ -589,10 +589,10 @@ class WgpuRenderPipeline():
                         "view_dimension": binding.dimension
                     }
                 })
-	
+    
             bindingPoint += 1
 
         bind_group_layout = self._device.create_bind_group_layout( entries= entries)
         bind_group_layouts.append(bind_group_layout)
-        peppeline_layout = self._device.create_pipeline_layout(bind_group_layouts=bind_group_layouts)
-        return peppeline_layout
+        pipeline_layout = self._device.create_pipeline_layout(bind_group_layouts=bind_group_layouts)
+        return pipeline_layout

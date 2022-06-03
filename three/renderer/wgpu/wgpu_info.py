@@ -7,17 +7,17 @@ class WgpuInfo:
         self.autoReset = True
 
         self.render = Dict({
-			'frame': 0,
-			'drawCalls': 0,
-			'triangles': 0,
-			'points': 0,
-			'lines': 0
-		})
+            'frame': 0,
+            'drawCalls': 0,
+            'triangles': 0,
+            'points': 0,
+            'lines': 0
+        })
 
         self.memory = Dict({
-			'geometries': 0,
-			'textures': 0
-		})
+            'geometries': 0,
+            'textures': 0
+        })
 
     def update( self, object, count, instanceCount ):
 

@@ -3,7 +3,7 @@ from ..math import Color
 
 class PointsMaterial(Material):
 
-    def __init__(self, parameters=None) -> None:
+    def __init__(self, parameters={}, **kwargs) -> None:
         super().__init__()
 
         self.type = 'PointsMaterial'
@@ -16,6 +16,12 @@ class PointsMaterial(Material):
 
         self.size = 1
         self.sizeAttenuation = True
+
+        if not isinstance(parameters, dict):
+            parameters = parameters.__dict__
+            
+        parameters = parameters.copy()
+        parameters.update(kwargs)
 
         self.setValues( parameters )
 

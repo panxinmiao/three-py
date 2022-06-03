@@ -3,14 +3,14 @@ from warnings import warn
 from ..constants import SRGBColorSpace, LinearSRGBColorSpace
 
 def SRGBToLinear( c ):
-	return c * 0.0773993808 if c < 0.04045 else math.pow( c * 0.9478672986 + 0.0521327014, 2.4 )
+    return c * 0.0773993808 if c < 0.04045 else math.pow( c * 0.9478672986 + 0.0521327014, 2.4 )
 
 def LinearToSRGB( c ):
-	return c * 12.92 if c < 0.0031308 else 1.055 * ( math.pow( c, 0.41666 ) ) - 0.055
+    return c * 12.92 if c < 0.0031308 else 1.055 * ( math.pow( c, 0.41666 ) ) - 0.055
 
 FN = {
-	SRGBColorSpace: { LinearSRGBColorSpace : SRGBToLinear },
-	LinearSRGBColorSpace: { SRGBColorSpace : LinearToSRGB },
+    SRGBColorSpace: { LinearSRGBColorSpace : SRGBToLinear },
+    LinearSRGBColorSpace: { SRGBColorSpace : LinearToSRGB },
 }
 
 

@@ -4,7 +4,7 @@ from ..structure import Dict
 
 class ShaderMaterial(Material):
 
-    def __init__(self, parameters = None) -> None:
+    def __init__(self, parameters = {}, **kwargs) -> None:
         super().__init__()
         if type(parameters) == dict:
             parameters = Dict(parameters)
@@ -47,11 +47,16 @@ class ShaderMaterial(Material):
 
         self.glslVersion = None
 
-        if parameters:
+        if isinstance(parameters, ShaderMaterial):
             if parameters.attributes:
                 warnings.warn( 'THREE.ShaderMaterial: attributes should now be defined in THREE.BufferGeometry instead.' )
 
-            self.setValues( parameters )
+        if not isinstance(parameters, dict):
+            parameters = parameters.__dict__
+
+        parameters = parameters.copy()
+        parameters.update(kwargs)
+        self.setValues( parameters )
 
 
     def copy( self, source:'ShaderMaterial' ):

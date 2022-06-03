@@ -39,10 +39,10 @@ class RenderTarget(EventDispatcher):
     def setTexture( self, texture ):
 
         texture.image = {
-			'width': self.width,
-			'height': self.height,
-			'depth': self.depth
-		}
+            'width': self.width,
+            'height': self.height,
+            'depth': self.depth
+        }
 
         self.texture = texture
 
@@ -76,7 +76,7 @@ class RenderTarget(EventDispatcher):
 
         self.texture = source.texture.clone()
 
-		# ensure image object is not shared, see #20328
+        # ensure image object is not shared, see #20328
 
         self.texture.image = {**source.texture.image}
 

@@ -55,7 +55,7 @@ class Triangle(NoneAttribute):
 
         denom = ( dot00 * dot11 - dot01 * dot01 )
 
-		# collinear or singular triangle
+        # collinear or singular triangle
         if denom == 0:
             # arbitrary location outside of triangle?
             # not sure if self is the best idea, maybe should be returning undefined

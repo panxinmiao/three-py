@@ -55,7 +55,7 @@ class MMDViewer(QtWidgets.QWidget):
         self.controls.target.set(0, 10, 0)
         self.controls.update()
 
-        renderer = three.WgpuRenderer(self.wgpu_widget, parameters={'antialias': True})
+        renderer = three.WgpuRenderer(self.wgpu_widget, antialias = True)
         renderer.init()
 
         def on_resize(event):

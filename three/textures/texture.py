@@ -52,7 +52,7 @@ class Texture(EventDispatcher):
         self.generateMipmaps = True
         self.premultiplyAlpha = False
         self.flipY = True
-        self.unpackAlignment = 4	# valid values: 1, 2, 4, 8 (see http://www.khronos.org/opengles/sdk/docs/man/xhtml/glPixelStorei.xml)
+        self.unpackAlignment = 4    # valid values: 1, 2, 4, 8 (see http://www.khronos.org/opengles/sdk/docs/man/xhtml/glPixelStorei.xml)
 
         self.encoding = encoding
 

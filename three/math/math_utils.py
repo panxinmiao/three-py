@@ -31,12 +31,12 @@ def lerp( x, y, t ):
 
 # http://www.rorydriscoll.com/2016/03/07/frame-rate-independent-damping-using-lerp/
 def damp( x, y, lam, dt ):
-	return lerp( x, y, 1 - math.exp( - lam * dt ) )
+    return lerp( x, y, 1 - math.exp( - lam * dt ) )
 
 
 # https://www.desmos.com/calculator/vcsjnyz7x4
 def pingpong( x, length = 1 ):
-	return length - abs( euclideanModulo( x, length * 2 ) - length )
+    return length - abs( euclideanModulo( x, length * 2 ) - length )
 
 # http://en.wikipedia.org/wiki/Smoothstep
 def smoothstep( x, min, max ):
@@ -59,32 +59,32 @@ def smootherstep( x, min, max ):
 
 # Random integer from <low, high> interval
 def randInt( low, high ):
-	return low + math.floor( random.random() * ( high - low + 1 ) )
+    return low + math.floor( random.random() * ( high - low + 1 ) )
 
 # Random float from <low, high> interval
 def randFloat( low, high ):
-	return low + random.random() * ( high - low )
+    return low + random.random() * ( high - low )
 
 
 # Random float from <-range/2, range/2> interval
 def  randFloatSpread( range ):
-	return range * ( 0.5 - random.random() )
+    return range * ( 0.5 - random.random() )
 
 # Deterministic pseudo-random float in the interval [ 0, 1 ]
 # def seededRandom( s ):
 #     pass
 
 def degToRad( degrees ):
-	return degrees * DEG2RAD
+    return degrees * DEG2RAD
 
 def radToDeg( radians ):
-	return radians * RAD2DEG
+    return radians * RAD2DEG
 
 def isPowerOfTwo( value ):
-	return ( value & ( value - 1 ) ) == 0 and value != 0
+    return ( value & ( value - 1 ) ) == 0 and value != 0
 
 def ceilPowerOfTwo( value ):
-	return math.pow( 2, math.ceil( math.log( value ) / math.log(2) ) )
+    return math.pow( 2, math.ceil( math.log( value ) / math.log(2) ) )
 
 def floorPowerOfTwo( value ):
-	return math.pow( 2, math.floor( math.log( value ) / math.log(2) ) )
+    return math.pow( 2, math.floor( math.log( value ) / math.log(2) ) )

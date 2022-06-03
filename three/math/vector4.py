@@ -195,9 +195,9 @@ class Vector4(NoneAttribute):
     def setAxisAngleFromRotationMatrix( self, m:'three.Matrix4' ) -> "Vector4":
         # http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToAngle/index.htm
         # assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
-        angle, x, y, z;  # variables for result
-        epsilon = 0.01,		# margin to allow for rounding errors
-        epsilon2 = 0.1,		# margin to distinguish between 0 and 180 degrees
+        # angle, x, y, z  # variables for result
+        epsilon = 0.01    # margin to allow for rounding errors
+        epsilon2 = 0.1    # margin to distinguish between 0 and 180 degrees
 
         te = m.elements,
 

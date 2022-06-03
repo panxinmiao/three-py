@@ -73,11 +73,11 @@ class Matrix3(NoneAttribute):
 
         self.set(
 
-			me[ 0 ], me[ 4 ], me[ 8 ],
-			me[ 1 ], me[ 5 ], me[ 9 ],
-			me[ 2 ], me[ 6 ], me[ 10 ]
+            me[ 0 ], me[ 4 ], me[ 8 ],
+            me[ 1 ], me[ 5 ], me[ 9 ],
+            me[ 2 ], me[ 6 ], me[ 10 ]
 
-		)
+        )
         return self
 
     def multiply( self, m:'Matrix3' ) -> 'Matrix3':
@@ -206,10 +206,10 @@ class Matrix3(NoneAttribute):
         s = math.sin( rotation )
 
         self.set(
-			sx * c, sx * s, - sx * ( c * cx + s * cy ) + cx + tx,
-			- sy * s, sy * c, - sy * ( - s * cx + c * cy ) + cy + ty,
-			0, 0, 1
-		)
+            sx * c, sx * s, - sx * ( c * cx + s * cy ) + cx + tx,
+            - sy * s, sy * c, - sy * ( - s * cx + c * cy ) + cy + ty,
+            0, 0, 1
+        )
 
         return self
 

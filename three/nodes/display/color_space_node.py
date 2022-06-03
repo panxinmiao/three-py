@@ -24,8 +24,8 @@ LinearTosRGB = ShaderNode(__LinearTosRGB)
 
 
 EncodingLib = {
-	'LinearToLinear': LinearToLinear,
-	'LinearTosRGB': LinearTosRGB
+    'LinearToLinear': LinearToLinear,
+    'LinearTosRGB': LinearTosRGB
 }
 
 
@@ -49,19 +49,20 @@ class ColorSpaceNode(TempNode):
 
         return self
 
-    def generate(self, builder:'NodeBuilder' ):
-
-        type = self.getNodeType( builder )
+    def construct(self, builder: 'NodeBuilder'):
 
         method = self.method
         node = self.node
 
+        outputNode = None
+
         if method != ColorSpaceNode.LINEAR_TO_LINEAR:
             encodingFunctionNode = EncodingLib[ method ]
-
-            return encodingFunctionNode({
+            outputNode = encodingFunctionNode({
                 'value': node,
-            }).build( builder, type )
+            })
 
         else:
-            return node.build( builder, type )
+            outputNode = node
+
+        return outputNode

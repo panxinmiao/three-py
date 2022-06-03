@@ -21,14 +21,14 @@ def __getSpecularMIPLevel(inputs, *args):
 _getSpecularMIPLevel = ShaderNode(__getSpecularMIPLevel)
 
 
-class EnvironmentLightNode(LightingNode):
+class EnvironmentNode(LightingNode):
 
     def __init__(self, envNode=None) -> None:
         super().__init__()
 
         self.envNode = envNode
 
-    def generate(self, builder):
+    def construct(self, builder):
         envNode = self.envNode
         flipNormalWorld = vec3(negate(transformedNormalWorld.x), transformedNormalWorld.yz)
 
@@ -37,7 +37,7 @@ class EnvironmentLightNode(LightingNode):
         reflectVec = transformDirection(reflectVec, cameraViewMatrix)
         reflectVec = vec3(negate(reflectVec.x), reflectVec.yz)
 
-      	# reflectVec = normalize(mix(new ReflectNode(), flipNormalWorld, mul(roughness, roughness)))
+        # reflectVec = normalize(mix(new ReflectNode(), flipNormalWorld, mul(roughness, roughness)))
 
         radianceContext = ContextNode(envNode, {
             "tempRead": False,
@@ -52,6 +52,10 @@ class EnvironmentLightNode(LightingNode):
             "levelNode": float(1),
             "levelShaderNode": _getSpecularMIPLevel
         })
+
+        # it's used to cache the construct only if necessary: See `CubeTextureNode.getConstructReference()`
+        radianceContext.context.environmentContext = radianceContext
+        irradianceContext.context.environmentContext = irradianceContext
 
         builder.context.radiance.add(radianceContext)
 

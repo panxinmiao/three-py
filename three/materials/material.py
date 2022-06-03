@@ -226,4 +226,3 @@ class Material(EventDispatcher):
         self._needs_update = value
         if value:
             self.version += 1
-			

@@ -10,12 +10,19 @@ class ContextNode(Node):
     def getNodeType( self, builder , *args ):
         return self.node.getNodeType( builder )
 
+    def construct(self, builder):
+        previousContext = builder.getContext()
+        builder.setContext({**builder.context, **self.context})
+        node = self.node.build(builder)
+
+        builder.setContext(previousContext)
+
+        return node
+
     def generate( self, builder, output ):
 
         previousContext = builder.getContext()
-
         builder.setContext( {**builder.context, **self.context} )
-
         snippet = self.node.build( builder, output )
         builder.setContext( previousContext )
         

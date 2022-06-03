@@ -43,7 +43,7 @@ class SpriteSheetUVNode(Node):
         uvFrameOffset = JoinNode( [
             OperatorNode( '*', cell, SplitNode( scale, 'x' ) ) , 
             OperatorNode( '*', rowInv, SplitNode( scale, 'y' ) )
-		] )
+       ] )
 
         uvScale = OperatorNode( '*', uv, scale )
         uvFrame = OperatorNode( '+', uvScale, uvFrameOffset )

@@ -26,5 +26,5 @@ class TimerNode(UniformNode):
             self.value = frame.deltaTime * scale
 
         else:
-			# global
+            # global
             self.value = frame.time * scale

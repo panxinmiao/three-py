@@ -1,3 +1,4 @@
+from three.nodes.accessors.uv_node import UVNode
 from .texture_node import TextureNode
 from ..core.uniform_node import UniformNode
 from .reflect_node import ReflectNode
@@ -5,14 +6,34 @@ from .reflect_node import ReflectNode
 class CubeTextureNode(TextureNode):
 
     def __init__(self, value, uvNode=None, levelNode=None) -> None:
-        super().__init__(value, uvNode or ReflectNode(), levelNode)
+        uvNode = uvNode or ReflectNode()
+        super().__init__(value, uvNode, levelNode)
 
     def getInputType(self, *args):
         return 'cubeTexture'
 
-    def generate(self, builder, output):
-        texture = self.value
+    def getConstructHash(self, builder):
+        return f"{ self.uuid }-{ builder.context.environmentContext.uuid if builder.context.environmentContext else '' }"
+
+    def construct(self, builder):
+        properties = builder.getNodeProperties(self)
         uvNode = self.uvNode or builder.context.uvNode or ReflectNode()
+        levelNode = self.levelNode or builder.context.levelNode
+
+        if levelNode and levelNode.isNode:
+            texture = self.value
+            levelNode = builder.context.levelShaderNode(
+                {'texture': texture, 'levelNode': levelNode}, builder) if builder.context.levelShaderNode else levelNode
+
+        properties.uvNode = uvNode
+        properties.levelNode = levelNode
+
+
+    def generate(self, builder, output):
+        properties = builder.getNodeProperties(self)
+        uvNode = properties.uvNode
+        levelNode = properties.levelNode
+        texture = self.value
 
         if not texture or texture.isCubeTexture != True:
             raise Exception('CubeTextureNode: value must be a CubeTexture')
@@ -32,14 +53,9 @@ class CubeTextureNode(TextureNode):
 
             if builder.context.tempRead == False or snippet is None:
                 uvSnippet = uvNode.build(builder, 'vec3')
-                levelNode = self.levelNode or builder.context.levelNode
-
-                if levelNode and levelNode.isNode:
-                    levelOutNode = builder.context.levelShaderNode(
-                        {'texture': texture, 'levelNode': levelNode}, builder) if builder.context.levelShaderNode else levelNode
-
-                    levelSnippet = levelOutNode.build(builder, 'float')
-
+                
+                if levelNode:
+                    levelSnippet = levelNode.build(builder, 'float')
                     snippet = builder.getCubeTextureLevel(textureProperty, uvSnippet, levelSnippet)
                 
                 else:

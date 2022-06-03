@@ -3,7 +3,7 @@ from wgpu.gui.auto import WgpuCanvas, run
 
 canvas = WgpuCanvas(size=(640, 480), max_fps=60, title="wgpu_renderer")
 
-render = three.WgpuRenderer(canvas, parameters={'antialias': True})
+render = three.WgpuRenderer(canvas, antialias = True)
 render.init()
 
 camera = three.PerspectiveCamera(70, 640 / 480, 0.01, 100)
@@ -25,6 +25,7 @@ def loop():
 
 render.setAnimationLoop(loop)
 
-run()
+if __name__ == '__main__':
+    run()
 
 

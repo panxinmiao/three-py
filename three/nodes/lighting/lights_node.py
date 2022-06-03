@@ -21,8 +21,7 @@ class LightsNode(Node):
     def hasLight(self):
         return len(self.lightNodes) > 0
 
-
-    def generate(self, builder ):
+    def construct(self, builder):
 
         lightNodes = self.lightNodes
 

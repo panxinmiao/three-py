@@ -51,10 +51,12 @@ class Object3DNode(Node):
             uniformNode.value = object.matrixWorld
 
         elif scope == Object3DNode.POSITION:
+            # uniformNode.value = uniformNode.value or three.Vector3()
             uniformNode.value.setFromMatrixPosition( object.matrixWorld )
 
         elif scope == Object3DNode.VIEW_POSITION:
             camera = frame.camera
+            uniformNode.value = uniformNode.value or three.Vector3()
             uniformNode.value.setFromMatrixPosition( object.matrixWorld )
             uniformNode.value.applyMatrix4( camera.matrixWorldInverse )
 
@@ -71,7 +73,6 @@ class Object3DNode(Node):
 
         elif scope == Object3DNode.POSITION or scope == Object3DNode.VIEW_POSITION:
             self._uniformNode.nodeType = 'vec3'
-            self._uniformNode.value = three.Vector3()
 
         return self._uniformNode.build( builder )
     

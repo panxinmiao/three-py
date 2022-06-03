@@ -3,7 +3,7 @@ from .material import Material
 from ..math import Color
 
 class LineBasicMaterial(Material):
-    def __init__(self, parameters=None) -> None:
+    def __init__(self, parameters={}, **kwargs) -> None:
         '''
         parameters = {
             color: <hex>,
@@ -16,6 +16,7 @@ class LineBasicMaterial(Material):
 
         super().__init__()
 
+
         self.type = 'LineBasicMaterial'
 
         self.color =  Color( 0xffffff )
@@ -23,6 +24,12 @@ class LineBasicMaterial(Material):
         self.linewidth = 1
         self.linecap = 'round'
         self.linejoin = 'round'
+
+        if not isinstance(parameters, dict):
+            parameters = parameters.__dict__
+            
+        parameters = parameters.copy()
+        parameters.update(kwargs)
 
         self.setValues( parameters )
 

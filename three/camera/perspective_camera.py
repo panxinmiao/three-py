@@ -20,8 +20,8 @@ class PerspectiveCamera(Camera):
         self.aspect = aspect
         self.view = None
 
-        self.filmGauge = 35;	# width of the film (default in millimeters)
-        self.filmOffset = 0;	# horizontal film offset (same unit as gauge)
+        self.filmGauge = 35    # width of the film (default in millimeters)
+        self.filmOffset = 0    # horizontal film offset (same unit as gauge)
 
         self.updateProjectionMatrix()
 
@@ -46,9 +46,9 @@ class PerspectiveCamera(Camera):
         self.updateProjectionMatrix()
 
 
-	# /**
-	#  Calculates the focal length from the current .fov and .filmGauge.
-	#  */
+    # /**
+    #  Calculates the focal length from the current .fov and .filmGauge.
+    #  */
     def getFocalLength(self):
         vExtentSlope = math.tan( MathUtils.DEG2RAD * 0.5 * self.fov )
         return 0.5 * self.getFilmHeight() / vExtentSlope

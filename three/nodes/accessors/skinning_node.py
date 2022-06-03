@@ -63,7 +63,7 @@ class SkinningNode(Node):
 
         self.updateType = NodeUpdateType.Object
 
-		#
+        #
 
         self.skinIndexNode =  attribute( 'skinIndex', 'uvec4' )
         self.skinWeightNode = attribute( 'skinWeight', 'vec4' )
@@ -76,12 +76,12 @@ class SkinningNode(Node):
     def generate( self, builder ):
 
         SkinningNode.__Skinning( {
-			'index': self.skinIndexNode,
-			'weight': self.skinWeightNode,
-			'bindMatrix': self.bindMatrixNode,
-			'bindMatrixInverse': self.bindMatrixInverseNode,
-			'boneMatrices': self.boneMatricesNode
-		}, builder )
+            'index': self.skinIndexNode,
+            'weight': self.skinWeightNode,
+            'bindMatrix': self.bindMatrixNode,
+            'bindMatrixInverse': self.bindMatrixInverseNode,
+            'boneMatrices': self.boneMatricesNode
+        }, builder )
 
 
     def update(self, *args):

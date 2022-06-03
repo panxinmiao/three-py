@@ -18,6 +18,20 @@ class Node(NoneAttribute):
         self.id = _nodeId
         _nodeId += 1
 
+    def getChildren(self):
+        children = []
+        for property in self.__dict__:
+            object = self.__dict__[property]
+            if isinstance(object, list):
+                for child in object:
+                    if child and isinstance(child, Node):
+                        children.append(child)
+
+            elif object and isinstance(object, Node):
+                children.append(object)
+
+        return children
+
     def getHash(self, *args):       # ( builder )
         return str(self.uuid)
 
@@ -26,37 +40,47 @@ class Node(NoneAttribute):
 
     def getNodeType(self, *args):  # ( builder )s
         return self.nodeType
+    
+    def getConstructHash(self, *args ):
+        return str(self.uuid)
 
     def getReference(self, builder):
         hash = self.getHash(builder)
         nodeFromHash = builder.getNodeFromHash(hash)
         return nodeFromHash or self
-    
-    def update(self, *args):  # ( builder )
-        warnings.warn( 'Abstract function.' )
 
+    def construct(self, builder):
+        nodeProperties = builder.getNodeProperties(self)
 
-    def generate(self, *args):  # ( builder )
-        warnings.warn( 'Abstract function.' )
+        for childNode in self.getChildren():
+            nodeProperties['_node' + str(childNode.id)] = childNode
 
+        # return a outputNode if exists
+        return None
 
     def analyze( self, builder:'NodeBuilder' ):
-        refNode = self.getReference(builder)
-
-        if self != refNode:
-            return refNode.analyze(builder)
-
-        nodeData = builder.getDataFromNode( self )
+        # refNode = self.getReference(builder)
+        nodeData = builder.getDataFromNode(self)
         nodeData.dependenciesCount = 1 if nodeData.dependenciesCount is None else nodeData.dependenciesCount + 1
 
-        nodeKeys = getNodesKeys( self )
+        if nodeData.dependenciesCount == 1:
+            # node flow children
+            nodeProperties = builder.getNodeProperties(self)
+            for childNode in nodeProperties.values():
+                if childNode and isinstance(childNode, Node):
+                    childNode.build(builder)
 
-        for property in nodeKeys:
-            self.__dict__[ property ].analyze( builder )
+    def generate(self, builder):
+        outputNode = builder.getNodeProperties(self).outputNode
 
+        if outputNode and outputNode.isNode:
+            type = self.getNodeType(builder)
+            return outputNode.build(builder, type)
+
+    def update(self, *args):  # ( builder )
+        warnings.warn('Abstract function.')
 
     def build( self, builder:'NodeBuilder', output = None ):
-
         refNode = self.getReference(builder)
 
         if self != refNode:
@@ -65,27 +89,49 @@ class Node(NoneAttribute):
         builder.addNode( self )
         builder.addStack( self )
 
-        nodeData = builder.getDataFromNode(self)
-        isGenerateOnce = self.generate.__code__.co_argcount == 2
+        '''
+        expected return:
+            - "construct"    -> Node
+            - "analyze"      -> null
+            - "generate"     -> String
+        '''
 
-        snippet = None
+        result = None
+        buildStage = builder.getBuildStage()
 
-        if isGenerateOnce:
-            type = self.getNodeType( builder )
-            snippet = nodeData.snippet
+        if buildStage == 'construct':
+            properties = builder.getNodeProperties(self)
+            # nodeData = builder.getDataFromNode(self)
 
-            if snippet == None:
-                snippet = self.generate( builder ) or ''
-                nodeData.snippet = snippet
+            #TODO make sure inited
+            if properties.initied != True:
+                properties.initied = True
+                properties["outputNode"] = self.construct(builder)
+                for childNode in properties.values():
+                    if childNode and isinstance(childNode, Node):
+                        childNode.build(builder)
 
-            snippet = builder.format( snippet, type, output )
+        elif buildStage == 'analyze':
+            self.analyze(builder)
 
-        else:
-            snippet = self.generate( builder, output ) or ''
+        elif buildStage == 'generate':
+            isGenerateOnce = self.generate.__code__.co_argcount == 2
+            if isGenerateOnce:
+                type = self.getNodeType(builder)
+                nodeData = builder.getDataFromNode(self)
+                result = nodeData.snippet
+
+                if result is None:
+                    result = self.generate(builder) or ''
+                    nodeData.snippet = result
+                
+                result = builder.format(result, type, output)
+            else:
+                result = self.generate(builder, output) or ''
 
         builder.removeStack( self )
 
-        return snippet
+        return result
 
     
     def serialize( self, json ):
