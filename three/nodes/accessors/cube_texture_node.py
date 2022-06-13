@@ -13,7 +13,7 @@ class CubeTextureNode(TextureNode):
         return 'cubeTexture'
 
     def getConstructHash(self, builder):
-        return f"{ self.uuid }-{ builder.context.environmentContext.uuid if builder.context.environmentContext else '' }"
+        return f"{ self.uuid } / { builder.context.environmentContext.uuid if builder.context.environmentContext else '' }"
 
     def construct(self, builder):
         properties = builder.getNodeProperties(self)
@@ -51,7 +51,7 @@ class CubeTextureNode(TextureNode):
 
             snippet = nodeData.snippet
 
-            if builder.context.tempRead == False or snippet is None:
+            if snippet is None or builder.context.tempRead == False:
                 uvSnippet = uvNode.build(builder, 'vec3')
                 
                 if levelNode:

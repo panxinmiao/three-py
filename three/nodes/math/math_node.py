@@ -38,7 +38,8 @@ class MathNode(TempNode):
     ROUND = 'round'
 
     # 2 inputs
-
+    
+    ATAN2 = 'atan2'
     MIN = 'min'
     MAX = 'max'
     MOD = 'mod'

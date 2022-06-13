@@ -223,6 +223,7 @@ dFdy = nodeProxy( MathNode, MathNode.DFDY )
 saturate = nodeProxy( MathNode, MathNode.SATURATE )
 round = nodeProxy( MathNode, MathNode.ROUND )
 
+atan2 = nodeProxy(MathNode, MathNode.ATAN2)
 min = nodeProxy(MathNode, MathNode.MIN)
 max = nodeProxy(MathNode, MathNode.MAX)
 mod = nodeProxy(MathNode, MathNode.MOD)
