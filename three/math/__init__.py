@@ -19,3 +19,4 @@ from .spherical import Spherical
 from .sphere import Sphere
 from .color import Color
 from .ray import Ray
+from .triangle import Triangle

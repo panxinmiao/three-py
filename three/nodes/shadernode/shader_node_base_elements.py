@@ -25,6 +25,7 @@ from ..accessors.uv_node import UVNode
 from ..accessors.reference_node import ReferenceNode
 from ..accessors.material_reference_node import MaterialReferenceNode
 from ..accessors.point_uv_node import PointUVNode
+from ..accessors.userdata_node import UserDataNode
 
 # display
 from ..display.front_facing_node import FrontFacingNode
@@ -125,6 +126,7 @@ materialOpacity = nodeImmutable(MaterialNode, MaterialNode.OPACITY)
 # materialSpecular = nodeImmutable(MaterialNode, MaterialNode.SPECULAR)
 materialRoughness = nodeImmutable(MaterialNode, MaterialNode.ROUGHNESS)
 materialMetalness = nodeImmutable(MaterialNode, MaterialNode.METALNESS)
+materialRotation = nodeImmutable(MaterialNode, MaterialNode.ROTATION)
 
 diffuseColor = nodeImmutable(PropertyNode, 'DiffuseColor', 'vec4')
 roughness = nodeImmutable(PropertyNode, 'Roughness', 'float')
@@ -132,8 +134,9 @@ metalness = nodeImmutable(PropertyNode, 'Metalness', 'float')
 alphaTest = nodeImmutable(PropertyNode, 'AlphaTest', 'float')
 specularColor = nodeImmutable(PropertyNode, 'SpecularColor', 'color')
 
-reference = lambda name, nodeOrType, object: nodeObject(ReferenceNode(name, getConstNodeType(nodeOrType), object))
-materialReference = lambda name, nodeOrType, material: nodeObject(MaterialReferenceNode(name, getConstNodeType(nodeOrType), material))
+reference = lambda name, nodeOrType, object=None: nodeObject(ReferenceNode(name, getConstNodeType(nodeOrType), object))
+materialReference = lambda name, nodeOrType, material=None: nodeObject(MaterialReferenceNode(name, getConstNodeType(nodeOrType), material))
+userData = lambda name, inputType, userData=None: nodeObject(UserDataNode(name, inputType, userData))
 
 modelViewProjection = nodeProxy(ModelViewProjectionNode)
 

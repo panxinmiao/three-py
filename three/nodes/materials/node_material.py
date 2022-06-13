@@ -4,7 +4,7 @@ from ..core.expression_node import ExpressionNode
 from ..core.attribute_node import AttributeNode
 
 from ..shadernode.shader_node_elements import (
-    float, vec4,
+    float, vec3, vec4,
     assign, label, mul, bypass,
     positionLocal, skinning, instance, modelViewProjection, lightingContext, colorSpace,
     materialAlphaTest, materialColor, materialOpacity)
@@ -15,8 +15,11 @@ class NodeMaterial(ShaderMaterial):
         self.lights = True
 
     def build( self, builder ):
+
+        self.generatePosition(builder)
+
         lightsNode = self.lightsNode
-        diffuseColorNode = self.generateMain( builder )['diffuseColorNode']
+        diffuseColorNode = self.generateDiffuseColor( builder )['diffuseColorNode']
 
         outgoingLightNode = self.generateLight( builder, { 'diffuseColorNode':diffuseColorNode, 'lightsNode':lightsNode } )
 
@@ -25,8 +28,7 @@ class NodeMaterial(ShaderMaterial):
     def customProgramCacheKey(self):
         return self.uuid + '-' + str(self.version)
 
-
-    def generateMain( self, builder ):
+    def generatePosition(self, builder):
 
         object = builder.object
 
@@ -48,6 +50,8 @@ class NodeMaterial(ShaderMaterial):
         builder.context.vertex = vertex
 
         builder.addFlow( 'vertex', modelViewProjection() )
+
+    def generateDiffuseColor(self, builder):
 
         # < FRAGMENT STAGE >
         if not self.colorNode and self.vertexColors == True:
@@ -110,7 +114,7 @@ class NodeMaterial(ShaderMaterial):
 
         # FOG
         if builder.fogNode:
-            outputNode = builder.fogNode.mix( outputNode )
+            outputNode = vec4(vec3(builder.fogNode.mix(outputNode)), outputNode.w)
 
         # RESULT
         builder.addFlow( 'fragment', label( outputNode, 'Output' ) )

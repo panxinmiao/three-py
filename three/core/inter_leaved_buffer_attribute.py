@@ -2,7 +2,6 @@
 from ..structure import NoneAttribute
 from .buffer_attribute import BufferAttribute
 from .inter_leaved_buffer import InterleavedBuffer
-import copy
 
 class InterleavedBufferAttribute(NoneAttribute):
 
@@ -48,7 +47,7 @@ class InterleavedBufferAttribute(NoneAttribute):
                 for j in range(self.itemSize):
                     array.append(self.data.array[ index + j ])
 
-            return BufferAttribute( copy.copy(self.data.array), self.itemSize, self.normalized )
+            return BufferAttribute( self.data.array.copy(), self.itemSize, self.normalized )
 
         else:
             if not data.interleavedBuffers:

@@ -11,6 +11,7 @@ class MaterialNode(Node):
     ROUGHNESS = 'roughness'
     METALNESS = 'metalness'
     EMISSIVE = 'emissive'
+    ROTATION = 'rotation'
 
     def __init__(self, scope = COLOR) -> None:
         super().__init__()
@@ -24,7 +25,7 @@ class MaterialNode(Node):
         if scope == MaterialNode.COLOR:
             return 'vec4' if material.map else 'vec3'
 
-        elif scope == MaterialNode.OPACITY:
+        elif scope == MaterialNode.OPACITY or scope == MaterialNode.ROTATION:
             return 'float'
 
         elif scope == MaterialNode.EMISSIVE:

@@ -4,6 +4,7 @@ from .mesh_basic_node_material import MeshBasicNodeMaterial
 from .mesh_standard_node_material import MeshStandardNodeMaterial
 from .mesh_normal_node_material import MeshNormalNodeMaterial
 from .points_node_material import PointsNodeMaterial
+from .sprite_node_material import SpriteNodeMaterial
 
 # __all__ = [ 
 #     'MeshBasicNodeMaterial', 'MeshStandardNodeMaterial', 'PointsNodeMaterial', 'LineBasicNodeMaterial'
@@ -15,8 +16,8 @@ materialLib = {
     'MeshBasicNodeMaterial': MeshBasicNodeMaterial,
     'MeshStandardNodeMaterial': MeshStandardNodeMaterial,
     'PointsNodeMaterial': PointsNodeMaterial,
-    'MeshNormalNodeMaterial': MeshNormalNodeMaterial
-
+    'MeshNormalNodeMaterial': MeshNormalNodeMaterial,
+    'SpriteNodeMaterial': SpriteNodeMaterial,
 }
 
 def fromType( type ):

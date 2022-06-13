@@ -13,6 +13,7 @@ from .node_keywords import NodeKeywords
 
 defaultShaderStages = ['fragment', 'vertex']
 shaderStages = [*defaultShaderStages, 'compute']
+vector = ['x', 'y', 'z', 'w']
 
 typeFromLength = {
     1: "float",

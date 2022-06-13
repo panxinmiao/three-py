@@ -275,10 +275,6 @@ class BufferAttribute(NoneAttribute):
 
         return self
 
-    def onUpload( self, callback ):
-        self.onUploadCallback = callback
-        return self
-
     def clone(self):
         return self.__class__( self.array, self.itemSize ).copy( self )
 

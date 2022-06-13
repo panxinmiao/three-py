@@ -47,9 +47,12 @@ class MeshStandardNodeMaterial(NodeMaterial):
         self.setValues( parameters )
 
     def build( self, builder ):
-        main = self.generateMain( builder )
-        colorNode = main['colorNode']
-        diffuseColorNode = main['diffuseColorNode']
+        self.generatePosition(builder)
+
+        diffuseColor = self.generateDiffuseColor(builder)
+
+        colorNode = diffuseColor['colorNode']
+        diffuseColorNode = diffuseColor['diffuseColorNode']
 
         envNode = self.envNode or builder.scene.environmentNode
         diffuseColorNode = self.generateStandardMaterial( builder, { 'colorNode': colorNode, 'diffuseColorNode': diffuseColorNode } )
