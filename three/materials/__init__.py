@@ -7,3 +7,4 @@ from .mesh_normal_material import MeshNormalMaterial
 from .line_basic_material import LineBasicMaterial
 from .points_material import PointsMaterial
 from .shader_material import ShaderMaterial
+from .sprite_material import SpriteMaterial

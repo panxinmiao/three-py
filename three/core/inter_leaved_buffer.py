@@ -31,6 +31,14 @@ class InterleavedBuffer(NoneAttribute):
         if value:
             self.version += 1
 
+    def onUploadCallback(self):
+        pass
+
+    def onUpload(self, callback):
+        self.onUploadCallback = callback
+        return self
+
+
     def setUsage( self, value ):
         self.usage = value
         return self

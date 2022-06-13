@@ -8,3 +8,4 @@ from .line import Line
 from .line_segments import LineSegments
 from .points import Points
 from .instanced_mesh import InstancedMesh
+from .sprite import Sprite

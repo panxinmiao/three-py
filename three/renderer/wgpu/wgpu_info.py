@@ -23,7 +23,7 @@ class WgpuInfo:
 
         self.render.drawCalls += 1
 
-        if object.isMesh:
+        if object.isMesh or object.isSprite:
             self.render.triangles += instanceCount * ( count / 3 )
 
         elif object.isPoints:

@@ -46,7 +46,7 @@ class WgpuRenderPipeline():
 
             vertexBuffers.append( {
                 'array_stride': attribute.arrayStride,
-                'attributes': [ { 'shader_location': attribute.slot, 'offset': 0, 'format': attribute.format } ],
+                'attributes': [{'shader_location': attribute.slot, 'offset': attribute.offset, 'format': attribute.format}],
                 'step_mode': stepMode
             } )
 
@@ -126,22 +126,6 @@ class WgpuRenderPipeline():
                 'count': self._sampleCount
             }
         )
-
-
-    def _getArrayStride( self, type, bytesPerElement ):
-
-        # @TODO: This code is GLSL specific. We need to update when we switch to WGSL.
-
-        if type == 'float' or type == 'int' or type == 'uint':
-             return bytesPerElement
-        if type == 'vec2' or type == 'ivec2' or type == 'uvec2':
-             return bytesPerElement * 2
-        if type == 'vec3' or type == 'ivec3' or type == 'uvec3':
-            return bytesPerElement * 3
-        if type == 'vec4' or type == 'ivec4' or type == 'uvec4':
-            return bytesPerElement * 4
-
-        #console.error( 'THREE.WebGPURenderer: Shader variable type not supported yet.', type )
 
     def _getAlphaBlend( self, material ):
         blending = material.blending
@@ -370,7 +354,7 @@ class WgpuRenderPipeline():
 
     
     def _getPrimitiveTopology( self, object ):
-        if object.isMesh:
+        if object.isMesh or object.isSprite:
             return GPUPrimitiveTopology.TriangleList
         elif object.isPoints:
             return GPUPrimitiveTopology.PointList
@@ -529,14 +513,23 @@ class WgpuRenderPipeline():
             type = nodeAttribute.type
 
             geometryAttribute = geometry.getAttribute( name )
-            bytesPerElement = geometryAttribute.array.bytes_per_element if geometryAttribute else 4
+            bytesPerElement = geometryAttribute.array.bytes_per_element
 
-            arrayStride = self._getArrayStride( type, bytesPerElement )
+            # arrayStride = self._getArrayStride( type, bytesPerElement )
             format = self._getVertexFormat( type, bytesPerElement )
+
+            arrayStride = geometryAttribute.itemSize * bytesPerElement
+            offset = 0
+
+            if geometryAttribute.isInterleavedBufferAttribute:
+                # @TODO: It can be optimized for "vertexBuffers" on RenderPipeline
+                arrayStride = geometryAttribute.data.stride * bytesPerElement
+                offset = geometryAttribute.offset * bytesPerElement
 
             attributes.append( Dict({
                 'name':name,
                 'arrayStride':arrayStride,
+                'offset':offset,
                 'format':format,
                 'slot':slot,
             }) )

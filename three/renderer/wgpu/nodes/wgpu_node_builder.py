@@ -76,12 +76,13 @@ fn mod( x : f32, y : f32 ) -> f32 {
     return x - y * floor( x / y );
 }
 ''' ),
-#     'smoothstep':  CodeNode( '''
-# fn smoothstep( low : f32, high : f32, x : f32 ) -> f32 {
-#     let t = clamp( ( x - low ) / ( high - low ), 0.0, 1.0 );
-#     return t * t * ( 3.0 - 2.0 * t );
-# }
-# ''' ),
+    # delete when update wgpu-core
+    'smoothstep':  CodeNode( '''
+fn smoothstep( low : f32, high : f32, x : f32 ) -> f32 {
+    let t = clamp( ( x - low ) / ( high - low ), 0.0, 1.0 );
+    return t * t * ( 3.0 - 2.0 * t );
+}
+''' ),
     'repeatWrapping': CodeNode( '''
 fn repeatWrapping( uv : vec2<f32>, dimension : vec2<i32> ) -> vec2<i32> {
     let uvScaled = vec2<i32>( uv * vec2<f32>( dimension ) );
@@ -214,7 +215,7 @@ class WgpuNodeBuilder(NodeBuilder):
                     texture = WgpuNodeSampledCubeTexture( uniformNode.name, uniformNode.node )
 
                 # add first textures in sequence and group for last
-                lastBinding = bindings[ -1 ]
+                lastBinding = bindings[-1] if bindings else None
                 index = len(bindings)-1 if (lastBinding and lastBinding.isUniformsGroup) else len(bindings)
 
                 if shaderStage == 'fragment':
