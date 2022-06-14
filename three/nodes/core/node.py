@@ -70,12 +70,11 @@ class Node(NoneAttribute):
                 if childNode and isinstance(childNode, Node):
                     childNode.build(builder)
 
-    def generate(self, builder):
+    def generate(self, builder, output):
         outputNode = builder.getNodeProperties(self).outputNode
 
         if outputNode and outputNode.isNode:
-            type = self.getNodeType(builder)
-            return outputNode.build(builder, type)
+            return outputNode.build(builder, output)
 
     def update(self, *args):  # ( builder )
         warnings.warn('Abstract function.')
@@ -101,11 +100,9 @@ class Node(NoneAttribute):
 
         if buildStage == 'construct':
             properties = builder.getNodeProperties(self)
-            # nodeData = builder.getDataFromNode(self)
 
-            #TODO make sure inited
-            if properties.initied != True:
-                properties.initied = True
+            if properties.initialized != True or builder.context.tempRead == False:
+                properties.initialized = True
                 properties["outputNode"] = self.construct(builder)
                 for childNode in properties.values():
                     if childNode and isinstance(childNode, Node):
@@ -121,7 +118,7 @@ class Node(NoneAttribute):
                 nodeData = builder.getDataFromNode(self)
                 result = nodeData.snippet
 
-                if result is None:
+                if result is None:  # or builder.context.tempRead == False
                     result = self.generate(builder) or ''
                     nodeData.snippet = result
                 

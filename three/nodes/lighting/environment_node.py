@@ -30,6 +30,8 @@ class EnvironmentNode(LightingNode):
 
     def construct(self, builder):
         envNode = self.envNode
+        properties = builder.getNodeProperties(self)
+
         flipNormalWorld = vec3(negate(transformedNormalWorld.x), transformedNormalWorld.yz)
 
         reflectVec = reflect(negate(positionViewDirection), transformedNormalView)
@@ -60,3 +62,6 @@ class EnvironmentNode(LightingNode):
         builder.context.radiance.add(radianceContext)
 
         builder.context.iblIrradiance.add(mul(math.pi, irradianceContext))
+
+        properties.radianceContext = radianceContext
+        properties.irradianceContext = irradianceContext

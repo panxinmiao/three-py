@@ -5,6 +5,7 @@ from ..accessors.reflect_node import ReflectNode
 from ..accessors.skinning_node import SkinningNode
 
 # display
+from ..display.color_adjustment_node import ColorAdjustmentNode
 from ..display.color_space_node import ColorSpaceNode
 from ..display.normal_map_node import NormalMapNode
 from ..display.tone_mapping_node import ToneMappingNode
@@ -40,6 +41,10 @@ reflectCube = nodeImmutable(ReflectNode, ReflectNode.CUBE)
 skinning = nodeProxy(SkinningNode)
 
 # diaplay
+
+saturation = nodeProxy(ColorAdjustmentNode, ColorAdjustmentNode.SATURATION)
+vibrance = nodeProxy(ColorAdjustmentNode, ColorAdjustmentNode.VIBRANCE)
+hue = nodeProxy(ColorAdjustmentNode, ColorAdjustmentNode.HUE)
 
 colorSpace = lambda node, encoding : nodeObject( ColorSpaceNode( None, nodeObject( node ) ).fromEncoding( encoding ) )
 normalMap = nodeProxy(NormalMapNode)

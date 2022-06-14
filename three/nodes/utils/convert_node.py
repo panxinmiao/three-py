@@ -11,19 +11,23 @@ class ConvertNode(Node):
     def getNodeType( self, *args):
         return self.convertTo
 
-    def generate( self, builder ):
+    def generate( self, builder, output ):
         convertTo = self.convertTo
         node = self.node
+        type = self.getNodeType(builder)
 
         # convertToSnippet = builder.getType( convertTo )
         # nodeSnippet = self.node.build( builder, convertTo )
+        snippet = None
 
         if builder.isReference( convertTo ) == False:
             # convertToSnippet = builder.getType( convertTo )
             nodeSnippet = node.build( builder, convertTo )
 
             #return f'{ builder.getVectorType( convertToSnippet ) }( { nodeSnippet } )'
-            return builder.format( nodeSnippet, self.getNodeType( builder ), convertTo )
+            snippet = builder.format(nodeSnippet, type, convertTo)
         else:
-            return node.build( builder, convertTo )
+            snippet = node.build(builder, convertTo)
+
+        return builder.format(snippet, type, output)
 

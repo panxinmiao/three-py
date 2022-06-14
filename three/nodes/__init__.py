@@ -45,11 +45,13 @@ from .accessors.reference_node import ReferenceNode
 from .accessors.skinning_node import SkinningNode 
 from .accessors.texture_node import TextureNode 
 from .accessors.uv_node import UVNode
+from .accessors.userdata_node import UserDataNode
 
 # gpgpu
 from .gpgpu.compute_node import ComputeNode
 
 # display
+from .display.color_adjustment_node import ColorAdjustmentNode
 from .display.color_space_node import ColorSpaceNode 
 from .display.front_facing_node import FrontFacingNode
 from .display.normal_map_node import NormalMapNode 
