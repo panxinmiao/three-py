@@ -1,30 +1,94 @@
-from json import load
 import imageio
+import numpy as np
 import three
 from pathlib import Path
 
-class TextureLoader:
+_memoryview_format = {
+    'e': three.HalfFloatType,
+    'f': three.FloatType,
+    'B': three.UnsignedByteType,
+    'b': three.ByteType,
+    'H': three.UnsignedShortType,
+    'h': three.ShortType,
+    'L': three.UnsignedIntType,
+    'l': three.IntType,
+}
 
-    def __init__(self, path = None):
-        self.path = path or '.'
+class Loader:
+    # TODO cache
+    def __init__(self, path=''):
+        self.path = path
 
     def load(self, name):
-        data = imageio.imread(Path(self.path) / name)
+        raise NotImplementedError
+
+    def parse(self):
+        pass
+
+
+class ImageLoader(Loader):
+    def load(self, name):
+        data = imageio.imread(Path(self.path) / name, pilmode='RGBA')
 
         image = three.Image(memoryview(
             data), width=data.shape[1], height=data.shape[0])
 
-        tex = three.Texture(image)
-        tex.needsUpdate = True
-
-        return tex
-
-setattr(three, 'TextureLoader', TextureLoader)
+        return image
 
 
-if __name__ == '__main__':
-    loader = TextureLoader(Path(__file__).parent.parent / "textures")
+class RGBMLoader(ImageLoader):
 
-    tex = loader.load('sprite1.png')
+    def __init__(self, path=''):
+        super().__init__(path)
+        self.maxRange = 7
 
-    print(tex)
+    def setMaxRange(self, value):
+        self.maxRange = value
+        return self
+
+    def load(self, name):
+        data:np.ndarray = imageio.imread(Path(self.path) / name, pilmode='RGBA')
+        data = data.astype(np.float32)/255
+        data = data * data[:, :, 3:4]*self.maxRange
+        data[:, :, 3] = 1
+        image = three.Image(memoryview(
+            data), width=data.shape[1], height=data.shape[0])
+
+        return image
+
+
+class TextureLoader(Loader):
+    def __init__(self, path=''):
+        super().__init__(path)
+        self._imageLoader = ImageLoader(path)
+
+    @property
+    def imageLoader(self):
+        return self._imageLoader
+
+    @imageLoader.setter
+    def imageLoader(self, value: ImageLoader):
+        self._imageLoader = value
+        self._imageLoader.path = self._imageLoader.path or self.path
+
+    def load(self, name):
+        image = self.imageLoader.load(name)
+        texture = three.Texture(image)
+        texture.needsUpdate = True
+        texture.type = _memoryview_format.get(image.data.format)
+        return texture
+
+
+class CubeTextureLoader(TextureLoader):
+
+    def load(self, urls):
+        images = []
+        for url in urls:
+            image = self.imageLoader.load(url)
+            images.append(image)
+
+        cubeTexture = three.CubeTexture(images)
+        cubeTexture.type = _memoryview_format.get(image.data.format)
+        cubeTexture.needsUpdate = True
+
+        return cubeTexture

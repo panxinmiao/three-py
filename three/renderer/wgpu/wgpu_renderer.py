@@ -260,7 +260,7 @@ class WgpuRenderer(NoneAttribute):
             
             depthStencilAttachment.view = self._depthBuffer.create_view()
 
-        self._background.update( scene )
+        self._background.update( self._currentRenderList, scene )
         # start render pass
         device = self._device
         cmd_encoder:wgpu.GPUCommandEncoder = device.create_command_encoder()
@@ -583,6 +583,7 @@ class WgpuRenderer(NoneAttribute):
             # the material from the renderItem object and pass it with its group data to _renderObject().
             object:'three.Object3D' = renderItem.object
 
+            object.onBeforeRender(self, scene, camera, renderItem.geometry, renderItem.material, renderItem.group)
 
             object.modelViewMatrix.multiplyMatrices( camera.matrixWorldInverse, object.matrixWorld )
 

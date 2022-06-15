@@ -95,9 +95,9 @@ class WgpuRenderList:
         renderItem = self.getNextRenderItem( object, geometry, material, groupOrder, z, group )
 
         if material.transparent:
-            self.transparent.remove( renderItem )
+            self.transparent.insert(0, renderItem)
         else:
-            self.opaque.remove( renderItem )
+            self.opaque.insert(0, renderItem)
 
     def sort( self, customOpaqueSort = None, customTransparentSort = None ):
         

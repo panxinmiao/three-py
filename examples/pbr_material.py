@@ -6,33 +6,14 @@ import trimesh
 from pathlib import Path
 from wgpu.gui.auto import WgpuCanvas, run
 
+from loaders.texture_loader import CubeTextureLoader
 
-def load_rgbm16_cube_texture(path, urls):
-    def rgbm_to_rgba(data: np.ndarray):
-        data = data.astype(np.float32)/255
-        data = data * data[:, :, 3:4]*16
-        data[:, :, 3] = 1
-        return data
-
-
-    images = []
-    for url in urls:
-        data = imageio.imread(path / url, format='png')
-        data = rgbm_to_rgba(data)
-        image = three.Image(memoryview(
-            data), width=data.shape[1], height=data.shape[0])
-        images.append(image)
-
-
-    cubeTexture = three.CubeTexture(images)
-    cubeTexture.type = three.FloatType
-    cubeTexture.generateMipmaps = True
-    cubeTexture.minFilter = three.LinearMipmapLinearFilter
-    cubeTexture.format = three.RGBAFormat
-    cubeTexture.needsUpdate = True
-
-    return cubeTexture
-
+"""
+TODO: Refactor some loader utilities to be more generic:
+    - ImageLoader
+    - TextureLoader
+    - GLTFLoader
+"""
 
 def load_gltf(path):
 
@@ -127,18 +108,29 @@ def init_scene():
     render.init()
 
     camera = three.PerspectiveCamera(45, 640 / 480, 0.25, 20)
-    camera.position.set(- 1.8, 0.6, 2.7)
+    camera.position.set(0, 0, 2.7)
 
     scene = three.Scene()
 
-    env_text_path = Path(__file__).parent / "textures" / "cube" / "pisaRGBM16"
-    env_text_urls = ['px.png', 'nx.png','py.png', 'ny.png', 'pz.png', 'nz.png']
+    env_text_path = Path(__file__).parent / "textures" / "cube" / "Park2"
+    env_text_urls = ['posx.jpg', 'negx.jpg',
+                     'posy.jpg', 'negy.jpg', 
+                     'posz.jpg', 'negz.jpg']
 
-    env_texture = load_rgbm16_cube_texture(env_text_path, env_text_urls)
+    # env_text_path = Path(__file__).parent / "textures" / "cube" / "pisaRGBM16"
+    # env_text_urls = ['px.png', 'nx.png',
+    #                  'py.png', 'ny.png',
+    #                  'pz.png', 'nz.png']
+
+    loader = CubeTextureLoader(env_text_path)
+    # loader.imageLoader = RGBMLoader().setMaxRange(16)
+
+    env_texture = loader.load(env_text_urls)
+    env_texture.generateMipmaps = True
 
     scene.environmentNode = three.nodes.CubeTextureNode(env_texture)
 
-    # scene.background = env_texture
+    scene.backgroundNode = scene.environmentNode
 
     gltf_path = Path(__file__).parent / "models" / "DamagedHelmet" / "glTF" / "DamagedHelmet.gltf"
     meshes = load_gltf(gltf_path)

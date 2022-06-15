@@ -3,6 +3,8 @@ import three
 from pathlib import Path
 from wgpu.gui.auto import WgpuCanvas, run
 
+from loaders.texture_loader import TextureLoader
+
 canvas = WgpuCanvas(size=(640, 480), max_fps=60, title="wgpu_renderer")
 
 render = three.WgpuRenderer(canvas, antialias = True)
@@ -15,15 +17,12 @@ scene = three.Scene()
 
 geometry = three.BoxGeometry(10, 10, 10)
 
-data = imageio.imread(Path(__file__).parent / "textures" / "crate.gif")
+loader = TextureLoader(Path(__file__).parent / "textures" )
 
-image = three.Image(memoryview(data), width=data.shape[1], height=data.shape[0])
-
-tex = three.Texture(image)
-tex.needsUpdate = True
+texture = loader.load("crate.gif")
 
 material = three.MeshBasicMaterial()
-material.map = tex
+material.map = texture
 
 mesh = three.Mesh(geometry, material)
 

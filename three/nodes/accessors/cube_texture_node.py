@@ -6,8 +6,11 @@ from .reflect_node import ReflectNode
 class CubeTextureNode(TextureNode):
 
     def __init__(self, value, uvNode=None, levelNode=None) -> None:
-        uvNode = uvNode or ReflectNode()
+
         super().__init__(value, uvNode, levelNode)
+
+        # Important: We don't need auto to creat a default UvNode (auto behavior in TextureNode.__init__) for CubeTextureNode.
+        self.uvNode = uvNode 
 
     def getInputType(self, *args):
         return 'cubeTexture'
