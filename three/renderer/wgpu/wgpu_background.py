@@ -1,5 +1,10 @@
 from warnings import warn
 from ...math import Color
+from ...objects import Mesh
+from ...geometries import BoxGeometry
+from ...nodes.shadernode.shader_node_base_elements import context, transformDirection, positionWorld, modelWorldMatrix
+from ...nodes.materials.mesh_basic_node_material import MeshBasicNodeMaterial
+from ...constants import BackSide
 from .constants import GPULoadOp, GPUStoreOp
 
 class WgpuBackground:
@@ -9,14 +14,15 @@ class WgpuBackground:
 
     def __init__( self, renderer) -> None:
         self.renderer = renderer
+        self.boxMesh = None
         self.forceClear = False
 
     def clear(self):
         self.forceClear = True
 
-    def update( self, scene ):
+    def update( self, renderList, scene ):
         renderer = self.renderer
-        background = scene.background if scene.isScene else None
+        background = scene.backgroundNode or scene.background if scene.isScene else None
         forceClear = self.forceClear
         
         if background is None:
@@ -30,6 +36,34 @@ class WgpuBackground:
             WgpuBackground._clearAlpha = 1
             forceClear = True
 
+        elif background.isNode:
+            WgpuBackground._clearColor.copy(renderer._clearColor)
+            WgpuBackground._clearAlpha = renderer._clearAlpha
+
+            boxMesh = self.boxMesh
+
+            if boxMesh is None:
+                colorNode = context(background, {
+                    'uvNode': transformDirection(positionWorld, modelWorldMatrix)
+                })
+
+                nodeMaterial = MeshBasicNodeMaterial()
+                nodeMaterial.colorNode = colorNode
+                nodeMaterial.side = BackSide
+                nodeMaterial.depthTest = False
+                nodeMaterial.depthWrite = False
+                nodeMaterial.fog = False
+
+                self.boxMesh = boxMesh = Mesh(BoxGeometry(1, 1, 1), nodeMaterial)
+
+                def _onBeforeRender(renderer, scene, camera, geometry, material, group):
+                    boxMesh.matrixWorld.copyPosition(camera.matrixWorld)
+
+                boxMesh.onBeforeRender = _onBeforeRender
+
+
+            renderList.unshift(boxMesh, boxMesh.geometry, boxMesh.material, 0, 0, None)
+            
         else:
             warn( f'THREE.WebGPURenderer: Unsupported background configuration.{background}' )
 

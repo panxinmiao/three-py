@@ -63,7 +63,6 @@ from .math.operator_node import OperatorNode
 from .math.cond_node import CondNode 
 
 # lights
-from .lighting.punctual_light_node import PunctualLightNode
 from .lighting.lights_node import LightsNode
 from .lighting.lighting_node import LightingNode
 from .lighting.lighting_context_node import LightingContextNode 
@@ -71,6 +70,8 @@ from .lighting.hemisphere_light_node import HemisphereLightNode
 from .lighting.environment_node import EnvironmentNode
 from .lighting.ao_node import AONode
 from .lighting.analytic_light_node import AnalyticLightNode
+from .lighting.punctual_light_node import PunctualLightNode
+from .lighting.directional_light_node import DirectionalLightNode
 
 # utils
 from .utils.array_element_node import ArrayElementNode 
