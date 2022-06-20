@@ -1,4 +1,3 @@
-from numpy import empty
 from .mesh import Mesh
 from ..math import Matrix4
 from ..core import InstancedBufferAttribute

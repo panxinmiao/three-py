@@ -271,10 +271,10 @@ class Quaternion(NoneAttribute):
         qbz = b._z
         qbw = b._w
 
-        self.x = qax * qbw + qaw * qbx + qay * qbz - qaz * qby
-        self.y = qay * qbw + qaw * qby + qaz * qbx - qax * qbz
-        self.z = qaz * qbw + qaw * qbz + qax * qby - qay * qbx
-        self.w = qaw * qbw - qax * qbx - qay * qby - qaz * qbz
+        self._x = qax * qbw + qaw * qbx + qay * qbz - qaz * qby
+        self._y = qay * qbw + qaw * qby + qaz * qbx - qax * qbz
+        self._z = qaz * qbw + qaw * qbz + qax * qby - qay * qbx
+        self._w = qaw * qbw - qax * qbx - qay * qby - qaz * qbz
 
         self._onChangeCallback()
 
@@ -315,7 +315,7 @@ class Quaternion(NoneAttribute):
             self._y = s * y + t * self._y
             self._z = s * z + t * self._z
             self.normalize()
-            self._onChangeCallback()
+            # self._onChangeCallback()
             return self
 
         sin_half_theta = sqr_sin_half_theta ** 0.5

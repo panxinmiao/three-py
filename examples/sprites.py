@@ -3,14 +3,14 @@ import math
 from random import random
 import three
 import three.nodes
-from three.nodes import texture, uv, mul, float, color, reference, userData
+from three.nodes import texture, uv, mul, float, color, userData
 from wgpu.gui.auto import WgpuCanvas, run
 from pathlib import Path
 
 from loaders.texture_loader import TextureLoader
 from utils.fps_recorder import FPSRecorder
 
-canvas = WgpuCanvas(size=(640, 480), title="wgpu_renderer")
+canvas = WgpuCanvas(size=(640, 480), max_fps=60, title="wgpu_renderer")
 
 render = three.WgpuRenderer(canvas, antialias=True)
 render.init()
@@ -58,9 +58,6 @@ for a in range(amount):
 scene.add(group)
 control = three.OrbitControls(camera, canvas)
 
-
-fps = FPSRecorder()
-
 def loop():
     t = time.time()
     l = len(group.children)
@@ -83,8 +80,6 @@ def loop():
     group.rotation.z = t * 1.0
 
     render.render(scene, camera)
-
-    fps.update()
 
 
 render.setAnimationLoop(loop)

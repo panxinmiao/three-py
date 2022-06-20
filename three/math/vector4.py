@@ -156,7 +156,7 @@ class Vector4(NoneAttribute):
         return self
 
 
-    def apply_matrix4(self, m: "three.Matrix4") -> "Vector4":
+    def applyMatrix4(self, m: "three.Matrix4") -> "Vector4":
         x = self.x
         y = self.y
         z = self.z
@@ -438,8 +438,3 @@ class Vector4(NoneAttribute):
     @property
     def isVector4(self):
         return True
-
-    applyMatrix4 = apply_matrix4
-
-#from .matrix4 import Matrix4
-#Matrix4_cls = "Matrix4"

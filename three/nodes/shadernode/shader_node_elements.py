@@ -21,6 +21,9 @@ from ..utils.osc_node import OscNode
 from ..utils.sprite_sheet_uv_node import SpriteSheetUVNode
 from ..utils.timer_node import TimerNode
 
+# geometry
+from ..geometry.range_node import RangeNode
+
 # procedural
 from ..procedural.checker_node import CheckerNode
 
@@ -70,6 +73,10 @@ spritesheetUV = nodeProxy(SpriteSheetUVNode)
 timerLocal = lambda timeScale : nodeObject( TimerNode( TimerNode.LOCAL, timeScale ) )
 timerGlobal = lambda timeScale : nodeObject( TimerNode( TimerNode.GLOBAL, timeScale ) )
 timerDelta = lambda timeScale : nodeObject( TimerNode( TimerNode.DELTA, timeScale ) )
+
+# geometry
+
+range = lambda min, max: nodeObject( RangeNode( min, max ) )
 
 # procedural
 

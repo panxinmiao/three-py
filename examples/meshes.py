@@ -40,13 +40,11 @@ scene.add(group)
 
 control = three.OrbitControls(camera, canvas)
 
-fps = FPSRecorder()
 def loop():
     group.rotation.x += 0.01
     group.rotation.y += 0.02
     render.render(scene, camera)
 
-    fps.update()
 
 
 render.setAnimationLoop(loop)

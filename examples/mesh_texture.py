@@ -1,4 +1,3 @@
-import imageio
 import three
 from pathlib import Path
 from wgpu.gui.auto import WgpuCanvas, run

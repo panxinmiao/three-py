@@ -582,17 +582,20 @@ class WgpuRenderer(NoneAttribute):
             # @TODO: Add support for multiple materials per object. This will require to extract
             # the material from the renderItem object and pass it with its group data to _renderObject().
             object:'three.Object3D' = renderItem.object
+            geometry:'three.Geometry' = renderItem.geometry
+            material:'three.Material' = renderItem.material
+            group:'three.Group' = renderItem.group
 
-            object.onBeforeRender(self, scene, camera, renderItem.geometry, renderItem.material, renderItem.group)
+            # object.onBeforeRender(self, scene, camera, renderItem.geometry, renderItem.material, renderItem.group)
 
-            object.modelViewMatrix.multiplyMatrices( camera.matrixWorldInverse, object.matrixWorld )
+            # object.modelViewMatrix.multiplyMatrices( camera.matrixWorldInverse, object.matrixWorld )
 
-            object.normalMatrix.getNormalMatrix( object.modelViewMatrix )
-            self._objects.update( object )
-            objectProperties = self._properties.get( object )
+            # object.normalMatrix.getNormalMatrix( object.modelViewMatrix )
+            # self._objects.update( object )
+            # objectProperties = self._properties.get( object )
 
-            objectProperties.lightsNode = lightsNode
-            objectProperties.scene = scene
+            # objectProperties.lightsNode = lightsNode
+            # objectProperties.scene = scene
 
             if camera.isArrayCamera:
                 cameras:'list[three.Camera]' = camera.cameras
@@ -605,19 +608,40 @@ class WgpuRenderer(NoneAttribute):
 
                         passEncoder.set_viewport( vp.x, vp.y, vp.width, vp.height, minDepth, maxDepth )
 
-                        self._nodes.update( object, camera2 )
-                        self._bindings.update( object )
-                        self._renderObject( object, passEncoder )
+                        # self._nodes.update( object, camera2 )
+                        # self._bindings.update( object )
+                        # self._renderObject( object, passEncoder )
+                        self._renderObject( object, scene, camera2, geometry, material, group, lightsNode, passEncoder )
 
 
             else:
-                self._nodes.update( object, camera )
-                self._bindings.update( object )
-                self._renderObject( object, passEncoder )
+                # self._nodes.update( object, camera )
+                # self._bindings.update( object )
+                # self._renderObject( object, passEncoder )
+                self._renderObject( object, scene, camera, geometry, material, group, lightsNode, passEncoder )
 
 
-    def _renderObject( self, object, passEncoder:wgpu.GPURenderPassEncoder ):
+    def _renderObject( self, object, scene, camera, geometry, material, group, lightsNode, passEncoder:wgpu.GPURenderPassEncoder ):
         info = self._info
+
+        objectProperties = self._properties.get( object )
+
+        objectProperties.lightsNode = lightsNode
+        objectProperties.scene = scene
+
+        #
+
+        object.onBeforeRender( self, scene, camera, geometry, material, group )
+
+        object.modelViewMatrix.multiplyMatrices( camera.matrixWorldInverse, object.matrixWorld )
+        object.normalMatrix.getNormalMatrix( object.modelViewMatrix )
+
+        # updates
+
+        self._nodes.update( object, camera )
+        self._bindings.update( object )
+        self._objects.update( object )
+
         # pipeline
         renderPipeline = self._renderPipelines.get( object )
 
@@ -629,7 +653,7 @@ class WgpuRenderer(NoneAttribute):
         passEncoder.set_bind_group( 0, bindGroup, [], 0, 99 )
 
         # index
-        geometry:'three.Geometry' = object.geometry
+        # geometry:'three.Geometry' = object.geometry
         index = geometry.index
 
         hasIndex = index is not None

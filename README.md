@@ -15,10 +15,18 @@ Under development, many things can change.
 ```
 pip install three-py
 ```
+Or, to get the latest from GitHub:
+```
+pip install -U https://github.com/panxinmiao/three-py/archive/main.zip
+```
 
 ## Requirements
 
 [wgpu-py](https://github.com/pygfx/wgpu-py)
+
+To run the [examples](./examples/), You probably also want to install `glwf` (or other gui backends).
+
+Please check the installation instructions of [wgpu-py](https://github.com/pygfx/wgpu-py) for details.
 
 ## Usage
 

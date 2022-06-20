@@ -1,4 +1,3 @@
-import imageio
 import numpy as np
 import three
 import three.nodes
@@ -108,7 +107,7 @@ def init_scene():
     render.init()
 
     camera = three.PerspectiveCamera(45, 640 / 480, 0.25, 20)
-    camera.position.set(0, 0, 2.7)
+    camera.position.set(- 1.8, 0.6, 2.7)
 
     scene = three.Scene()
 
