@@ -3,12 +3,10 @@ import three.nodes
 from three.nodes import *
 import time
 import math
-from PyQt5 import QtWidgets
-from wgpu.gui.qt import WgpuCanvas
+from wgpu.gui.auto import WgpuCanvas, run
 from pymeshio.pmx import reader
 from pathlib import Path
 
-app = QtWidgets.QApplication([])
 
 p = Path(__file__).parent / "models" / "miku_pmx" / "blue.pmx"
 
@@ -157,4 +155,4 @@ def loop():
 render.setAnimationLoop(loop)
 
 if __name__ == '__main__':
-    app.exec_()
+    run()
