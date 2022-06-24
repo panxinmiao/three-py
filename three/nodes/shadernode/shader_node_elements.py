@@ -1,7 +1,7 @@
 # accssors
 from ..accessors.cube_texture_node import CubeTextureNode
 from ..accessors.instance_node import InstanceNode
-from ..accessors.reflect_node import ReflectNode
+from ..accessors.reflect_vector_node import ReflectVectorNode
 from ..accessors.skinning_node import SkinningNode
 
 # display
@@ -39,8 +39,7 @@ from .shader_node_base_elements import *
 
 cubeTexture = nodeProxy( CubeTextureNode )
 instance = nodeProxy(InstanceNode)
-reflectVector = nodeImmutable(ReflectNode, ReflectNode.VECTOR)
-reflectCube = nodeImmutable(ReflectNode, ReflectNode.CUBE)
+reflectVector = nodeImmutable(ReflectVectorNode)
 skinning = nodeProxy(SkinningNode)
 
 # diaplay
