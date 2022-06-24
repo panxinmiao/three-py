@@ -162,7 +162,8 @@ class WgpuRenderer(NoneAttribute):
 
         self._renderPassDescriptor = Dict({
             'color_attachments': [ {
-                'view': None
+                'view': None,
+                'store_op': GPUStoreOp.Store
             } ],
             'depth_stencil_attachment': {
                 'view': None,

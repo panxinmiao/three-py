@@ -1,11 +1,15 @@
 from warnings import warn
 from ...math import Color
 from ...objects import Mesh
-from ...geometries import BoxGeometry
+from ...geometries import BoxGeometry, PlaneGeometry
 from ...nodes.shadernode.shader_node_base_elements import context, transformDirection, positionWorld, modelWorldMatrix
 from ...nodes.materials.mesh_basic_node_material import MeshBasicNodeMaterial
+from ...nodes.accessors.cube_texture_node import CubeTextureNode
+from ...nodes.accessors.texture_node import TextureNode
 from ...constants import BackSide
 from .constants import GPULoadOp, GPUStoreOp
+
+from ...nodes import NodeMaterial, vec2, vec4, positionLocal, UVNode, nodeObject
 
 class WgpuBackground:
 
@@ -15,6 +19,7 @@ class WgpuBackground:
     def __init__( self, renderer) -> None:
         self.renderer = renderer
         self.boxMesh = None
+        self.planeMesh = None
         self.forceClear = False
 
     def clear(self):
@@ -36,11 +41,14 @@ class WgpuBackground:
             WgpuBackground._clearAlpha = 1
             forceClear = True
 
-        elif background.isNode:
+        elif background.isCubeTextureNode or background.isCubeTexture:
             WgpuBackground._clearColor.copy(renderer._clearColor)
             WgpuBackground._clearAlpha = renderer._clearAlpha
 
             boxMesh = self.boxMesh
+
+            if background.isCubeTexture:
+                background = CubeTextureNode(background)
 
             if boxMesh is None:
                 colorNode = context(background, {
@@ -63,6 +71,28 @@ class WgpuBackground:
 
 
             renderList.unshift(boxMesh, boxMesh.geometry, boxMesh.material, 0, 0, None)
+
+        elif background.isTextureNode or background.isTexture:
+            WgpuBackground._clearColor.copy(renderer._clearColor)
+            WgpuBackground._clearAlpha = renderer._clearAlpha
+
+            planeMesh = self.planeMesh
+
+            if background.isTexture:
+                background = TextureNode(background)
+
+            if planeMesh is None:
+                uv = nodeObject(UVNode())
+                background.uvNode =  vec2(uv.x, -uv.y + 1)
+                nodeMaterial = BackgroundNodeMaterial()
+                nodeMaterial.colorNode = background
+                nodeMaterial.depthTest = False
+                nodeMaterial.depthWrite = False
+                nodeMaterial.fog = False
+
+                self.planeMesh = planeMesh = Mesh(PlaneGeometry(2, 2), nodeMaterial)
+
+            renderList.unshift(planeMesh, planeMesh.geometry, planeMesh.material, 0, 0, None)
             
         else:
             warn( f'THREE.WebGPURenderer: Unsupported background configuration.{background}' )
@@ -75,7 +105,7 @@ class WgpuBackground:
         depthStencilAttachment = renderPassDescriptor.depth_stencil_attachment
 
         if renderer.autoClear or forceClear:
-            if renderer.autoClearColor:
+            if renderer.autoClearColor or forceClear:
                 WgpuBackground._clearColor.multiplyScalar( WgpuBackground._clearAlpha )
                 colorAttachment.clear_value = (WgpuBackground._clearColor.r, WgpuBackground._clearColor.g, WgpuBackground._clearColor.b, WgpuBackground._clearAlpha)
                 colorAttachment.load_op = GPULoadOp.Clear
@@ -84,7 +114,7 @@ class WgpuBackground:
             else:
                 colorAttachment.load_op = GPULoadOp.Load
 
-            if renderer.autoClearDepth:
+            if renderer.autoClearDepth or forceClear:
                 depthStencilAttachment.depth_clear_value = renderer._clearDepth
                 depthStencilAttachment.depth_load_op = GPULoadOp.Clear
 
@@ -92,7 +122,7 @@ class WgpuBackground:
                 depthStencilAttachment.depth_load_op = GPULoadOp.Load
 
 
-            if renderer.autoClearStencil:
+            if renderer.autoClearStencil or forceClear:
                 depthStencilAttachment.stencil_clear_value = renderer._clearStencil
                 depthStencilAttachment.stencil_load_op = GPULoadOp.Clear
 
@@ -108,3 +138,19 @@ class WgpuBackground:
 
 
         self.forceClear = False
+
+
+class BackgroundNodeMaterial(NodeMaterial):
+
+    def __init__(self, parameters=None) -> None:
+        super().__init__()
+        self.lights = False
+
+    def generatePosition(self, builder):
+        # < VERTEX STAGE >
+
+        vertex = vec4(positionLocal.xy, 1.0, 1.0)
+
+        builder.context.vertex = vertex
+
+        builder.addFlow( 'vertex', vertex )

@@ -10,7 +10,7 @@ def _isSubType(cls_name:str, cls: type):
 
 class NoneAttribute:
     def __getattr__(self, name:str):
-        # TODO someway better?
+        # TODO remove this for performance
         if name.startswith('is'):
             cls_name = name[2:]
             return _isSubType(cls_name, self.__class__)

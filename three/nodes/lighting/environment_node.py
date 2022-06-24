@@ -3,7 +3,7 @@ from .lighting_node import LightingNode
 from ..core.context_node import ContextNode
 from ..utils.max_mip_level_node import MaxMipLevelNode
 from ..shadernode.shader_node import ShaderNode
-from ..shadernode.shader_node_base_elements import float, add, mul, div, log2, clamp, roughness, reflect, mix, vec3, positionViewDirection, negate, normalize, transformedNormalView, transformedNormalWorld, transformDirection, cameraViewMatrix
+from ..shadernode.shader_node_base_elements import float, add, mul, div, log2, clamp, roughness, reflect, mix, positionViewDirection, negate, normalize, transformedNormalView, transformedNormalWorld, transformDirection, cameraViewMatrix
 
 
 def __getSpecularMIPLevel(inputs, *args):
@@ -32,12 +32,12 @@ class EnvironmentNode(LightingNode):
         envNode = self.envNode
         properties = builder.getNodeProperties(self)
 
-        flipNormalWorld = vec3(negate(transformedNormalWorld.x), transformedNormalWorld.yz)
+        #flipNormalWorld = vec3(negate(transformedNormalWorld.x), transformedNormalWorld.yz)
 
         reflectVec = reflect(negate(positionViewDirection), transformedNormalView)
         reflectVec = normalize(mix(reflectVec, transformedNormalView, mul(roughness, roughness)))
         reflectVec = transformDirection(reflectVec, cameraViewMatrix)
-        reflectVec = vec3(negate(reflectVec.x), reflectVec.yz)
+        #reflectVec = vec3(negate(reflectVec.x), reflectVec.yz)
 
         # reflectVec = normalize(mix(new ReflectNode(), flipNormalWorld, mul(roughness, roughness)))
 
@@ -50,7 +50,7 @@ class EnvironmentNode(LightingNode):
 
         irradianceContext = ContextNode(envNode, {
             "tempRead": False,
-            "uvNode": flipNormalWorld,
+            "uvNode": transformedNormalWorld,
             "levelNode": float(1),
             "levelShaderNode": _getSpecularMIPLevel
         })

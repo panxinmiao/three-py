@@ -1,7 +1,7 @@
-from three.nodes.accessors.uv_node import UVNode
 from .texture_node import TextureNode
 from ..core.uniform_node import UniformNode
-from .reflect_node import ReflectNode
+from .reflect_vector_node import ReflectVectorNode
+from ..shadernode.shader_node_base_elements import negate, vec3, nodeObject
 
 class CubeTextureNode(TextureNode):
 
@@ -20,7 +20,7 @@ class CubeTextureNode(TextureNode):
 
     def construct(self, builder):
         properties = builder.getNodeProperties(self)
-        uvNode = self.uvNode or builder.context.uvNode or ReflectNode()
+        uvNode = self.uvNode or builder.context.uvNode or ReflectVectorNode()
         levelNode = self.levelNode or builder.context.levelNode
 
         if levelNode and levelNode.isNode:
@@ -55,7 +55,10 @@ class CubeTextureNode(TextureNode):
             snippet = nodeData.snippet
 
             if snippet is None or builder.context.tempRead == False:
-                uvSnippet = uvNode.build(builder, 'vec3')
+                # uvSnippet = uvNode.build(builder, 'vec3')
+                uvNodeObject = nodeObject( uvNode )
+                cubeUV = vec3( negate( uvNodeObject.x ), uvNodeObject.yz )
+                uvSnippet = cubeUV.build( builder, 'vec3' )
                 
                 if levelNode:
                     levelSnippet = levelNode.build(builder, 'float')
