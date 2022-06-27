@@ -26,6 +26,9 @@ _projScreenMatrix = Matrix4()
 _vector3 = Vector3()
 
 class WgpuRenderer(NoneAttribute):
+
+    isWgpuRenderer = True
+
     def __init__(self, canvas:'wgpu.WgpuCanvasInterface', parameters:dict={}, **kwargs) -> None:
 
         parameters = parameters.copy()

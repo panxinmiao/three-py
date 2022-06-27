@@ -5,6 +5,8 @@ from .node_builder import NodeBuilder
 
 class CodeNode(Node):
 
+    isCodeNode = True
+
     def __init__(self, code='', nodeType='code') -> None:
         super().__init__(nodeType=nodeType)
         self.code = code

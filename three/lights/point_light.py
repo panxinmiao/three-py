@@ -3,6 +3,9 @@ from .point_light_shadow import PointLightShadow
 import math
 
 class PointLight(Light):
+
+    isPointLight = True
+
     def __init__(self, color, intensity=1, distance = 0, decay = 1):
         super().__init__(color, intensity)
 

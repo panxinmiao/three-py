@@ -9,6 +9,9 @@ _vector = Vector3()
 _vector2 = Vector2()
 
 class BufferAttribute(NoneAttribute):
+
+    isBufferAttribute = True
+    
     def __init__(self, ary: TypedArray, itemSize, normalized = False) -> None:
 
         if not isinstance(ary, TypedArray):

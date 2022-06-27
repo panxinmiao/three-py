@@ -17,6 +17,8 @@ from ..shadernode.shader_node_elements import (
 defaultValues = MeshStandardMaterial()
 
 class MeshStandardNodeMaterial(NodeMaterial):
+
+    isMeshStandardNodeMaterial = True
     
     def __init__(self, parameters = None) -> None:
 

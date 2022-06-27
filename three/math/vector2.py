@@ -4,6 +4,9 @@ import three
 from ..structure import NoneAttribute
 
 class Vector2(NoneAttribute):
+
+    isVector2 = True
+
     def __init__(self, x: float = 0, y: float = 0) -> None:
         self.x = x
         self.y = y
@@ -259,8 +262,3 @@ class Vector2(NoneAttribute):
         self.x = attribute.getX( index )
         self.y = attribute.getY( index )
         return self
-    
-
-    @property
-    def isVector2(self):
-        return True

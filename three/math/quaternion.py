@@ -6,6 +6,9 @@ from ..structure import NoneAttribute
 import three
 
 class Quaternion(NoneAttribute):
+
+    isQuaternion = True
+
     def __init__(self, x: float = 0, y: float = 0, z: float = 0, w: float = 1) -> None:
         self._x = x
         self._y = y
@@ -398,8 +401,3 @@ class Quaternion(NoneAttribute):
         
     def _onChangeCallback(self):
         pass
-
-    
-    @property
-    def isQuaternion(self):
-        return True

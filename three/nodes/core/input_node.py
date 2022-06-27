@@ -5,6 +5,9 @@ from warnings import warn
 from .node_utils import getValueType, getValueFromType
 
 class InputNode(Node):
+
+    isInputNode = True
+
     def __init__(self, value, nodeType = None ) -> None:
         super().__init__(nodeType)
         self._value = value

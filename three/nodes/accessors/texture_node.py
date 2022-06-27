@@ -3,6 +3,8 @@ from .uv_node import UVNode
 
 class TextureNode(UniformNode):
 
+    isTextureNode = True
+
      # TODO now it use same UVNode as default parameter for all TextureNodes, make sure it's ok
     def __init__(self, value, uvNode=None, levelNode=None) -> None:
         super().__init__(value, 'vec4')

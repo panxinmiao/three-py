@@ -12,14 +12,15 @@ class WgpuAttributes:
         self.device = device
 
     def get(self, attribute: three.BufferAttribute):
-        if attribute.isInterleavedBufferAttribute:
+        #if attribute.isInterleavedBufferAttribute:
+        if attribute._type == 'InterleavedBufferAttribute':
             attribute = attribute.data
         
         return self.buffers.get( attribute )
 
     def remove( self, attribute: three.BufferAttribute ):
 
-        if attribute.isInterleavedBufferAttribute:
+        if attribute._type == 'InterleavedBufferAttribute':
             attribute = attribute.data
         
         data = self.buffers.get( attribute )
@@ -30,7 +31,7 @@ class WgpuAttributes:
             #self.buffers.delete( attribute )
 
     def update( self, attribute: three.BufferAttribute, isIndex = False, usage = None ):
-        if attribute.isInterleavedBufferAttribute:
+        if attribute._type == 'InterleavedBufferAttribute':
             attribute = attribute.data
 
         data = self.buffers.get( attribute )

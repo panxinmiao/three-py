@@ -4,10 +4,12 @@ from ..constants import TangentSpaceNormalMap
 
 class MeshNormalMaterial(Material):
 
+    isMeshNormalMaterial = True
+
     def __init__(self, parameters = {}, **kwargs) -> None:
         super().__init__()
 
-        self.type = 'MeshNormalMaterial'
+        self._type = 'MeshNormalMaterial'
 
         self.bumpMap = None
         self.bumpScale = 1

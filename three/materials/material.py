@@ -10,6 +10,9 @@ from ..math import Color, Vector3
 _material_id = 0
 
 class Material(EventDispatcher):
+
+    isMaterial = True
+
     def __init__(self) -> None:
         global _material_id
         _material_id += 1

@@ -4,6 +4,8 @@ from ..core.node import Node
 
 class PointUVNode(Node):
 
+    isPointUVNode = True
+
     def __init__(self) -> None:
         super().__init__('vec2')
 

@@ -2,10 +2,12 @@ from ..structure import NoneAttribute
 from .vector3 import Vector3
 
 class SphericalHarmonics3(NoneAttribute):
+
+    isSphericalHarmonics3 = True
    
     def __init__(self) -> None:
         self.coefficients:'list[Vector3]' = []
-        for i in range(9):
+        for _ in range(9):
             self.coefficients.append( Vector3() )
 
     def set( self, coefficients ):

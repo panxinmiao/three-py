@@ -8,6 +8,8 @@ _lookTarget = Vector3()
 
 class LightShadow:
 
+    isLightShadow = True
+
     def __init__(self, camera:'three.Camera') -> None:
         self.camera = camera
 

@@ -6,6 +6,8 @@ from ..materials import SpriteMaterial
 
 class Sprite(Object3D):
 
+    isSprite = True
+
     _geometry = None
 
     def __init__(self, material):

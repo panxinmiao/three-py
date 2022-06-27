@@ -5,6 +5,9 @@ from ..shadernode.shader_node_base_elements import NormalNode, mul, add
 defaultValues = MeshNormalMaterial()
 
 class MeshNormalNodeMaterial(NodeMaterial):
+
+    isMeshNormalNodeMaterial = True
+
     def __init__(self, parameters = None) -> None:
         super().__init__()
         #colorNode = NormalNode( NormalNode.VIEW )

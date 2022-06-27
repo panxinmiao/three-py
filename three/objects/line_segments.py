@@ -8,6 +8,8 @@ _end = Vector3()
 
 class LineSegments(Line):
 
+    isLineSegments = True
+
     def __init__(self, geometry=None, material=None):
         super().__init__(geometry, material)
 

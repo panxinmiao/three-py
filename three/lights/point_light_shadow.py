@@ -8,6 +8,8 @@ _lookTarget = Vector3()
 
 class PointLightShadow(LightShadow):
 
+    isPointLightShadow = True
+
     def __init__(self) -> None:
 
         super().__init__(PerspectiveCamera( 90, 1, 0.5, 500 ))

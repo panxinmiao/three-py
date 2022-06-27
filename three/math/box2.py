@@ -4,6 +4,9 @@ from .vector2 import Vector2
 _vector = Vector2()
 
 class Box2(NoneAttribute):
+
+    isBox2 = True
+
     def __init__( self,min = None, max = None ) -> None:
         if min is None:
             min = Vector2( float('inf'), float('inf') )

@@ -31,6 +31,7 @@ class WgpuUniform(NoneAttribute):
 
 
 class FloatUniform(WgpuUniform):
+    isFloatUniform = True
 
     def __init__(self, name, value=0) -> None:
         super().__init__(name, value)
@@ -39,6 +40,7 @@ class FloatUniform(WgpuUniform):
         self.itemSize = 1
 
 class Vector2Uniform(WgpuUniform):
+    isVector2Uniform = True
 
     def __init__(self, name, value=None) -> None:
         super().__init__(name, value or Vector2())
@@ -47,6 +49,7 @@ class Vector2Uniform(WgpuUniform):
         self.itemSize = 2
 
 class Vector3Uniform(WgpuUniform):
+    isVector3Uniform = True
 
     def __init__(self, name, value=None) -> None:
         super().__init__(name, value or Vector3())
@@ -56,6 +59,7 @@ class Vector3Uniform(WgpuUniform):
 
 
 class Vector4Uniform(WgpuUniform):
+    isVector4Uniform = True
 
     def __init__(self, name, value=None) -> None:
         super().__init__(name, value or Vector4())
@@ -65,6 +69,7 @@ class Vector4Uniform(WgpuUniform):
 
 
 class ColorUniform(WgpuUniform):
+    isColorUniform = True
 
     def __init__(self, name, value=None) -> None:
         super().__init__(name, value or Color())
@@ -73,6 +78,7 @@ class ColorUniform(WgpuUniform):
         self.itemSize = 3
 
 class Matrix3Uniform(WgpuUniform):
+    isMatrix3Uniform = True
 
     def __init__(self, name, value=None) -> None:
         super().__init__(name, value or Matrix3())
@@ -82,6 +88,7 @@ class Matrix3Uniform(WgpuUniform):
 
 
 class Matrix4Uniform(WgpuUniform):
+    isMatrix4Uniform = True
 
     def __init__(self, name, value=None) -> None:
         super().__init__(name, value or Matrix4())

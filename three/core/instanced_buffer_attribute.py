@@ -3,6 +3,8 @@ from ..structure import TypedArray
 
 class InstancedBufferAttribute(BufferAttribute):
 
+    isInstancedBufferAttribute = True
+
     def __init__(self, ary: TypedArray, itemSize, normalized=False, meshPerAttribute=1 ) -> None:
         super().__init__(ary, itemSize, normalized)
 

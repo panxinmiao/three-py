@@ -5,6 +5,8 @@ from .constants import GPUShaderStage, GPUBufferUsage
 
 class WgpuBuffer(WgpuBinding):
 
+    isBuffer = True
+
     def __init__(self, name, type, buffer=None) -> None:
         super().__init__(name)
 

@@ -8,6 +8,9 @@ import three
 from ..structure import NoneAttribute
 
 class Vector3(NoneAttribute):
+
+    isVector3 = True
+
     def __init__(self, x: float = 0, y: float = 0, z: float = 0) -> None:
         self.x = x
         self.y = y
@@ -449,10 +452,6 @@ class Vector3(NoneAttribute):
         self.z = u
 
         return self
-    
-    @property
-    def isVector3(self):
-        return True
 
 _tmp_quaternion = Quaternion()
 _tmp_vector = Vector3()

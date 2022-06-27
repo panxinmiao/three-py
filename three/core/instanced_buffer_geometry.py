@@ -3,6 +3,8 @@ from .geometry import Geometry
 
 class InstancedGeometry(Geometry):
 
+    isInstancedBufferGeometry = True
+
     def __init__(self) -> None:
         super().__init__()
 

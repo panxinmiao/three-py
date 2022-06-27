@@ -4,6 +4,8 @@ from ..math import math_utils as MathUtils
 import math
 
 class PerspectiveCamera(Camera):
+
+    isPerspectiveCamera = True
     
     def __init__(self, fov = 50, aspect = 1, near = 0.1, far = 2000 ) -> None:
         super().__init__()

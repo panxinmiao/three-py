@@ -3,6 +3,8 @@ from ..shadernode.shader_node_base_elements import smoothstep, negate, positionV
 
 class FogRangeNode(FogNode):
 
+    isFogRangeNode = True
+
     def __init__(self, colorNode, nearNode, farNode) -> None:
         super().__init__(colorNode)
         self.nearNode = nearNode

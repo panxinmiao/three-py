@@ -3,6 +3,8 @@ from ..core.attribute_node import AttributeNode
 
 class UVNode(AttributeNode):
 
+    isUVNode = True
+
     def __init__(self, index=0) -> None:
         super().__init__(None, 'vec2')
         self.index = index

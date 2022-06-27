@@ -3,6 +3,9 @@ from ..materials import Material
 from warnings import warn
 
 class Mesh(Object3D):
+
+    isMesh = True
+    
     def __init__( self, geometry = None, material = None ) -> None:
         super().__init__()
         self._type = 'Mesh'

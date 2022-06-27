@@ -12,6 +12,8 @@ defaultValues = SpriteMaterial()
 
 class SpriteNodeMaterial(NodeMaterial):
 
+    isSpriteNodeMaterial = True
+
     def __init__(self, parameters=None) -> None:
         super().__init__()
 

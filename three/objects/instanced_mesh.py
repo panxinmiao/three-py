@@ -10,6 +10,8 @@ _mesh = Mesh()
 
 class InstancedMesh(Mesh):
 
+    isInstancedMesh = True
+
     def __init__(self, geometry, material, count) -> None:
         super().__init__(geometry, material)
 

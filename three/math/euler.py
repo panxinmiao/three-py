@@ -9,6 +9,9 @@ from ..structure import NoneAttribute
 import three
 
 class Euler(NoneAttribute):
+
+    isEuler = True
+
     class RotationOrders(Enum):
         XYZ = "XYZ"
         YZX = "YZX"

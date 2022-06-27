@@ -3,6 +3,8 @@ from ..math import Color
 
 class SpriteMaterial(Material):
 
+    isSpriteMaterial = True
+
     def __init__(self, parameters={}, **kwargs) -> None:
         super().__init__()
 

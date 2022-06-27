@@ -9,6 +9,8 @@ _matrixWorldInv = Matrix4()
 
 class SkeletonHelper(LineSegments):
 
+    isSkeletonHelper = True
+
     def __init__(self, object):
         
         bones = _getBoneList( object )

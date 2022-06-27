@@ -3,6 +3,9 @@ from ..math import Color
 from ..constants import MultiplyOperation
 
 class MeshBasicMaterial(Material):
+
+    isMeshBasicMaterial = True
+
     def __init__(self, parameters = {}, **kwargs) -> None:
         '''
         parameters = {
