@@ -13,6 +13,8 @@ _matrix = Matrix4()
 
 class SkinnedMesh(Mesh):
 
+    isSkinnedMesh = True
+
     def __init__(self, geometry=None, material=None) -> None:
         super().__init__(geometry, material)
 

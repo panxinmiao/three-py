@@ -3,6 +3,8 @@ from ..math.math_node import MathNode
 
 class FogNode(Node):
 
+    isFogNode = True
+
     def __init__(self, colorNode, factorNode = None) -> None:
         super().__init__('float')
 

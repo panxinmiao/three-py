@@ -29,6 +29,8 @@ _addedEvent = { type: 'added' }
 _removedEvent = { type: 'removed' }
 
 class Object3D(EventDispatcher):
+    isObject3D = True
+
     DefaultUp = Vector3( 0, 1, 0 )
     _v = Vector3()
     _m = Matrix4()

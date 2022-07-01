@@ -4,6 +4,8 @@ from .node_builder import NodeBuilder
 
 class TempNode(Node):
 
+    isTempNode = True
+
     def __init__(self, type = None) -> None:
         super().__init__(type)
 

@@ -33,6 +33,8 @@ def toComponents( source, target ):
 # @TODO ColorSpace
 class Color(NoneAttribute):
 
+    isColor = True
+
     def __init__(self, r=None, g=None, b=None) -> None:
         
         if g is None and b is None:
@@ -300,8 +302,3 @@ class Color(NoneAttribute):
             self.b /= 255
 
         return self
-
-
-    @property
-    def isColor(self):
-        return True

@@ -11,6 +11,8 @@ _texture_id = 0
 
 class Texture(EventDispatcher):
 
+    isTexture = True
+
     DEFAULT_IMAGE = None
     DEFAULT_MAPPING = UVMapping
 

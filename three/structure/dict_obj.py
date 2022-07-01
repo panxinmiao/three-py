@@ -1,3 +1,4 @@
+# TODO: improve it
 class Dict(dict):
     ''' TODO all dict method '''
 

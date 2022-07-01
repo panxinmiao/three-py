@@ -2,6 +2,9 @@ from .input_node import InputNode
 from .node_builder import NodeBuilder
 
 class UniformNode(InputNode):
+
+    isUniformNode = True
+
     def getUniformHash( self, builder:'NodeBuilder' ):
         return self.getHash( builder )
 

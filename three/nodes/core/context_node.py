@@ -2,6 +2,9 @@ from .node import Node
 from three.structure import Dict
 
 class ContextNode(Node):
+
+    isContextNode = True
+
     def __init__(self, node, context=None) -> None:
         super().__init__()
         self.node = node

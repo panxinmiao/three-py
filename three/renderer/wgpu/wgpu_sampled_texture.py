@@ -2,6 +2,8 @@ from .wgpu_binding import WgpuBinding
 from .constants import GPUBindingType, GPUTextureViewDimension, GPUShaderStage
 
 class WgpuSampledTexture(WgpuBinding):
+
+    isSampledTexture = True
     
     def __init__( self, name, texture = None ) -> None:
         super().__init__(name)
@@ -17,11 +19,10 @@ class WgpuSampledTexture(WgpuBinding):
     def getTexture( self ):
         return self.texture
 
-    @property
-    def isSampledTexture(self):
-        return True
 
 class WgpuSampledArrayTexture(WgpuSampledTexture):
+
+    isSampledArrayTexture = True
 
     def __init__(self, name, texture = None) -> None:
         super().__init__(name, texture)
@@ -30,12 +31,16 @@ class WgpuSampledArrayTexture(WgpuSampledTexture):
 
 class WgpuSampled3DTexture(WgpuSampledTexture):
 
+    isSampled3DTexture = True
+
     def __init__(self, name, texture = None) -> None:
         super().__init__(name, texture)
         self.dimension = GPUTextureViewDimension.ThreeD
 
 
 class WgpuSampledCubeTexture(WgpuSampledTexture):
+
+    isSampledCubeTexture = True
 
     def __init__(self, name, texture = None) -> None:
         super().__init__(name, texture)

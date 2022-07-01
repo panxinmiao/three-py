@@ -9,6 +9,8 @@ _normalMatrix = Matrix3()
 
 class Plane(NoneAttribute):
 
+    isPlane = True
+
     def __init__(self, normal = None, constant = 0 ) -> None:
         if normal is None:
             normal = Vector3( 1, 0, 0 )

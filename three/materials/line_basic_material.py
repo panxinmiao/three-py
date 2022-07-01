@@ -3,6 +3,9 @@ from .material import Material
 from ..math import Color
 
 class LineBasicMaterial(Material):
+
+    isLineBasicMaterial = True
+
     def __init__(self, parameters={}, **kwargs) -> None:
         '''
         parameters = {
@@ -17,7 +20,7 @@ class LineBasicMaterial(Material):
         super().__init__()
 
 
-        self.type = 'LineBasicMaterial'
+        self._type = 'LineBasicMaterial'
 
         self.color =  Color( 0xffffff )
 

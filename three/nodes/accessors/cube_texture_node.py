@@ -5,6 +5,8 @@ from ..shadernode.shader_node_base_elements import negate, vec3, nodeObject
 
 class CubeTextureNode(TextureNode):
 
+    isCubeTextureNode = True
+
     def __init__(self, value, uvNode=None, levelNode=None) -> None:
 
         super().__init__(value, uvNode, levelNode)

@@ -5,6 +5,8 @@ from three.materials import PointsMaterial
 defaultValues = PointsMaterial()
 class PointsNodeMaterial(NodeMaterial):
 
+    isPointsNodeMaterial = True
+
     def __init__(self, parameters=None) -> None:
         super().__init__()
 

@@ -413,7 +413,7 @@ class OrbitControls(EventDispatcher):
 
             else:
                 # camera neither orthographic nor perspective
-                warn( 'WARNING: OrbitControls.js encountered an unknown camera type - pan disabled.' )
+                warn( 'WARNING: OrbitControls encountered an unknown camera type - pan disabled.' )
                 self.enablePan = False
 
         return pan
@@ -432,7 +432,7 @@ class OrbitControls(EventDispatcher):
             self.__zoomChanged = True
 
         else:
-            warn( 'WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.' )
+            warn( 'WARNING: OrbitControls encountered an unknown camera type - dolly/zoom disabled.' )
             self.enableZoom = False
 
     def __dollyIn( self, dollyScale ):
@@ -445,7 +445,7 @@ class OrbitControls(EventDispatcher):
             self.__zoomChanged = True
 
         else:
-            warn( 'WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.' )
+            warn( 'WARNING: OrbitControls encountered an unknown camera type - dolly/zoom disabled.' )
             self.enableZoom = False
 
     #

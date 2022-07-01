@@ -13,6 +13,8 @@ _end = Vector3()
 
 class Line(Object3D):
 
+    isLine = True
+
     def __init__(self, geometry = None, material = None):
 
         super().__init__()

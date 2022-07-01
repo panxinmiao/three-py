@@ -58,6 +58,8 @@ for a in range(amount):
 scene.add(group)
 control = three.OrbitControls(camera, canvas)
 
+fps = FPSRecorder()
+
 def loop():
     t = time.time()
     l = len(group.children)
@@ -80,6 +82,7 @@ def loop():
     group.rotation.z = t * 1.0
 
     render.render(scene, camera)
+    fps.update()
 
 
 render.setAnimationLoop(loop)

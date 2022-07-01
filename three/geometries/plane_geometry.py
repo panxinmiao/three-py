@@ -6,7 +6,7 @@ class PlaneGeometry(BufferGeometry):
 
     def __init__(self, width = 1, height = 1, widthSegments = 1, heightSegments = 1) -> None:
         super().__init__()
-        self.type = 'PlaneGeometry'
+        self._type = 'PlaneGeometry'
 
         self.parameters = {
             'width': width,

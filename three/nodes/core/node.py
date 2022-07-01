@@ -9,6 +9,9 @@ from .node_utils import getNodesKeys
 _nodeId = 0
 
 class Node(NoneAttribute):
+
+    isNode = True
+
     def __init__(self, nodeType = None) -> None:
         self.nodeType = nodeType
         self.updateType = NodeUpdateType.NONE

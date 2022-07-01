@@ -2,9 +2,11 @@ import warnings
 from .wgpu_uniform_buffer import WgpuUniformBuffer
 from ...structure import Float32Array
 from .constants import GPUChunkSize
-from .wgpu_uniform import WgpuUniform
+from .wgpu_uniform import WgpuUniform, FloatUniform,Vector2Uniform, Vector3Uniform, Vector4Uniform, Matrix3Uniform, Matrix4Uniform, ColorUniform
 
 class WgpuUniformsGroup(WgpuUniformBuffer):
+
+    isUniformsGroup = True
 
     def __init__(self, name) -> None:
         super().__init__(name)
@@ -75,19 +77,19 @@ class WgpuUniformsGroup(WgpuUniformBuffer):
 
 
     def updateByType( self, uniform:'WgpuUniform' ):
-        if uniform.isFloatUniform:
+        if isinstance(uniform, FloatUniform):
             return self.updateNumber( uniform )
-        if uniform.isVector2Uniform:
+        if isinstance(uniform, Vector2Uniform):
             return self.updateVector2( uniform )
-        if uniform.isVector3Uniform:
+        if isinstance(uniform, Vector3Uniform):
             return self.updateVector3( uniform )
-        if uniform.isVector4Uniform:
+        if isinstance(uniform, Vector4Uniform):
             return self.updateVector4( uniform )
-        if uniform.isColorUniform:
+        if isinstance(uniform, ColorUniform):
             return self.updateColor( uniform )
-        if uniform.isMatrix3Uniform:
+        if isinstance(uniform, Matrix3Uniform):
             return self.updateMatrix3( uniform )
-        if uniform.isMatrix4Uniform:
+        if isinstance(uniform, Matrix4Uniform):
             return self.updateMatrix4( uniform )
 
         warnings.warn( f'THREE.WebGPUUniformsGroup: Unsupported uniform type.{uniform}' )

@@ -3,6 +3,8 @@ import uuid, warnings
 
 class Source(NoneAttribute):
 
+    isSource = True
+
     def __init__(self, data = None ) -> None:
         super().__init__()
         self.uuid = uuid.uuid1()

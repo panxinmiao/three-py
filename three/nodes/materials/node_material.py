@@ -10,6 +10,9 @@ from ..shadernode.shader_node_elements import (
     materialAlphaTest, materialColor, materialOpacity)
 
 class NodeMaterial(ShaderMaterial):
+
+    isNodeMaterial = True
+
     def __init__(self) -> None:
         super().__init__()
         self.lights = True

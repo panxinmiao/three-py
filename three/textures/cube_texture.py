@@ -4,6 +4,8 @@ from ..constants import CubeReflectionMapping
 
 class CubeTexture(Texture):
 
+    isCubeTexture = True
+
     def __init__(self, images=None, mapping=CubeReflectionMapping, *args, **kwargs) -> None:
         
         images = images if images else []

@@ -8,7 +8,7 @@ class CircleGeometry(BufferGeometry):
     def __init__(self, radius = 1, segments = 8, thetaStart = 0, thetaLength = math.pi * 2) -> None:
         super().__init__()
 
-        self.type = 'CircleGeometry'
+        self._type = 'CircleGeometry'
 
         self.parameters = {
             'radius': radius,

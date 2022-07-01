@@ -3,6 +3,8 @@ from .node import Node
 
 class BypassNode(Node):
 
+    isBypassNode = True
+
     def __init__(self, returnNode, callNode) -> None:
         super().__init__()
 

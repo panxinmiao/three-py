@@ -1,13 +1,15 @@
 
 from .base import Camera
 from ..structure import Dict
-from ..math import math_utils as MathUtils
-import math
 
 class OrthographicCamera(Camera):
 
+    isOrthographicCamera = True
+
     def __init__(self, left=- 1, right=1, top=1, bottom=- 1, near=0.1, far=2000):
         super().__init__()
+
+        self._type = 'OrthographicCamera'
 
         self.zoom = 1
         self.view = None

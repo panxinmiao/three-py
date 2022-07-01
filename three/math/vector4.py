@@ -3,6 +3,9 @@ import math, random
 from ..structure import NoneAttribute
 
 class Vector4(NoneAttribute):
+
+    isVector4 = True
+
     def __init__(self, x: float = 0, y: float = 0, z: float = 0, w: float = 0) -> None:
         self.x = x
         self.y = y
@@ -432,9 +435,3 @@ class Vector4(NoneAttribute):
         self.w = random.random()
 
         return self
-
-
-
-    @property
-    def isVector4(self):
-        return True

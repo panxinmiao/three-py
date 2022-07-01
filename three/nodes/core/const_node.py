@@ -2,6 +2,8 @@ from .input_node import InputNode
 
 class ConstNode(InputNode):
 
+    isConstNode = True
+
     def generateConst( self, builder ):
         return builder.getConst( self.getNodeType( builder ), self.value )
 

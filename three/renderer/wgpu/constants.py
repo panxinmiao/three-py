@@ -243,7 +243,7 @@ class GPUInputStepMode():
     Vertex = 'vertex'
     Instance = 'instance'
 
-# @TODO: Move to src/constants.js
+# @TODO: Move to three.constants
 
 # Flags
 

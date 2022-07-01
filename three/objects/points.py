@@ -11,8 +11,12 @@ _position = Vector3()
 
 class Points(Object3D):
 
+    isPoints = True
+
     def __init__(self, geometry = None, material = None):
         super().__init__()
+        self._type = 'Points'
+        
         geometry = geometry or BufferGeometry()
         material = material or PointsMaterial()
 

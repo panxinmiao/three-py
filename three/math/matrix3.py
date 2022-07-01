@@ -2,6 +2,9 @@ import three, math
 from ..structure import NoneAttribute
 
 class Matrix3(NoneAttribute):
+
+    isMatrix3 = True
+
     def __init__(self) -> None:
         self.elements = [
             1, 0, 0,
@@ -287,7 +290,3 @@ class Matrix3(NoneAttribute):
 
     def clone( self ) -> "Matrix3":
         return Matrix3().fromArray(self.elements)
-    
-    @property
-    def isMatrix3(self):
-        return True

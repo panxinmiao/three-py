@@ -2,8 +2,9 @@ import uuid
 from ..constants import StaticDrawUsage
 from ..structure import NoneAttribute, TypedArray
 
-
 class InterleavedBuffer(NoneAttribute):
+
+    isInterleavedBuffer = True
 
     def __init__(self, ary: TypedArray, stride) -> None:
         self.array = ary

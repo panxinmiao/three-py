@@ -5,8 +5,12 @@ from .inter_leaved_buffer import InterleavedBuffer
 
 class InterleavedBufferAttribute(NoneAttribute):
 
+    isInterleavedBufferAttribute = True
+
     def __init__(self, interleavedBuffer: InterleavedBuffer, itemSize, offset, normalized = False) -> None:
         super().__init__()
+
+        self._type = 'InterleavedBufferAttribute'
 
         self.name = ''
         self.data = interleavedBuffer

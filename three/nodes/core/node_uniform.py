@@ -2,6 +2,8 @@ from three.structure import NoneAttribute
 
 class NodeUniform(NoneAttribute):
 
+    isNodeUniform = True
+
     def __init__(self, name, type, node, needsUpdate = None) -> None:
         super().__init__()
         self.name = name

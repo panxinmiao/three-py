@@ -3,6 +3,8 @@ from ..math import Matrix4
 import three
 
 class Camera(Object3D):
+    isCamera = True
+
     def __init__(self, name=''):
         super().__init__(name = name)
         self._type = 'Camera'

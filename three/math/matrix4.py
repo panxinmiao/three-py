@@ -5,6 +5,9 @@ from ..structure import NoneAttribute
 import three
 
 class Matrix4(NoneAttribute):
+
+    isMatrix4 = True
+
     def __init__(self) -> None:
         self.elements = [
 
@@ -797,10 +800,6 @@ class Matrix4(NoneAttribute):
         for i in range(16):
             array[i + offset] = self.elements[i]
         return array
-
-    @property
-    def isMatrix4(self):
-        return True
 
 _zero = Vector3(0, 0, 0)
 _one = Vector3(1, 1, 1)

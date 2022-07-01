@@ -30,6 +30,9 @@ _boxMorphTargets = Box3()
 _vector = Vector3()
 
 class Geometry(EventDispatcher):
+
+    isBufferGeometry = True
+
     def __init__(self) -> None:
         self.uuid = uuid.uuid1()
 
@@ -50,10 +53,6 @@ class Geometry(EventDispatcher):
         self.drawRange = Dict({ 'start': 0, 'count': float('inf') })
 
         self.userData = Dict({})
-
-    @property
-    def isBufferGeometry(self):
-        return True
 
     def getIndex(self):
         return self.index
@@ -184,15 +183,6 @@ class Geometry(EventDispatcher):
 
         position = self.attributes.position
         morphAttributesPosition = self.morphAttributes.position
-
-        if position and position.isGLBufferAttribute:
-            warn( f'THREE.BufferGeometry.computeBoundingBox(): GLBufferAttribute requires a manual bounding box. Alternatively set "mesh.frustumCulled" to "false". {self}' )
-            self.boundingBox.set(
-                Vector3( float('-inf'),float('-inf'), float('-inf') ),
-                Vector3( float('+inf'), float('+inf'), float('+inf') )
-            )
-
-            return
 
         if position is not None:
             self.boundingBox.setFromBufferAttribute( position )

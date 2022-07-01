@@ -3,10 +3,12 @@ from ..math import Color
 
 class PointsMaterial(Material):
 
+    isPointsMaterial = True
+
     def __init__(self, parameters={}, **kwargs) -> None:
         super().__init__()
 
-        self.type = 'PointsMaterial'
+        self._type = 'PointsMaterial'
 
         self.color = Color( 0xffffff )
 

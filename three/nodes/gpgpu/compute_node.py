@@ -4,6 +4,8 @@ from ..core.constants import NodeUpdateType
 
 class ComputeNode(Node):
 
+    isComputeNode = True
+
     def __init__(self, computeNode, count, workgroupSize=None) -> None:
         super().__init__('void')
 

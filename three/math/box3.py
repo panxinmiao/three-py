@@ -4,6 +4,8 @@ from .vector3 import Vector3
 
 class Box3(NoneAttribute):
 
+    isBox3 = True
+
     def __init__( self,min = None, max = None ) -> None:
         if min is None:
             min = Vector3( math.inf, math.inf, math.inf)

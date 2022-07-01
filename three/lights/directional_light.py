@@ -2,6 +2,9 @@ from .light import Light
 from ..core import Object3D
 
 class DirectionalLight(Light):
+
+    isDirectionalLight = True
+
     def __init__(self, color, intensity=1):
         super().__init__(color, intensity)
         self._type = 'DirectionalLight'

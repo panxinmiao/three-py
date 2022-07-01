@@ -4,6 +4,8 @@ from ..constants import TangentSpaceNormalMap
 
 class MeshStandardMaterial(Material):
 
+    isMeshStandardMaterial = True
+
     def __init__(self, parameters = {}, **kwargs) -> None:
 
         '''
@@ -58,7 +60,7 @@ class MeshStandardMaterial(Material):
 
         self.defines = { 'STANDARD': '' }
 
-        self.type = 'MeshStandardMaterial'
+        self._type = 'MeshStandardMaterial'
 
         self.color = Color( 0xffffff ) # diffuse
         self.roughness = 1.0

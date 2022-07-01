@@ -4,6 +4,9 @@ from three.materials import MeshBasicMaterial
 defaultValues = MeshBasicMaterial()
 
 class MeshBasicNodeMaterial(NodeMaterial):
+
+    isMeshStandardNodeMaterial = True
+
     def __init__(self, parameters = None ) -> None:
         super().__init__()
         self.lights = True

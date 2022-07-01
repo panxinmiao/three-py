@@ -3,6 +3,8 @@ from .constants import GPUBindingType
 import wgpu
 
 class WgpuSampler(WgpuBinding):
+
+    isSampler = True
     
     def __init__(self, name, texture) -> None:
         super().__init__(name)
@@ -15,9 +17,5 @@ class WgpuSampler(WgpuBinding):
 
     def getTexture( self ):
         return self.texture
-
-    @property
-    def isSampler(self):
-        return True
 
     

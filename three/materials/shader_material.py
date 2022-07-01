@@ -4,13 +4,15 @@ from ..structure import Dict
 
 class ShaderMaterial(Material):
 
+    isShaderMaterial = True
+
     def __init__(self, parameters = {}, **kwargs) -> None:
         super().__init__()
         if type(parameters) == dict:
             parameters = Dict(parameters)
 
 
-        self.type = 'ShaderMaterial'
+        self._type = 'ShaderMaterial'
 
         self.defines = {}
         self.uniforms = {}

@@ -3,6 +3,8 @@ from ..math import Color
 
 class Light(Object3D):
 
+    isLight = True
+
     def __init__(self, color, intensity = 1):
         super().__init__()
         self._type = 'Light'
