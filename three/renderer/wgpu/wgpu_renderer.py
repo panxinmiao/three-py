@@ -669,6 +669,8 @@ class WgpuRenderer(NoneAttribute):
         # vertex buffers
         self._setupVertexBuffers( geometry.attributes, passEncoder, renderPipeline )
 
+        passEncoder.set_stencil_reference(material.stencilRef)
+
         # draw
 
         drawRange = geometry.drawRange

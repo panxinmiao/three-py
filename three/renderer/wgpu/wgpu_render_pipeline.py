@@ -109,7 +109,7 @@ class WgpuRenderPipeline():
             'depth_write_enabled': material.depthWrite,
             'depth_compare': depthCompare,
             'stencil_front': stencilFront,
-            'stencil_back': {}, # three.js does not provide an API to configure the back function (gl.stencilFuncSeparate() was never used)
+            'stencil_back': stencilFront, # three.js does not provide an API to configure the back function (gl.stencilFuncSeparate() was never used)
             'stencil_read_mask': material.stencilFuncMask,
             'stencil_write_mask': material.stencilWriteMask
         }
@@ -376,22 +376,22 @@ class WgpuRenderPipeline():
         elif stencilFunc == AlwaysStencilFunc:
             return GPUCompareFunction.Always
 
-        elif LessStencilFunc:
+        elif stencilFunc == LessStencilFunc:
             return GPUCompareFunction.Less
 
-        elif LessEqualStencilFunc:
+        elif stencilFunc == LessEqualStencilFunc:
             return GPUCompareFunction.LessEqual
 
-        elif EqualStencilFunc:
+        elif stencilFunc == EqualStencilFunc:
             return GPUCompareFunction.Equal
 
-        elif GreaterEqualStencilFunc:
+        elif stencilFunc == GreaterEqualStencilFunc:
             return GPUCompareFunction.GreaterEqual
 
-        elif GreaterStencilFunc:
+        elif stencilFunc == GreaterStencilFunc:
             return GPUCompareFunction.Greater
 
-        elif NotEqualStencilFunc:
+        elif stencilFunc == NotEqualStencilFunc:
             return GPUCompareFunction.NotEqual
 
         else:
