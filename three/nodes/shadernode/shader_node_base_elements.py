@@ -5,6 +5,7 @@ from ..core.attribute_node import AttributeNode
 from ..core.uniform_node import UniformNode
 from ..core.bypass_node import BypassNode
 from ..core.instance_index_node import InstanceIndexNode
+from ..core.vertex_index_node import VertexIndexNode
 from ..core.context_node import ContextNode
 from ..core.function_node import FunctionNode
 from ..core.function_call_node import FunctionCallNode
@@ -104,6 +105,7 @@ context = nodeProxy( ContextNode )
 expression = nodeProxy( ExpressionNode )
 call = nodeProxy( FunctionCallNode )
 instanceIndex = nodeImmutable( InstanceIndexNode )
+vertexIndex = nodeImmutable( VertexIndexNode )
 label = nodeProxy( VarNode )
 temp = label
 vary = nodeProxy( VaryNode )

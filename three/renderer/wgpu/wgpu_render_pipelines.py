@@ -121,7 +121,8 @@ class WgpuRenderPipelines:
             material.stencilFuncMask, material.stencilWriteMask,
             material.side,
             self.sampleCount,
-            renderer.getCurrentEncoding(), renderer.getCurrentColorFormat(), renderer.getCurrentDepthStencilFormat()
+            renderer.getCurrentEncoding(), renderer.getCurrentColorFormat(), renderer.getCurrentDepthStencilFormat(),
+            renderer.getPrimitiveTopology( object )
         ]
 
         return ','.join( [ str(e) for e in parameters] )

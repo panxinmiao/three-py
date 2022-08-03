@@ -292,6 +292,12 @@ class WgpuNodeBuilder(NodeBuilder):
 
         return 'instanceIndex'
 
+    def getVertexIndex( self ):
+        if self.shaderStage == 'vertex':
+            return self.getBuiltin('vertex_index', 'vertexIndex', 'u32', 'attribute')
+
+        return 'vertexIndex'
+
     def getFrontFacing(self):
         return self.getBuiltin('front_facing', 'isFront', 'bool')
 

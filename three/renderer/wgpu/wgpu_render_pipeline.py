@@ -3,7 +3,7 @@ import three
 import wgpu
 from ...structure import Dict
 from .constants import ( GPUVertexFormat, GPUInputStepMode, GPUBlendFactor, GPUBlendOperation, BlendColorFactor, OneMinusBlendColorFactor, 
-                            GPUColorWriteFlags, GPUCompareFunction, GPUIndexFormat, GPUFrontFace, GPUCullMode, GPUPrimitiveTopology, GPUStencilOperation )
+                            GPUColorWriteFlags, GPUCompareFunction, GPUIndexFormat, GPUFrontFace, GPUCullMode, GPUStencilOperation )
 
 from ...constants import ( NoBlending, NormalBlending, AdditiveBlending, SubtractiveBlending, MultiplyBlending, CustomBlending, 
                             ZeroFactor, OneFactor, SrcColorFactor, OneMinusSrcColorFactor, SrcAlphaFactor, OneMinusSrcAlphaFactor, DstColorFactor,
@@ -104,7 +104,7 @@ class WgpuRenderPipeline():
             'write_mask': colorWriteMask
         } ] )
 
-        depth_stencil ={
+        depthStencil ={
             'format': depthStencilFormat,
             'depth_write_enabled': material.depthWrite,
             'depth_compare': depthCompare,
@@ -121,7 +121,7 @@ class WgpuRenderPipeline():
             vertex = _vertex,
             fragment = _fragment,
             primitive = primitiveState,
-            depth_stencil = depth_stencil,
+            depth_stencil = depthStencil,
             multisample = {
                 'count': self._sampleCount
             }
@@ -156,16 +156,16 @@ class WgpuRenderPipeline():
                     'operation': GPUBlendOperation.Add
                 }
         elif blending == CustomBlending:
-                blendSrcAlpha = material.blendSrcAlpha
-                blendDstAlpha = material.blendDstAlpha
-                blendEquationAlpha = material.blendEquationAlpha
+            blendSrcAlpha = material.blendSrcAlpha
+            blendDstAlpha = material.blendDstAlpha
+            blendEquationAlpha = material.blendEquationAlpha
 
-                if blendSrcAlpha and blendDstAlpha and blendEquationAlpha:
-                    alphaBlend = {
-                        'src_factor': self._getBlendFactor( blendSrcAlpha ),
-                        'dst_factor': self._getBlendFactor( blendDstAlpha ),
-                        'operation': self._getBlendOperation( blendEquationAlpha )
-                    }
+            if blendSrcAlpha and blendDstAlpha and blendEquationAlpha:
+                alphaBlend = {
+                    'src_factor': self._getBlendFactor( blendSrcAlpha ),
+                    'dst_factor': self._getBlendFactor( blendDstAlpha ),
+                    'operation': self._getBlendOperation( blendEquationAlpha )
+                }
         else:
             warn(f'THREE.WebGPURenderer: Blending not supported.{blending}' )
 
@@ -328,7 +328,7 @@ class WgpuRenderPipeline():
     def _getPrimitiveState( self, object, material:'three.Material' ):
         descriptor = {}
         
-        descriptor['topology'] = self._getPrimitiveTopology( object )
+        descriptor['topology'] = self._renderer.getPrimitiveTopology( object )
 
         if object.isLine == True and object.isLineSegments != True:
             geometry = object.geometry
@@ -352,20 +352,8 @@ class WgpuRenderPipeline():
 
         return descriptor
 
-    
-    def _getPrimitiveTopology( self, object ):
-        if object.isMesh or object.isSprite:
-            return GPUPrimitiveTopology.TriangleList
-        elif object.isPoints:
-            return GPUPrimitiveTopology.PointList
-        elif object.isLineSegments:
-            return GPUPrimitiveTopology.LineList
-        elif object.isLine:
-            return GPUPrimitiveTopology.LineStrip
-
-    
     def _getStencilCompare( self, material ):
-        
+
         #let stencilCompare;
 
         stencilFunc = material.stencilFunc

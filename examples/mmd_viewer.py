@@ -1,5 +1,5 @@
 import three
-from PyQt5 import QtWidgets, QtCore
+from PySide6 import QtWidgets, QtCore
 from wgpu.gui.qt import WgpuWidget
 from pymeshio.pmx import reader
 from three.controls import OrbitControls
@@ -131,10 +131,4 @@ if __name__ == '__main__':
     window = MMDViewer()
     window.init_scene()
     window.show()
-    app.exec_()
-
-            
-
-        
-
-            
+    app.exec()
