@@ -62,7 +62,7 @@ class BufferAttribute(NoneAttribute):
         #self.array.frombytes(source.array.tobytes)
         self.array = source.array.copy()
         self.itemSize = source.itemSize
-        self.count = source.count
+        self._count = source.count
         self.normalized = source.normalized
         
         self.usage = source.usage
@@ -279,7 +279,7 @@ class BufferAttribute(NoneAttribute):
         return self
 
     def clone(self):
-        return self.__class__( self.array, self.itemSize ).copy( self )
+        return self.__class__( self.array.copy(), self.itemSize ).copy( self )
 
 
     #TODO set and transform
