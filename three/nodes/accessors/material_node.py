@@ -25,7 +25,7 @@ class MaterialNode(Node):
         if scope == MaterialNode.COLOR:
             return 'vec4' if material.map else 'vec3'
 
-        elif scope == MaterialNode.OPACITY or scope == MaterialNode.ROTATION:
+        elif scope == MaterialNode.ALPHA_TEST or scope == MaterialNode.OPACITY or scope == MaterialNode.ROTATION:
             return 'float'
 
         elif scope == MaterialNode.EMISSIVE:
@@ -33,6 +33,9 @@ class MaterialNode(Node):
 
         elif scope == MaterialNode.ROUGHNESS or scope == MaterialNode.METALNESS:
             return 'float'
+
+        else:
+            raise Exception( 'Unknown scope: ' + scope )
 
     def generate( self, builder, output ):
         material = builder.getContextValue( 'material' )

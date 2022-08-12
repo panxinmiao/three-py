@@ -19,7 +19,7 @@ from .wgpu_background import WgpuBackground
 from .nodes.wgpu_nodes import WgpuNodes
 
 from ...constants import LinearEncoding
-from .constants import GPUStoreOp, GPUTextureFormat, GPUIndexFormat, GPUTextureUsage
+from .constants import GPUStoreOp, GPUTextureFormat, GPUIndexFormat, GPUTextureUsage, GPUPrimitiveTopology
 
 _frustum = Frustum()
 _projScreenMatrix = Matrix4()
@@ -441,6 +441,17 @@ class WgpuRenderer(NoneAttribute):
             format = GPUTextureFormat.Depth24PlusStencil8
 
         return format
+
+    def getPrimitiveTopology( self, object ):
+
+        if object.isMesh or object.isSprite:
+            return GPUPrimitiveTopology.TriangleList
+        elif object.isPoints:
+            return GPUPrimitiveTopology.PointList
+        elif object.isLineSegments:
+            return GPUPrimitiveTopology.LineList
+        elif object.isLine:
+            return GPUPrimitiveTopology.LineStrip
 
     def getClearColor( self, target ):
         return target.copy( self._clearColor )

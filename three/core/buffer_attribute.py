@@ -1,6 +1,5 @@
-#from array import array
 from ..structure import NoneAttribute, TypedArray, Dict
-from ..structure import Int8Array, Uint8Array,  Int16Array, Uint16Array, Int32Array, Uint32Array, BigInt64Array, BigUint64Array ,Float32Array, Float64Array
+from ..structure import Int8Array, Uint8Array,  Int16Array, Uint16Array, Int32Array, Uint32Array, BigInt64Array, BigUint64Array, Float16Array, Float32Array, Float64Array
 from ..math import Color, Vector2, Vector3, Vector4, Matrix3, Matrix4
 from warnings import warn
 
@@ -286,22 +285,16 @@ class BufferAttribute(NoneAttribute):
 
 
 class Int8BufferAttribute(BufferAttribute):
-
     def __init__(self, ary, itemSize, normalized=False) -> None:
         super().__init__( Int8Array( ary ), itemSize, normalized)
 
-
-
 class Uint8BufferAttribute(BufferAttribute):
-
     def __init__(self, ary, itemSize, normalized=False) -> None:
         super().__init__( Uint8Array( ary ), itemSize, normalized)
-
 
 class Uint8ClampedBufferAttribute(BufferAttribute):
     def __init__(self, ary, itemSize, normalized=False) -> None:
         super().__init__( Uint8Array( ary ), itemSize, normalized)
-
 
 class Int16BufferAttribute(BufferAttribute):
     def __init__(self, ary, itemSize, normalized=False) -> None:
@@ -327,10 +320,9 @@ class BigUInt64BufferAttribute(BufferAttribute):
     def __init__(self, ary, itemSize, normalized=False) -> None:
         super().__init__( BigUint64Array( ary ), itemSize, normalized)
 
-# class Float16BufferAttribute(BufferAttribute):
-#     def __init__(self, ary, itemSize, normalized=False) -> None:
-#         super().__init__( Float16Array( ary ), itemSize, normalized)
-
+class Float16BufferAttribute(BufferAttribute):
+    def __init__(self, ary, itemSize, normalized=False) -> None:
+        super().__init__( Float16Array( ary ), itemSize, normalized)
 
 class Float32BufferAttribute(BufferAttribute):
     def __init__(self, ary, itemSize, normalized=False) -> None:

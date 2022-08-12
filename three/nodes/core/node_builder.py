@@ -126,6 +126,10 @@ class NodeBuilder(NoneAttribute):
         # /*shaderStage*/
         warnings.warn( 'Abstract function.' )
 
+    def getVertexIndex( self, *args ):
+        '''/* shaderStage */'''
+        warnings.warn( 'Abstract function.' )
+
     def getFrontFacing(self, *args):
         warnings.warn('Abstract function.')
 
