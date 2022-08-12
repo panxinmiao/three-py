@@ -1,4 +1,3 @@
-# from ..bytebuffer import ByteBuffer
 import abc
 import struct, uuid
 from typing import Iterable
@@ -29,7 +28,6 @@ class TypedArray(metaclass=abc.ABCMeta):
 
         ary._buffer = buffer
         ary._byteOffset = byteOffset
-        #ary._byteLength = byteLength
         ary._length = length
         return ary
 
@@ -54,10 +52,6 @@ class TypedArray(metaclass=abc.ABCMeta):
             raise ValueError(f'byte length of {ary.name} should be a multiple of {el}')
         ary._length = int(byteLength / el)
         return ary
-        
-
-    # def __init__(self, buffer: bytearray, byteOffset = 0, length = None) -> None:
-    #     pass
 
     def __init__(self, __initializer: list = []) -> None:
         self._uuid = uuid.uuid1()
@@ -69,7 +63,6 @@ class TypedArray(metaclass=abc.ABCMeta):
             bytes = struct.pack(f'{self._length}{self.struct_symbol}', *__initializer)
             self._buffer = bytearray(bytes)
         self._byteOffset = 0
-        #self._byteLength = len(bytes)
 
     @property
     @abc.abstractmethod
@@ -117,7 +110,6 @@ class TypedArray(metaclass=abc.ABCMeta):
         return self
 
     def __copy__(self):
-        # return self.__class__.wrap(self.buffer.copy(), byteOffset=self.byteOffset, length=self.length)
         return self.__class__.wrap(self.range_buffer())
 
     def range_buffer(self):
@@ -128,22 +120,13 @@ class TypedArray(metaclass=abc.ABCMeta):
             src_offset = self._byteOffset + n * self.bytes_per_element
             return struct.unpack_from(self.struct_symbol, self._buffer, src_offset)[0]
         if isinstance(n, slice):
-            # start = n.start or 0
-            # stop = n.stop or self.length
-            # start = start*self.bytes_per_element
-            # stop = self.byteOffset + stop*self.bytes_per_element
-
-
             _start = n.start*self.bytes_per_element if n.start else None
             _stop = n.stop*self.bytes_per_element if n.stop else None
-            #_step = n.step*self.bytes_per_element if n.step else None
 
             _s = slice(_start, _stop , None)
             buffer = self.buffer[_s]
             return self.__class__.wrap(buffer, 0)
-            #return self.__class__(buffer, 0)
 
-    
     def __setitem__(self, n , v):
         if isinstance(n, int):
             if n >= self.length:
@@ -154,7 +137,6 @@ class TypedArray(metaclass=abc.ABCMeta):
                 raise ValueError(f"a number is required (got type {v.__class__.__name__})")
             src_offset = self._byteOffset + n * self.bytes_per_element
             struct.pack_into(self.struct_symbol, self._buffer, src_offset, v)
-            #struct.unpack_from(self.struct_symbol, self._buffer, src_offset)[0]
         if isinstance(n, slice):
             if isinstance(v, list):
                 bytes = struct.pack(f'{len(v)}{self.struct_symbol}', *v)
@@ -168,11 +150,8 @@ class TypedArray(metaclass=abc.ABCMeta):
 
             _start = n.start*self.bytes_per_element if n.start else None
             _stop = n.stop*self.bytes_per_element if n.stop else None
-            #_step = n.step*self.bytes_per_element if n.step else None
 
             _s = slice(_start, _stop , None)
-
-            #self._length += (len(v) - len(self[n]))
 
             self.buffer[_s] = bytes
 
@@ -278,10 +257,10 @@ class Uint32Array(TypedArray):
     bytes_per_element = 4
     struct_symbol = 'I'
 
-# class Float16Array(TypedArray):
-#     name = 'Float32Array'
-#     bytes_per_element = 2
-#     struct_symbol = 'f'
+class Float16Array(TypedArray):
+    name = 'Float16Array'
+    bytes_per_element = 2
+    struct_symbol = 'e'
 
 class Float32Array(TypedArray):
     name = 'Float32Array'

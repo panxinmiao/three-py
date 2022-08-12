@@ -147,22 +147,4 @@ class Skeleton(NoneAttribute):
                 s += print_tree(bone)
         
         return s
-        
 
-    # @property
-    # def bones(self):
-    #     return self._bones
-
-    # @property
-    # def boneInverses(self):
-    #     return self._boneInverses
-
-    def pose(self):
-        """TODO recover the bind-time world matrices."""
-        pass
-
-    def fromJson(self):
-        pass
-    
-    def toJson(self):
-        pass

@@ -106,7 +106,7 @@ class Box3(NoneAttribute):
         return self.expandByObject( object, precise )
 
     def clone( self ):
-        return Box3.copy( self )
+        return Box3().copy( self )
 
     def copy( self, box: 'Box3' ):
         self.min.copy( box.min )
