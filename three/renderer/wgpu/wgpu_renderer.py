@@ -503,14 +503,20 @@ class WgpuRenderer(NoneAttribute):
     def compute( self, *computeNodes ):
 
         device = self._device
+        computePipelines = self._computePipelines
 
         cmdEncoder:wgpu.GPUCommandEncoder = device.create_command_encoder()
 
         passEncoder:wgpu.GPUComputePassEncoder = cmdEncoder.begin_compute_pass()
 
         for computeNode in computeNodes:
+
+            # onInit
+            if not computePipelines.has(computeNode):
+                computeNode.onInit(renderer=self)
+
             # pipeline
-            pipeline = self._computePipelines.get(computeNode)
+            pipeline = computePipelines.get(computeNode)
             passEncoder.set_pipeline( pipeline )
 
             # node
