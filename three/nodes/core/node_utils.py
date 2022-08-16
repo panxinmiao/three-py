@@ -10,6 +10,19 @@ def getNodesKeys( object:'object' ):
 
     return props
 
+def getCacheKey( object ):
+    cacheKey = '{'
+
+    if object.isNode:
+        cacheKey += f'uuid:"{ object.uuid }",'
+
+    for property in getNodesKeys( object ):
+        cacheKey += f'{ property }:{ object[ property ].getCacheKey() },'
+
+    cacheKey += '}'
+
+    return cacheKey
+
 def getValueType( value ):
     if type(value) == int or type(value) == float:
         return 'float'

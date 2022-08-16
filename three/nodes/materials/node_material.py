@@ -2,6 +2,7 @@ from inspect import isfunction
 from three.materials import ShaderMaterial
 from ..core.expression_node import ExpressionNode
 from ..core.attribute_node import AttributeNode
+from ..core.node_utils import getCacheKey
 
 from ..shadernode.shader_node_elements import (
     float, vec3, vec4,
@@ -17,6 +18,8 @@ class NodeMaterial(ShaderMaterial):
         super().__init__()
         self.lights = True
 
+        self._type = self.__class__.__name__
+
     def build( self, builder ):
 
         self.generatePosition(builder)
@@ -26,10 +29,11 @@ class NodeMaterial(ShaderMaterial):
 
         outgoingLightNode = self.generateLight( builder, { 'diffuseColorNode':diffuseColorNode, 'lightsNode':lightsNode } )
 
-        self.generateOutput( builder, { 'diffuseColorNode':diffuseColorNode, 'outgoingLightNode': outgoingLightNode } )
+        self.generateOutput( builder, { 'diffuseColorNode': diffuseColorNode, 'outgoingLightNode': outgoingLightNode } )
 
     def customProgramCacheKey(self):
-        return self.uuid + '-' + str(self.version)
+        #return self.uuid + '-' + str(self.version)
+        return getCacheKey( self )
 
     def generatePosition(self, builder):
 

@@ -4,7 +4,7 @@ import uuid, warnings
 from three.structure import NoneAttribute
 from .constants import NodeUpdateType
 from .node_builder import NodeBuilder
-from .node_utils import getNodesKeys
+from .node_utils import getCacheKey
 
 _nodeId = 0
 
@@ -34,6 +34,10 @@ class Node(NoneAttribute):
                 children.append(object)
 
         return children
+
+    def getCacheKey(self):
+        # needs to be verified
+        return getCacheKey( self )
 
     def getHash(self, *args):       # ( builder )
         return str(self.uuid)
