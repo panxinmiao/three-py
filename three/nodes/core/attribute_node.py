@@ -1,5 +1,5 @@
 from .node import Node
-from .vary_node import VaryNode
+from .varying_node import VaryingNode
 from .node_builder import NodeBuilder
 
 class AttributeNode(Node):
@@ -32,8 +32,8 @@ class AttributeNode(Node):
         if builder.isShaderStage( 'vertex' ):
             return attribute.name
         else:
-            nodeVary = VaryNode( self )
-            return nodeVary.build( builder, attribute.type )
+            nodeVarying = VaryingNode( self )
+            return nodeVarying.build( builder, attribute.type )
 
     
 

@@ -2,7 +2,7 @@
 
 from ..core.node import Node
 from ..core.attribute_node import AttributeNode
-from ..core.vary_node import VaryNode
+from ..core.varying_node import VaryingNode
 from ..math.math_node import MathNode
 from ..math.operator_node import OperatorNode
 from .model_node import ModelNode
@@ -28,17 +28,17 @@ class NormalNode(Node):
         if scope == NormalNode.GEOMETRY:
             outputNode = AttributeNode( 'normal', 'vec3' )
         elif scope == NormalNode.LOCAL:
-            outputNode = VaryNode( NormalNode( NormalNode.GEOMETRY ) )
+            outputNode = VaryingNode( NormalNode( NormalNode.GEOMETRY ) )
         elif scope == NormalNode.VIEW:
             vertexNormalNode = OperatorNode( '*', ModelNode( ModelNode.NORMAL_MATRIX ), NormalNode( NormalNode.LOCAL ) )
-            outputNode = MathNode( MathNode.NORMALIZE, VaryNode( vertexNormalNode ) )
+            outputNode = MathNode( MathNode.NORMALIZE, VaryingNode( vertexNormalNode ) )
         elif scope == NormalNode.WORLD:
             
             #vertexNormalNode = inverseTransformDirection.call( { 'dir': NormalNode( NormalNode.VIEW ), 'matrix': CameraNode( CameraNode.VIEW_MATRIX ) } )
             # To use INVERSE_TRANSFORM_DIRECTION only inverse the param order like this: MathNode( ..., Vector, Matrix );
 
             vertexNormalNode = MathNode( MathNode.TRANSFORM_DIRECTION, NormalNode( NormalNode.VIEW ), CameraNode( CameraNode.VIEW_MATRIX ) )
-            outputNode = MathNode( MathNode.NORMALIZE, VaryNode( vertexNormalNode ) )
+            outputNode = MathNode( MathNode.NORMALIZE, VaryingNode( vertexNormalNode ) )
 
         return outputNode.build( builder )
 

@@ -176,9 +176,9 @@ class WgpuNodeBuilder(NodeBuilder):
         if shaderStage is None:
             shaderStage =  self.shaderStage 
 
-        if node.isNodeVary:
+        if node.isNodeVarying:
             if shaderStage == 'vertex':
-                return f'NodeVarys.{ node.name }'
+                return f'NodeVaryings.{ node.name }'
 
         elif node.isNodeUniform:
             name = node.name
@@ -336,20 +336,20 @@ class WgpuNodeBuilder(NodeBuilder):
         return f"\n{code}\n"
 
 
-    def getVarys(self, shaderStage ):
+    def getVaryings(self, shaderStage ):
         snippets = []
         if shaderStage == 'vertex':
             self.getBuiltin('position', 'Vertex', 'vec4<f32>', 'vertex')
 
-            varys = self.varys
+            varyings = self.varyings
 
-            for index, vary in enumerate(varys):
-                snippets.append(f'@location( {index} ) { vary.name } : { self.getType( vary.type ) }' )
+            for index, varying in enumerate(varyings):
+                snippets.append(f'@location( {index} ) { varying.name } : { self.getType( varying.type ) }' )
 
         elif shaderStage == 'fragment':
-            varys = self.varys
-            for index, vary in enumerate(varys):
-                snippets.append( f'@location( {index} ) { vary.name } : { self.getType( vary.type ) }' )
+            varyings = self.varyings
+            for index, varying in enumerate(varyings):
+                snippets.append( f'@location( {index} ) { varying.name } : { self.getType( varying.type ) }' )
 
         for val in self.builtins[shaderStage].values():
             name = val["name"]
@@ -358,7 +358,7 @@ class WgpuNodeBuilder(NodeBuilder):
             snippets.append(f'@builtin({name}) {property}: {type}')
 
         code = ',\n\t'.join(snippets)
-        return self._getWGSLStruct( 'NodeVarysStruct', '\t' + code ) if shaderStage == 'vertex' else code
+        return self._getWGSLStruct( 'NodeVaryingsStruct', '\t' + code ) if shaderStage == 'vertex' else code
 
     
     def getUniforms(self, shaderStage ):
@@ -454,7 +454,7 @@ class WgpuNodeBuilder(NodeBuilder):
                     flow += '// FLOW RESULT\n\t'
 
                     if shaderStage == 'vertex':
-                        flow += 'NodeVarys.Vertex = '
+                        flow += 'NodeVaryings.Vertex = '
 
                     elif shaderStage == 'fragment':
                         flow += 'return '
@@ -465,7 +465,7 @@ class WgpuNodeBuilder(NodeBuilder):
 
             stageData.uniforms = self.getUniforms( shaderStage )
             stageData.attributes = self.getAttributes( shaderStage )
-            stageData.varys = self.getVarys( shaderStage )
+            stageData.varyings = self.getVaryings( shaderStage )
             stageData.vars = self.getVars( shaderStage )
             stageData.codes = self.getCodes( shaderStage )
             stageData.flow = flow
@@ -517,17 +517,17 @@ class WgpuNodeBuilder(NodeBuilder):
 // uniforms
 {shaderData.uniforms}
 
-// varys
-{shaderData.varys}
+// varyings
+{shaderData.varyings}
 
 // codes
 {shaderData.codes}
 
 @stage( vertex )
-fn main( {shaderData.attributes} ) -> NodeVarysStruct {{
+fn main( {shaderData.attributes} ) -> NodeVaryingsStruct {{
 
     // system
-    var NodeVarys: NodeVarysStruct;
+    var NodeVaryings: NodeVaryingsStruct;
 
     // vars
     {shaderData.vars}
@@ -535,7 +535,7 @@ fn main( {shaderData.attributes} ) -> NodeVarysStruct {{
     // flow
     {shaderData.flow}
 
-    return NodeVarys;
+    return NodeVaryings;
 
 }}
 '''
@@ -550,7 +550,7 @@ fn main( {shaderData.attributes} ) -> NodeVarysStruct {{
 {shaderData.codes}
 
 @stage( fragment )
-fn main( {shaderData.varys} ) -> @location( 0 ) vec4<f32> {{
+fn main( {shaderData.varyings} ) -> @location( 0 ) vec4<f32> {{
 
     // vars
     {shaderData.vars}

@@ -8,7 +8,7 @@ from .node_attribute import NodeAttribute
 from .node_code import NodeCode
 from .node_uniform import NodeUniform
 from .node_var import NodeVar
-from .node_vary import NodeVary
+from .node_varying import NodeVarying
 from .node_keywords import NodeKeywords
 
 defaultShaderStages = ['fragment', 'vertex']
@@ -52,7 +52,7 @@ class NodeBuilder(NoneAttribute):
         self.uniforms = {'vertex': [], 'fragment': [], 'compute': [], 'index': 0}
         self.codes = {'vertex': [], 'fragment': [], 'compute': []}
         self.attributes = []
-        self.varys = []
+        self.varyings = []
         self.vars = {'vertex': [], 'fragment': [], 'compute': []}
         self.flow = { 'code': '' }
         self.stack = []
@@ -335,20 +335,20 @@ class NodeBuilder(NoneAttribute):
 
         return nodeVar
 
-    def getVaryFromNode(self, node, type ):
+    def getVaryingFromNode(self, node, type ):
 
         nodeData = self.getDataFromNode( node, None )
 
-        nodeVary = nodeData.vary
+        nodeVarying = nodeData.varying
 
-        if nodeVary is None:
-            varys = self.varys
-            index = len(varys)
-            nodeVary = NodeVary( 'nodeVary' + str(index), type )
-            varys.append( nodeVary )
-            nodeData.vary = nodeVary
+        if nodeVarying is None:
+            varyings = self.varyings
+            index = len(varyings)
+            nodeVarying = NodeVarying( 'nodeVarying' + str(index), type )
+            varyings.append( nodeVarying )
+            nodeData.varying = nodeVarying
         
-        return nodeVary
+        return nodeVarying
 
     def getCodeFromNode(self, node, type, shaderStage = None):
         if shaderStage is None:
@@ -412,7 +412,7 @@ class NodeBuilder(NoneAttribute):
     def getAttributes(self, shaderStage ):
         warnings.warn( 'Abstract function.' )
 
-    def getVarys(self,  shaderStage):
+    def getVaryings(self,  shaderStage):
         warnings.warn( 'Abstract function.' )
 
 

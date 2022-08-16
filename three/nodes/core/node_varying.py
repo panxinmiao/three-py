@@ -1,8 +1,8 @@
 from three.structure import NoneAttribute
 
-class NodeVary(NoneAttribute):
+class NodeVarying(NoneAttribute):
     
-    isNodeVary = True
+    isNodeVarying = True
 
     def __init__(self, name, type) -> None:
         super().__init__()

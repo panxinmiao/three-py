@@ -11,7 +11,7 @@ from ..core.function_node import FunctionNode
 from ..core.function_call_node import FunctionCallNode
 from ..core.code_node import CodeNode
 from ..core.expression_node import ExpressionNode
-from ..core.vary_node import VaryNode
+from ..core.varying_node import VaryingNode
 
 from ..accessors.buffer_node import BufferNode
 from ..accessors.storage_buffer_node import StorageBufferNode
@@ -108,7 +108,7 @@ instanceIndex = nodeImmutable( InstanceIndexNode )
 vertexIndex = nodeImmutable( VertexIndexNode )
 label = nodeProxy( VarNode )
 temp = label
-vary = nodeProxy( VaryNode )
+varying = nodeProxy( VaryingNode )
 
 
 #accesors
