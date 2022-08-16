@@ -21,12 +21,12 @@ from .core.node_function_input import NodeFunctionInput
 from .core.node_keywords import NodeKeywords 
 from .core.node_uniform import NodeUniform 
 from .core.node_var import NodeVar 
-from .core.node_vary import NodeVary 
+from .core.node_varying import NodeVarying 
 from .core.property_node import PropertyNode 
 from .core.temp_node import TempNode 
 from .core.uniform_node import UniformNode 
 from .core.var_node import VarNode 
-from .core.vary_node import VaryNode 
+from .core.varying_node import VaryingNode 
 
 # accessors
 from .accessors.buffer_node import BufferNode 

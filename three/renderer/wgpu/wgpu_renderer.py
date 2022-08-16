@@ -17,9 +17,10 @@ from .wgpu_render_state import WebGPURenderStates
 from .wgpu_textures import WgpuTextures
 from .wgpu_background import WgpuBackground
 from .nodes.wgpu_nodes import WgpuNodes
+from .wgpu_utils import WgpuUtils
 
 from ...constants import LinearEncoding
-from .constants import GPUStoreOp, GPUTextureFormat, GPUIndexFormat, GPUTextureUsage, GPUPrimitiveTopology
+from .constants import GPUStoreOp, GPUTextureFormat, GPUIndexFormat, GPUTextureUsage
 
 _frustum = Frustum()
 _projScreenMatrix = Matrix4()
@@ -154,9 +155,10 @@ class WgpuRenderer(NoneAttribute):
         self._geometries = WgpuGeometries( self._attributes, self._info )
         self._textures = WgpuTextures( device, self._properties, self._info )
         self._objects = WgpuObjects( self._geometries, self._info )
+        self._utils = WgpuUtils( self )
         self._nodes = WgpuNodes( self, self._properties )
         self._computePipelines = WgpuComputePipelines( device, self._nodes)
-        self._renderPipelines = WgpuRenderPipelines( self, device, parameters.sampleCount, self._nodes )
+        self._renderPipelines = WgpuRenderPipelines( device, self._nodes, self._utils )
         self._renderPipelines.bindings = WgpuBindings( device, self._info, self._properties, self._textures, self._renderPipelines, self._computePipelines, self._attributes, self._nodes )
         self._bindings = self._renderPipelines.bindings
         self._renderLists =  WgpuRenderLists()
@@ -409,50 +411,6 @@ class WgpuRenderer(NoneAttribute):
             'maxDepth': maxDepth
         })
 
-    # TODO: combine encoding and color format
-    def getCurrentEncoding(self):
-        renderTarget = self.getRenderTarget()
-        return renderTarget.texture.encoding if renderTarget is not None else self.outputEncoding
-
-    def getCurrentColorFormat(self):
-
-        format = None
-
-        renderTarget = self.getRenderTarget()
-
-        if renderTarget is not None:
-            renderTargetProperties = self._properties.get( renderTarget )
-            format = renderTargetProperties.colorTextureFormat
-        else:
-            format = GPUTextureFormat.BGRA8Unorm  # default context format
-            #format = self._context.get_preferred_format(self._device.adapter)
-
-        return format
-
-    def getCurrentDepthStencilFormat(self):
-        format = None
-
-        renderTarget = self.getRenderTarget()
-
-        if renderTarget is not None:
-            renderTargetProperties = self._properties.get( renderTarget )
-            format = renderTargetProperties.depthTextureFormat
-        else:
-            format = GPUTextureFormat.Depth24PlusStencil8
-
-        return format
-
-    def getPrimitiveTopology( self, object ):
-
-        if object.isMesh or object.isSprite:
-            return GPUPrimitiveTopology.TriangleList
-        elif object.isPoints:
-            return GPUPrimitiveTopology.PointList
-        elif object.isLineSegments:
-            return GPUPrimitiveTopology.LineList
-        elif object.isLine:
-            return GPUPrimitiveTopology.LineStrip
-
     def getClearColor( self, target ):
         return target.copy( self._clearColor )
 
@@ -503,14 +461,20 @@ class WgpuRenderer(NoneAttribute):
     def compute( self, *computeNodes ):
 
         device = self._device
+        computePipelines = self._computePipelines
 
         cmdEncoder:wgpu.GPUCommandEncoder = device.create_command_encoder()
 
         passEncoder:wgpu.GPUComputePassEncoder = cmdEncoder.begin_compute_pass()
 
         for computeNode in computeNodes:
+
+            # onInit
+            if not computePipelines.has(computeNode):
+                computeNode.onInit(renderer=self)
+
             # pipeline
-            pipeline = self._computePipelines.get(computeNode)
+            pipeline = computePipelines.get(computeNode)
             passEncoder.set_pipeline( pipeline )
 
             # node

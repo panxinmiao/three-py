@@ -16,10 +16,11 @@ from ...constants import ( NoBlending, NormalBlending, AdditiveBlending, Subtrac
 
 class WgpuRenderPipeline():
 
-    def __init__(self, device:'wgpu.GPUDevice', renderer:'three.WgpuRenderer', sampleCount) -> None:
+    def __init__(self, device:'wgpu.GPUDevice', utils) -> None:
         self._device = device
-        self._renderer = renderer
-        self._sampleCount = sampleCount
+        self._utils = utils
+        # self._renderer = renderer
+        # self._sampleCount = sampleCount
 
         self.cacheKey = None
         self.stageVertex = None
@@ -88,8 +89,11 @@ class WgpuRenderPipeline():
         primitiveState = self._getPrimitiveState( object, material )
         colorWriteMask = self._getColorWriteMask( material )
         depthCompare = self._getDepthCompare( material )
-        colorFormat = self._renderer.getCurrentColorFormat()
-        depthStencilFormat = self._renderer.getCurrentDepthStencilFormat()
+        colorFormat = self._utils.getCurrentColorFormat()
+        depthStencilFormat = self._utils.getCurrentDepthStencilFormat()
+        sampleCount = self._utils.getSampleCount()
+        # colorFormat = self._renderer.getCurrentColorFormat()
+        # depthStencilFormat = self._renderer.getCurrentDepthStencilFormat()
         
         _vertex = {}
         _vertex.update(stageVertex.stage, buffers = vertexBuffers)
@@ -123,7 +127,7 @@ class WgpuRenderPipeline():
             primitive = primitiveState,
             depth_stencil = depthStencil,
             multisample = {
-                'count': self._sampleCount
+                'count': sampleCount
             }
         )
 
@@ -328,7 +332,7 @@ class WgpuRenderPipeline():
     def _getPrimitiveState( self, object, material:'three.Material' ):
         descriptor = {}
         
-        descriptor['topology'] = self._renderer.getPrimitiveTopology( object )
+        descriptor['topology'] = self._utils.getPrimitiveTopology( object )
 
         if object.isLine == True and object.isLineSegments != True:
             geometry = object.geometry

@@ -14,6 +14,9 @@ class WgpuComputePipelines:
             'compute': {}
         })
 
+    def has(self, computeNode):
+        return computeNode in self.pipelines
+
     def get(self, computeNode):
 
         pipeline = self.pipelines.get(computeNode)

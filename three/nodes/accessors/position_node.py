@@ -1,7 +1,7 @@
 #from three.renderer.nodes import Node, AttributeNode, VaryNode, ModelNode, MathNode, OperatorNode
 from ..core.node import Node
 from ..core.attribute_node import AttributeNode
-from ..core.vary_node import VaryNode
+from ..core.varying_node import VaryingNode
 from .model_node import ModelNode
 from ..math.operator_node import OperatorNode
 from ..math.math_node import MathNode
@@ -28,19 +28,19 @@ class PositionNode(Node):
             outputNode = AttributeNode( 'position', 'vec3' )
 
         elif scope == PositionNode.LOCAL:
-            outputNode = VaryNode( PositionNode( PositionNode.GEOMETRY ) )
+            outputNode = VaryingNode( PositionNode( PositionNode.GEOMETRY ) )
 
         elif scope == PositionNode.WORLD:
             #vertexPositionNode = transformDirection.call( { 'dir': PositionNode( PositionNode.LOCAL ), 'matrix': ModelNode( ModelNode.WORLD_MATRIX ) } )
             vertexPositionNode = MathNode( MathNode.TRANSFORM_DIRECTION, ModelNode( ModelNode.WORLD_MATRIX ), PositionNode( PositionNode.LOCAL ) )
-            outputNode = VaryNode( vertexPositionNode )
+            outputNode = VaryingNode( vertexPositionNode )
 
         elif scope == PositionNode.VIEW:
             vertexPositionNode = OperatorNode( '*', ModelNode( ModelNode.VIEW_MATRIX ), PositionNode( PositionNode.LOCAL ) )
-            outputNode = VaryNode( vertexPositionNode )
+            outputNode = VaryingNode( vertexPositionNode )
 
         elif scope == PositionNode.VIEW_DIRECTION:
             vertexPositionNode = MathNode( MathNode.NEGATE, PositionNode( PositionNode.VIEW ) )
-            outputNode = MathNode( MathNode.NORMALIZE, VaryNode( vertexPositionNode ) )
+            outputNode = MathNode( MathNode.NORMALIZE, VaryingNode( vertexPositionNode ) )
 
         return outputNode.build( builder, self.getNodeType( builder ) )

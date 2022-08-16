@@ -6,13 +6,13 @@ import os
 
 class WgpuRenderPipelines:
 
-    def __init__(self, renderer, device, sampleCount, nodes, bindings = None) -> None:
+    def __init__(self, device, nodes, utils) -> None:
         
-        self.renderer = renderer
         self.device = device
-        self.sampleCount = sampleCount
         self.nodes = nodes
-        self.bindings = bindings
+        self.utils = utils
+
+        self.bindings = None
 
         self.pipelines = []
         self.objectCache = WeakKeyDictionary()
@@ -98,7 +98,7 @@ class WgpuRenderPipelines:
 
         
         if pipeline is None:
-            pipeline = WgpuRenderPipeline( self.device, self.renderer, self.sampleCount )
+            pipeline = WgpuRenderPipeline( self.device, self.utils )
             pipeline.init( cacheKey, stageVertex, stageFragment, object, nodeBuilder )
             pipelines.append( pipeline )
 
@@ -107,7 +107,7 @@ class WgpuRenderPipelines:
     def _computeCacheKey( self, stageVertex, stageFragment, object ):
 
         material = object.material
-        renderer = self.renderer
+        utils = self.utils
 
         parameters = [
             stageVertex.id, stageFragment.id,
@@ -120,9 +120,9 @@ class WgpuRenderPipelines:
             material.stencilFail, material.stencilZFail, material.stencilZPass,
             material.stencilFuncMask, material.stencilWriteMask,
             material.side,
-            self.sampleCount,
-            renderer.getCurrentEncoding(), renderer.getCurrentColorFormat(), renderer.getCurrentDepthStencilFormat(),
-            renderer.getPrimitiveTopology( object )
+            utils.getSampleCount(),
+            utils.getCurrentEncoding(), utils.getCurrentColorFormat(), utils.getCurrentDepthStencilFormat(),
+            utils.getPrimitiveTopology( object )
         ]
 
         return ','.join( [ str(e) for e in parameters] )
@@ -213,16 +213,17 @@ class WgpuRenderPipelines:
 
         # check renderer state
 
-        renderer = self.renderer
+        utils = self.utils
 
-        encoding = renderer.getCurrentEncoding()
-        colorFormat = renderer.getCurrentColorFormat()
-        depthStencilFormat = renderer.getCurrentDepthStencilFormat()
+        sampleCount = utils.getSampleCount()
+        encoding = utils.getCurrentEncoding()
+        colorFormat = utils.getCurrentColorFormat()
+        depthStencilFormat = utils.getCurrentDepthStencilFormat()
 
-        if ( cache.sampleCount != self.sampleCount or cache.encoding != encoding or
+        if ( cache.sampleCount != sampleCount or cache.encoding != encoding or
             cache.colorFormat != colorFormat or cache.depthStencilFormat != depthStencilFormat ):
 
-            cache.sampleCount = self.sampleCount
+            cache.sampleCount = sampleCount
             cache.encoding = encoding
             cache.colorFormat = colorFormat
             cache.depthStencilFormat = depthStencilFormat

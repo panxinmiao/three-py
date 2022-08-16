@@ -27,10 +27,12 @@ class ComputeNode(Node):
             size *= self.workgroupSize[i]
         self.dispatchCount = math.ceil(self.count / size)
 
+    def onInit(self, *, renderer, **kwargs):
+        pass
+
     def update(self, params):
         renderer = params['renderer']
         renderer.compute(self)
-
 
     def generate(self, builder):
         shaderStage = builder.shaderStage

@@ -115,14 +115,7 @@ class MathNode(TempNode):
         b = self.bNode
         c = self.cNode
 
-        isWebGL = builder.renderer.isWebGLRenderer == True
-
-        if isWebGL and ( method == MathNode.DFDX or method == MathNode.DFDY ) and output == 'vec3':
-            return JoinNode( [
-                MathNode( method, SplitNode( a, 'x' ) ),
-                MathNode( method, SplitNode( a, 'y' ) ),
-                MathNode( method, SplitNode( a, 'z' ) )
-            ] ).build( builder )
+        # isWebGL = builder.renderer.isWebGLRenderer == True
 
         if method == MathNode.TRANSFORM_DIRECTION:
 
@@ -173,7 +166,7 @@ class MathNode(TempNode):
                     b.build( builder, inputType )
                 ])
 
-            elif (isWebGL and (method == MathNode.MIN or method == MathNode.MAX)) or method == MathNode.MOD:
+            elif method == MathNode.MOD:
                 params.extend([
                     a.build( builder, inputType ),
                     b.build( builder, 'float' if builder.getTypeLength( b.getNodeType( builder ) ) == 1 else inputType )
