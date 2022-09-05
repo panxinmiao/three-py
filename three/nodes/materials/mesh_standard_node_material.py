@@ -36,9 +36,6 @@ class MeshStandardNodeMaterial(NodeMaterial):
         self.metalnessNode = None
         self.roughnessNode = None
 
-        self.clearcoatNode = None
-        self.clearcoatRoughnessNode = None
-
         self.envNode = None
 
         self.lightsNode = None
@@ -150,9 +147,6 @@ class MeshStandardNodeMaterial(NodeMaterial):
 
         self.metalnessNode = source.metalnessNode
         self.roughnessNode = source.roughnessNode
-
-        self.clearcoatNode = source.clearcoatNode
-        self.clearcoatRoughnessNode = source.clearcoatRoughnessNode
 
         self.envNode = source.envNode
 

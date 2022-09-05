@@ -11,12 +11,12 @@ class BoxGeometry(BufferGeometry):
         self._type = 'BoxGeometry'
 
         self.parameters = {
-            width: width,
-            height: height,
-            depth: depth,
-            widthSegments: widthSegments,
-            heightSegments: heightSegments,
-            depthSegments: depthSegments
+            'width': width,
+            'height': height,
+            'depth': depth,
+            'widthSegments': widthSegments,
+            'heightSegments': heightSegments,
+            'depthSegments': depthSegments
         }
 
         scope = self

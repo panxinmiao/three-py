@@ -3,21 +3,20 @@ from ..core import Float32BufferAttribute
 from ..math import Vector3, Vector2
 import math
 
-
 class CylinderGeometry(BufferGeometry):
 
     def __init__(self, radiusTop = 1, radiusBottom = 1, height = 1, radialSegments = 8, heightSegments = 1, openEnded = False, thetaStart = 0, thetaLength = math.pi * 2 ) -> None:
         super().__init__()
 
         self.parameters = {
-            radiusTop: radiusTop,
-            radiusBottom: radiusBottom,
-            height: height,
-            radialSegments: radialSegments,
-            heightSegments: heightSegments,
-            openEnded: openEnded,
-            thetaStart: thetaStart,
-            thetaLength: thetaLength
+            'radiusTop': radiusTop,
+            'radiusBottom': radiusBottom,
+            'height': height,
+            'radialSegments': radialSegments,
+            'heightSegments': heightSegments,
+            'openEnded': openEnded,
+            'thetaStart': thetaStart,
+            'thetaLength': thetaLength
         }
 
         #scope = self

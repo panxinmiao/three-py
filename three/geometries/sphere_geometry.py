@@ -9,13 +9,13 @@ class SphereGeometry(BufferGeometry):
         super().__init__()
 
         self.parameters = {
-            radius: radius,
-            widthSegments: widthSegments,
-            heightSegments: heightSegments,
-            phiStart: phiStart,
-            phiLength: phiLength,
-            thetaStart: thetaStart,
-            thetaLength: thetaLength
+            'radius': radius,
+            'widthSegments': widthSegments,
+            'heightSegments': heightSegments,
+            'phiStart': phiStart,
+            'phiLength': phiLength,
+            'thetaStart': thetaStart,
+            'thetaLength': thetaLength
         }
 
         widthSegments = max( 3, math.floor( widthSegments ) )
