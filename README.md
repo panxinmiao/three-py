@@ -24,7 +24,7 @@ pip install -U https://github.com/panxinmiao/three-py/archive/main.zip
 
 [wgpu-py](https://github.com/pygfx/wgpu-py)
 
-To run the [examples](./examples/), You probably also want to install `glwf` (or other gui backends).
+To run the [examples](./examples/), You probably also want to install `glfw` (or other gui backends).
 
 Please check the installation instructions of [wgpu-py](https://github.com/pygfx/wgpu-py) for details.
 
