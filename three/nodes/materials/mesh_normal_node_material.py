@@ -1,6 +1,10 @@
 from .node_material import NodeMaterial
 from three.materials import MeshNormalMaterial
-from ..shadernode.shader_node_base_elements import NormalNode, mul, add
+from ..core.expression_node import ExpressionNode
+
+from ..shadernode.shader_node_elements import (
+    float, assign, label, mul, add, normalize, cross, dFdx, dFdy, vec4, 
+    positionView, normalView, materialAlphaTest, materialOpacity)
 
 defaultValues = MeshNormalMaterial()
 
@@ -10,10 +14,8 @@ class MeshNormalNodeMaterial(NodeMaterial):
 
     def __init__(self, parameters = None) -> None:
         super().__init__()
-        #colorNode = NormalNode( NormalNode.VIEW )
-        #colorNode = mul(colorNode, 0.5)
-        self.colorNode = add(mul(NormalNode( NormalNode.VIEW ), 0.5), 0.5)
-        #self.colorNode = None
+
+        # self.colorNode = add(mul(NormalNode( NormalNode.VIEW ), 0.5), 0.5)
         self.opacityNode = None
         self.alphaTestNode = None
         self.lightsNode = None
@@ -32,10 +34,32 @@ class MeshNormalNodeMaterial(NodeMaterial):
         return super().copy( source )
 
     
-    # def build( self, builder ):
-    #     lightNode = self.lightNode
-    #     diffuseColorNode = self.generateMain( builder )['diffuseColorNode']
+    def generateDiffuseColor(self, builder):
 
-    #     outgoingLightNode = self.generateLight( builder, { diffuseColorNode, lightNode } )
+        # < FRAGMENT STAGE >
 
-    #     self.generateOutput( builder, { diffuseColorNode, outgoingLightNode } )
+        normalNode = normalize(cross(dFdx(positionView), dFdy(positionView))) if self.flatShading else normalView
+
+        colorNode = vec4(add(mul(normalNode, 0.5), 0.5))
+
+        opacityNode = float( self.opacityNode ) if self.opacityNode else materialOpacity
+
+        # COLOR
+        colorNode = builder.addFlow( 'fragment', label( colorNode, 'Color' ) )
+        diffuseColorNode = builder.addFlow( 'fragment', label( colorNode, 'DiffuseColor' ) )
+
+        # OPACITY
+        opacityNode = builder.addFlow( 'fragment', label( opacityNode, 'OPACITY' ) )
+        builder.addFlow( 'fragment', assign( diffuseColorNode.a, mul( diffuseColorNode.a, opacityNode ) ) )
+
+        # ALPHA TEST
+        if self.alphaTestNode or self.alphaTest > 0:
+
+            alphaTestNode = float( self.alphaTestNode ) if self.alphaTestNode else materialAlphaTest
+
+            builder.addFlow( 'fragment', label( alphaTestNode, 'AlphaTest' ) )
+
+            # @TODO: remove ExpressionNode here and then possibly remove it completely
+            builder.addFlow( 'fragment', ExpressionNode( 'if ( DiffuseColor.a <= AlphaTest ) { discard; }' ) )
+
+        return { 'colorNode': colorNode, 'diffuseColorNode': diffuseColorNode }

@@ -72,6 +72,7 @@ from .lighting.ao_node import AONode
 from .lighting.analytic_light_node import AnalyticLightNode
 from .lighting.punctual_light_node import PunctualLightNode
 from .lighting.directional_light_node import DirectionalLightNode
+from .lighting.ambient_light_node import AmbientLightNode
 
 # utils
 from .utils.array_element_node import ArrayElementNode 

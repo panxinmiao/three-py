@@ -64,11 +64,12 @@ def createMesh( geometry, bones ):
     material.color = three.Color(0xaaee00)
 
     # flat shading
-    from three.nodes import add, mul, normalize, cross, dFdx, dFdy, positionView
-    colorNode = add(mul(normalize(cross(dFdx(positionView), dFdy(positionView))), 0.5), 0.5)
+    material.flatShading = True
 
-    material.colorNode = colorNode
-    
+    # from three.nodes import add, mul, normalize, cross, dFdx, dFdy, positionView
+    # colorNode = add(mul(normalize(cross(dFdx(positionView), dFdy(positionView))), 0.5), 0.5)
+    # material.colorNode = colorNode
+
     mesh = three.SkinnedMesh(geometry, material)
     skeleton = three.Skeleton( bones )
 
