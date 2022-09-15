@@ -28,14 +28,11 @@ cylinderGeometry = three.CylinderGeometry( 5, 5, 20, 32 )
 
 sphereGeometry = three.SphereGeometry( 10, 32, 16 )
 
-# material = three.MeshStandardMaterial(side = three.DoubleSide, color = 0x049ef4)
-# material.flatShading = True
-
 loader = TextureLoader(Path(__file__).parent / "textures" )
 
 texture = loader.load("uv_grid.jpg")
 
-material = three.MeshBasicMaterial(side = three.DoubleSide)
+material = three.MeshPhongMaterial(side = three.DoubleSide)
 material.map = texture
 
 torusMesh = three.Mesh(torusGeometry, material)
@@ -69,11 +66,11 @@ scene.add(latheMesh)
 scene.add(cylinderMesh)
 scene.add(sphereMesh)
 
-# light1 = three.DirectionalLight( 0xffffff, 2 )
-# scene.add( light1 )
+light1 = three.DirectionalLight( 0xffffff, 2 )
+scene.add( light1 )
 
-# light2 = three.AmbientLight( 0xeeeeee, 2 )
-# scene.add( light2 )
+light2 = three.AmbientLight( 0xeeeeee, 2 )
+scene.add( light2 )
 
 control = three.OrbitControls(camera, canvas)
 

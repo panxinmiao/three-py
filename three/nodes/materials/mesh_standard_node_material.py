@@ -11,7 +11,7 @@ from ..display.normal_map_node import NormalMapNode
 
 from ..shadernode.shader_node_elements import (
         float, vec3, vec4, normalView, add, context,
-        assign, label, mul, invert, mix, texture, uniform,
+        assign, label, mul, invert, mix, texture, uniform, cubeTexture, nodeObject,
         materialRoughness, materialMetalness, materialEmissive)
 
 defaultValues = MeshStandardMaterial()
@@ -53,7 +53,22 @@ class MeshStandardNodeMaterial(NodeMaterial):
         colorNode = diffuseColor['colorNode']
         diffuseColorNode = diffuseColor['diffuseColorNode']
 
-        envNode = self.envNode or builder.scene.environmentNode
+        # envNode = self.envNode or builder.scene.environmentNode
+        envNode = self.envNode
+
+        if not envNode:
+            if builder.material.envMap and builder.material.envMap.isTexture:
+                envNode = cubeTexture(builder.material.envMap)
+
+        if not envNode:
+            if builder.scene.environmentNode:
+                if builder.scene.environmentNode.isTexture:
+                    envNode = cubeTexture(builder.scene.environmentNode)
+                else:
+                    envNode = nodeObject(builder.scene.environmentNode)
+            elif builder.scene.environment:
+                envNode = cubeTexture(builder.scene.environment)
+
         diffuseColorNode = self.generateStandardMaterial( builder, { 'colorNode': colorNode, 'diffuseColorNode': diffuseColorNode } )
 
         if self.lightsNode:

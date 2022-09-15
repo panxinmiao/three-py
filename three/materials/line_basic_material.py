@@ -7,18 +7,8 @@ class LineBasicMaterial(Material):
     isLineBasicMaterial = True
 
     def __init__(self, parameters={}, **kwargs) -> None:
-        '''
-        parameters = {
-            color: <hex>,
-            opacity: <float>,
-            linewidth: <float>,
-            linecap: "round",
-            linejoin: "round"
-            }
-        '''
 
         super().__init__()
-
 
         self._type = 'LineBasicMaterial'
 

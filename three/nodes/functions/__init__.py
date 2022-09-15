@@ -19,5 +19,6 @@ from .BSDF.V_GGX_SmithCorrelated import V_GGX_SmithCorrelated
 from .light.getDistanceAttenuation import getDistanceAttenuation
 from .material.getGeometryRoughness import getGeometryRoughness
 from .material.getRoughness import getRoughness
-from .physical_lighting_model import RE_Direct_Physical, PhysicalLightingModel
+from .physical_lighting_model import PhysicalLightingModel
+from .phong_lighting_model import PhongLightingModel
 

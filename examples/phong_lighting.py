@@ -1,12 +1,9 @@
 import three
-import three.nodes
-from three.nodes import *
 import time
 import math
 from wgpu.gui.auto import WgpuCanvas, run
 from pymeshio.pmx import reader
 from pathlib import Path
-
 
 p = Path(__file__).parent / "models" / "miku_pmx" / "blue.pmx"
 
@@ -41,9 +38,9 @@ geometry.setAttribute('uv', three.Float32BufferAttribute(uvs, 2))
 geometry.setIndex(pmd_file.indices)
 # geometry.computeVertexNormals()
 
-canvas = WgpuCanvas(size=(640, 480),  max_fps=60, title="Phong Light Model")
-render = three.WgpuRenderer(canvas,  antialias = True)
-#render.outputEncoding = three.sRGBEncoding
+canvas = WgpuCanvas(size=(640, 480), max_fps=60, title="PhongLighting")
+render = three.WgpuRenderer(canvas, antialias = True)
+render.outputEncoding = three.sRGBEncoding
 
 render.init()
 
@@ -53,71 +50,31 @@ camera.position.y = 10
 
 scene = three.Scene()
 
-material = three.MeshBasicMaterial(color = 0xffffff, shinniness = 32.0)
+material = three.MeshPhongMaterial(color = 0x0ffffff)
+material.shininess = 64
 
 material.side = three.DoubleSide
 
 mesh = three.Mesh(geometry, material)
 mesh.rotation.y = math.pi/6 * 5
-scene.add(mesh)
 
+scene.add(mesh)
 
 sp = three.SphereGeometry(0.5, 16, 8)
 
-light1 = three.PointLight(0xffaa00, math.pi)
+light1 = three.PointLight(0xffaa00, 2*math.pi)
 light1.add(three.Mesh(sp, three.MeshBasicMaterial({'color': 0xffaa00})))
 scene.add(light1)
 
-light2 = three.PointLight(0x0040ff, math.pi)
+light2 = three.PointLight(0x0040ff, 2*math.pi)
 light2.add(three.Mesh(sp, three.MeshBasicMaterial({'color': 0x0040ff})))
 scene.add(light2)
 
-light3 = three.PointLight(0x80ff80, math.pi)
+light3 = three.PointLight(0x80ff80, 2*math.pi)
 light3.add(three.Mesh(sp, three.MeshBasicMaterial({'color': 0x80ff80})))
 scene.add(light3)
 
-allLightsNode = three.nodes.LightsNode().fromLights([light1, light2, light3])
-
-
-def _phong_light_model(inputs, *args):
-    '''
-        Reference: https://sotrh.github.io/learn-wgpu/intermediate/tutorial10-lighting/#the-blinn-phong-model
-    '''
-
-    lightDirection = inputs['lightDirection']
-    lightColor = inputs['lightColor']
-
-    lightColor = lightColor * math.pi
-
-    # ambient
-    ambientStrength = 0.1
-    ambientColor = lightColor * ambientStrength
-
-    # flat shading
-    # normal = add(
-    #     mul(normalize(cross(dFdx(positionWorld), dFdy(positionWorld))), 0.5), 0.5)
-
-    # diffuse
-    diffuseStrength = max(dot(transformedNormalView, lightDirection), 0)
-    diffuseColor = lightColor * diffuseStrength
-
-    halfDirection = normalize(positionViewDirection + lightDirection)
-    specularStrength = pow(
-        max(dot(normalWorld, halfDirection), 0.0), MaterialReferenceNode('shinniness', 'float'))
-
-    specularColor = specularStrength * lightColor
-
-    total = (ambientColor + diffuseColor+ specularColor) * materialColor
-    inputs.reflectedLight.directDiffuse.add(total)
-    
-
-
-
-phongLightModel = three.nodes.ShaderNode(_phong_light_model)
-lightingModelContext = three.nodes.ContextNode(
-    allLightsNode, {"lightingModelNode": {"direct": phongLightModel}})
-
-material.lightsNode = lightingModelContext
+# scene.add(three.AmbientLight(0x111111))
 
 control = three.OrbitControls(camera, canvas)
 
