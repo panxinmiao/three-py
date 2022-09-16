@@ -7,7 +7,7 @@ from ..lighting.ao_node import AONode
 from ..functions.phong_lighting_model import PhongLightingModel
 
 from ..display.normal_map_node import NormalMapNode
-
+from ..lighting.environment_node import EnvironmentNode
 from ..accessors.material_reference_node import MaterialReferenceNode
 from ..accessors.texture_node import TextureNode
 from ..utils.split_node import SplitNode
@@ -61,9 +61,6 @@ class MeshPhongNodeMaterial(NodeMaterial):
 
         materialLightsNode = []
 
-        # if envNode:
-        #     materialLightsNode.append(EnvironmentNode(envNode))
-
         if builder.material.aoMap:
             materialLightsNode.append(AONode(texture(builder.material.aoMap)))
 
@@ -85,16 +82,9 @@ class MeshPhongNodeMaterial(NodeMaterial):
 
         # SPECULAR COLOR
 
-        specularNode = self.specularNode or MaterialReferenceNode( 'specular', 'color' )
-        # if not specularNode:
-        #     materialSpecular = MaterialReferenceNode( 'specular', 'color' )
-        #     if material.specularMap and material.specularMap.isTexture:
-        #         specularMap = TextureNode(material.specularMap)
-        #         specularNode = OperatorNode('*', materialSpecular, specularMap)
-        #     else:
-        #         specularNode = materialSpecular
+        specularColorNode = self.specularNode or MaterialReferenceNode( 'specular', 'color' )
 
-        specularColorNode = vec4(specularNode) 
+        specularColorNode = vec4(specularColorNode) 
 
         builder.addFlow( 'fragment', label( specularColorNode, 'SpecularColor' ) )
 
@@ -135,29 +125,27 @@ class MeshPhongNodeMaterial(NodeMaterial):
             vec3(self.emissiveNode or materialEmissive), outgoingLightNode)
 
         # ENV MAPPING
-        envNode = self.envNode
-
-        if not envNode:
+        if not self.envNode:
             if builder.material.envMap and builder.material.envMap.isTexture:
-                envNode = cubeTexture(builder.material.envMap)
+                self.envNode = cubeTexture(builder.material.envMap)
 
-        if not envNode:
+        if not self.envNode:
             if builder.scene.environmentNode:
                 if builder.scene.environmentNode.isTexture:
-                    envNode = cubeTexture(builder.scene.environmentNode)
+                    self.envNode = cubeTexture(builder.scene.environmentNode)
                 else:
-                    envNode = nodeObject(builder.scene.environmentNode)
+                    self.envNode = nodeObject(builder.scene.environmentNode)
             elif builder.scene.environment:
-                envNode = cubeTexture(builder.scene.environment)
+                self.envNode = cubeTexture(builder.scene.environment)
 
-        if envNode:
+        if self.envNode:
             reflectivity = MaterialReferenceNode('reflectivity', 'float')
             if builder.material.combine == MultiplyOperation:
-                outgoingLightNode = mix(outgoingLightNode, mul(outgoingLightNode, envNode.xyz), mul(property('SpecularStrength', 'float'), reflectivity))
+                outgoingLightNode = mix(outgoingLightNode, mul(outgoingLightNode, self.envNode.xyz), mul(property('SpecularStrength', 'float'), reflectivity))
             elif builder.material.combine == MixOperation:
-                outgoingLightNode = mix(outgoingLightNode, envNode.xyz, mul(property('SpecularStrength', 'float'), reflectivity))
+                outgoingLightNode = mix(outgoingLightNode, self.envNode.xyz, mul(property('SpecularStrength', 'float'), reflectivity))
             elif builder.material.combine == AddOperation:
-                outgoingLightNode = add(outgoingLightNode, mul(envNode.xyz, mul(property('SpecularStrength', 'float'), reflectivity)))
+                outgoingLightNode = add(outgoingLightNode, mul(self.envNode.xyz, mul(property('SpecularStrength', 'float'), reflectivity)))
 
         # TONE MAPPING
         if renderer.toneMappingNode:

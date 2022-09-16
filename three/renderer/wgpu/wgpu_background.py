@@ -55,7 +55,7 @@ class WgpuBackground:
                     'uvNode': transformDirection(positionWorld, modelWorldMatrix)
                 })
 
-                nodeMaterial = MeshBasicNodeMaterial()
+                nodeMaterial = NodeMaterial()
                 nodeMaterial.colorNode = colorNode
                 nodeMaterial.side = BackSide
                 nodeMaterial.depthTest = False

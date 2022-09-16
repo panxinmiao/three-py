@@ -1,7 +1,6 @@
 import time, math
 import three
 import three.nodes
-from colorsys import hls_to_rgb
 from pathlib import Path
 from wgpu.gui.auto import WgpuCanvas, run
 
@@ -21,9 +20,9 @@ scene = three.Scene()
 
 scene.add(three.AmbientLight(0x222222))
 directional_light = three.DirectionalLight(0xFFFFFF, 1)
-directional_light.position.set(1, 1, 1).normalize()
+directional_light.position.set(1, 1, 1)
 scene.add(directional_light)
-point_light = three.PointLight(0xFFFFFF, 2, 800)
+point_light = three.PointLight(0xFFFFFF, 2)
 scene.add(point_light)
 
 # light_helper = three.PointLightHelper(point_light, size=4)
@@ -40,6 +39,8 @@ envMap.generateMipmaps = True
 
 scene.background = three.nodes.CubeTextureNode(envMap)
 
+scene.environmentNode = scene.background
+
 
 cube_width = 400
 numbers_per_side = 2
@@ -48,51 +49,30 @@ step_size = 1.0 / numbers_per_side
 
 geometry = three.SphereGeometry(sphere_radius, 32, 16)
 
-standardMaterial = three.MeshStandardMaterial(color=0x00FF00)
-standardMaterial.envMap = envMap
+basicMaterial = three.MeshBasicMaterial(color=0xFFFF00)
+# basicMaterial.envMap = envMap
 
-mesh = three.Mesh(geometry, standardMaterial)
+mesh = three.Mesh(geometry, basicMaterial)
 
-mesh.position.set(-100, 0, 0)
+mesh.position.set(-200, 0, 0)
 scene.add(mesh)
 
-phongMaterial = three.MeshPhongMaterial(color=0x00FF00, shininess=50)
-phongMaterial.envMap = envMap
+standardMaterial = three.MeshStandardMaterial(color=0xFFFF00)
+standardMaterial.roughness = 0.1
+standardMaterial.metalness = 1.0
+standardMaterial.envMap = envMap
 
-mesh2 = three.Mesh(geometry, phongMaterial)
+mesh2 = three.Mesh(geometry, standardMaterial)
 
-mesh2.position.set(100, 0, 0)
 scene.add(mesh2)
 
+phongMaterial = three.MeshPhongMaterial(color=0xFFFF00, shininess=100)
+phongMaterial.envMap = envMap
 
-# index = 0
-# alpha = 0.0
-# while alpha <= 1.0:
-#     beta = 0.0
-#     while beta <= 1.0:
-#         gamma = 0.0
-#         while gamma <= 1.0:
-#             material = three.MeshStandardMaterial(
-#                 color = three.Color(*hls_to_rgb(alpha, 0.5, gamma * 0.5 + 0.1)),
-#                 metalness=beta,
-#                 roughness=1.0 - alpha,
-#             )
+mesh3 = three.Mesh(geometry, phongMaterial)
 
-#             if index % 2 != 0:
-#                 material.envMap = envMap
-
-#             mesh = three.Mesh(geometry, material)
-
-#             mesh.position.x = alpha * 400 - 200
-#             mesh.position.y = beta * 400 - 200
-#             mesh.position.z = gamma * 400 - 200
-#             scene.add(mesh)
-#             index += 1
-
-#             gamma += step_size
-#         beta += step_size
-#     alpha += step_size
-
+mesh3.position.set(200, 0, 0)
+scene.add(mesh3)
 
 renderer.outputEncoding = three.sRGBEncoding
 

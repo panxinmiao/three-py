@@ -1,5 +1,12 @@
 from .node_material import NodeMaterial
 from three.materials import MeshBasicMaterial
+from three.constants import MultiplyOperation, MixOperation, AddOperation
+
+from ..accessors.material_reference_node import MaterialReferenceNode
+from ..accessors.texture_node import TextureNode
+from ..utils.split_node import SplitNode
+
+from ..shadernode.shader_node_elements import ( add, context, cubeTexture, mix, mul, nodeObject)
 
 defaultValues = MeshBasicMaterial()
 
@@ -26,3 +33,46 @@ class MeshBasicNodeMaterial(NodeMaterial):
         self.lightsNode = source.lightsNode
         self.positionNode = source.positionNode
         return super().copy( source )
+
+    def generateLight(self, builder, parameters):
+
+        renderer = builder.renderer
+
+        outgoingLightNode = super().generateLight(builder, parameters)
+
+        # ENV MAPPING
+        envNode = self.envNode
+
+        if not envNode:
+            if builder.material.envMap and builder.material.envMap.isTexture:
+                envNode = cubeTexture(builder.material.envMap)
+
+        if not envNode:
+            if builder.scene.environmentNode:
+                if builder.scene.environmentNode.isTexture:
+                    envNode = cubeTexture(builder.scene.environmentNode)
+                else:
+                    envNode = nodeObject(builder.scene.environmentNode)
+            elif builder.scene.environment:
+                envNode = cubeTexture(builder.scene.environment)
+
+        if envNode:
+            reflectivity = MaterialReferenceNode('reflectivity', 'float')
+            material = builder.material
+            if material.specularMap and material.specularMap.isTexture:
+                specularStrength = SplitNode(TextureNode(material.specularMap), 'r')
+            else:
+                specularStrength = 1.0
+
+            if builder.material.combine == MultiplyOperation:
+                outgoingLightNode = mix(outgoingLightNode, mul(outgoingLightNode, envNode.xyz), mul(specularStrength, reflectivity))
+            elif builder.material.combine == MixOperation:
+                outgoingLightNode = mix(outgoingLightNode, envNode.xyz, mul(specularStrength, reflectivity))
+            elif builder.material.combine == AddOperation:
+                outgoingLightNode = add(outgoingLightNode, mul(envNode.xyz, mul(specularStrength, reflectivity)))
+
+        # TONE MAPPING
+        if renderer.toneMappingNode:
+            outgoingLightNode = context(renderer.toneMappingNode, {'color': outgoingLightNode})
+
+        return outgoingLightNode

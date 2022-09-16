@@ -5,7 +5,7 @@ from colorsys import hls_to_rgb
 from pathlib import Path
 from wgpu.gui.auto import WgpuCanvas, run
 
-from loaders.texture_loader import TextureLoader, CubeTextureLoader
+from loaders.texture_loader import CubeTextureLoader
 
 canvas = WgpuCanvas(size=(640, 480), title="pbr")
 renderer = three.WgpuRenderer(canvas, antialias=True)
