@@ -99,15 +99,27 @@ class ProxyNode:
 
     def __add__(self, other):
         return nodeProxy(OperatorNode, '+')(self, other)
+    
+    def __radd__(self, other):
+        return nodeProxy(OperatorNode, '+')(other, self)
 
     def __sub__(self, other):
         return nodeProxy(OperatorNode, '-')(self, other)
+    
+    def __rsub__(self, other):
+        return nodeProxy(OperatorNode, '-')(other, self)
 
     def __mul__(self, other):
         return nodeProxy(OperatorNode, '*')(self, other)
+    
+    def __rmul__(self, other):
+        return nodeProxy(OperatorNode, '*')(other, self)
 
     def __div__(self, other):
         return nodeProxy(OperatorNode, '/')(self, other)
+    
+    def __rdiv__(self, other):
+        return nodeProxy(OperatorNode, '/')(other, self)
 
     def __mod__(self, other):
         return nodeProxy(OperatorNode, '%')(self, other)

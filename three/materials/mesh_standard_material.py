@@ -8,54 +8,6 @@ class MeshStandardMaterial(Material):
 
     def __init__(self, parameters = {}, **kwargs) -> None:
 
-        '''
-        parameters = {
-            color: <hex>,
-            roughness: <float>,
-            metalness: <float>,
-            opacity: <float>,
-
-            map: THREE.Texture( <Image> ),
-
-            lightMap: THREE.Texture( <Image> ),
-            lightMapIntensity: <float>
-
-            aoMap: THREE.Texture( <Image> ),
-            aoMapIntensity: <float>
-
-            emissive: <hex>,
-            emissiveIntensity: <float>
-            emissiveMap: THREE.Texture( <Image> ),
-
-            bumpMap: THREE.Texture( <Image> ),
-            bumpScale: <float>,
-
-            normalMap: THREE.Texture( <Image> ),
-            normalMapType: THREE.TangentSpaceNormalMap,
-            normalScale: <Vector2>,
-
-            displacementMap: THREE.Texture( <Image> ),
-            displacementScale: <float>,
-            displacementBias: <float>,
-
-            roughnessMap: THREE.Texture( <Image> ),
-
-            metalnessMap: THREE.Texture( <Image> ),
-
-            alphaMap: THREE.Texture( <Image> ),
-
-            envMap: THREE.CubeTexture( [posx, negx, posy, negy, posz, negz] ),
-            envMapIntensity: <float>
-
-            refractionRatio: <float>,
-
-            wireframe: <boolean>,
-            wireframeLinewidth: <float>,
-
-            flatShading: <bool>
-        }
-        '''
-
         super().__init__()
 
         self.defines = { 'STANDARD': '' }
@@ -97,8 +49,6 @@ class MeshStandardMaterial(Material):
 
         self.envMap = None
         self.envMapIntensity = 1.0
-
-        self.refractionRatio = 0.98
 
         self.wireframe = False
         self.wireframeLinewidth = 1
@@ -155,8 +105,6 @@ class MeshStandardMaterial(Material):
 
         self.envMap = source.envMap
         self.envMapIntensity = source.envMapIntensity
-
-        self.refractionRatio = source.refractionRatio
 
         self.wireframe = source.wireframe
         self.wireframeLinewidth = source.wireframeLinewidth

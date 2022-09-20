@@ -1,7 +1,5 @@
 import three
 from wgpu.gui.auto import WgpuCanvas, run
-from pathlib import Path
-from loaders.texture_loader import TextureLoader
 
 canvas = WgpuCanvas(size=(640, 640), max_fps=60, title="PolyhedronGeometrys")
 
@@ -13,16 +11,6 @@ camera = three.OrthographicCamera(-20, 20, 20, -20, 0.01, 200)
 camera.position.z = 100
 
 scene = three.Scene()
-
-# loader = TextureLoader(Path(__file__).parent / "textures" )
-
-# texture = loader.load("uv_grid.jpg")
-
-# texture.wrapS = three.RepeatWrapping
-# texture.wrapT = three.RepeatWrapping
-
-# material = three.MeshBasicMaterial(side = three.DoubleSide)
-# material.map = texture
 
 material = three.MeshNormalMaterial(side = three.DoubleSide)
 material.flatShading = True

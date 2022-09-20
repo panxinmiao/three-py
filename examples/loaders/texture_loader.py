@@ -27,9 +27,10 @@ class Loader:
 
 
 class ImageLoader(Loader):
-    def load(self, name):
+    def load(self, name, flip = False):
         data = imageio.imread(Path(self.path) / name, pilmode='RGBA')
-
+        if flip:
+            data = np.ascontiguousarray(np.flipud(data))
         image = three.Image(memoryview(
             data), width=data.shape[1], height=data.shape[0])
 
@@ -71,8 +72,8 @@ class TextureLoader(Loader):
         self._imageLoader = value
         self._imageLoader.path = self._imageLoader.path or self.path
 
-    def load(self, name):
-        image = self.imageLoader.load(name)
+    def load(self, name, flip = False):
+        image = self.imageLoader.load(name, flip)
         texture = three.Texture(image)
         texture.needsUpdate = True
         texture.type = _memoryview_format.get(image.data.format)
@@ -81,10 +82,10 @@ class TextureLoader(Loader):
 
 class CubeTextureLoader(TextureLoader):
 
-    def load(self, urls):
+    def load(self, urls, flip = False):
         images = []
         for url in urls:
-            image = self.imageLoader.load(url)
+            image = self.imageLoader.load(url, flip)
             images.append(image)
 
         cubeTexture = three.CubeTexture(images)

@@ -10,6 +10,6 @@ class ReflectVectorNode(Node):
         return 'reflectVector'
 
 
-    def construct(self):
+    def construct(self, builder):
         reflectView = reflect( negate( positionViewDirection ), transformedNormalView )
         return transformDirection( reflectView, cameraViewMatrix )

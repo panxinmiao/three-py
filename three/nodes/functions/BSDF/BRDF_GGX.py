@@ -29,4 +29,4 @@ def __BRDF_GGX( inputs ):
     
     return mul( F, mul( V, D ) )
 
-BRDF_GGX = ShaderNode( __BRDF_GGX ); # validated
+BRDF_GGX = ShaderNode( __BRDF_GGX ) # validated
