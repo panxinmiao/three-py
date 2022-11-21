@@ -191,7 +191,12 @@ class WgpuRenderer(NoneAttribute):
         pass
 
     def setAnimationLoop(self, animationLoop):
-        self._canvas.request_draw(animationLoop)
+        def loop():
+            animationLoop()
+            if self._renderTarget is None:
+                self._canvas.request_draw()
+
+        self._canvas.request_draw(loop)
 
     def render( self, scene:'three.Scene', camera:'three.Camera' ):
 
@@ -306,9 +311,9 @@ class WgpuRenderer(NoneAttribute):
         passEncoder.end()
         device.queue.submit([cmd_encoder.finish()])
 
-        if renderTarget is None:
-            if ch !=0 and cw != 0:
-                self._canvas.request_draw()
+        # if renderTarget is None:
+        #     if ch !=0 and cw != 0:
+        #         self._canvas.request_draw()
         
 
     def getContext(self):

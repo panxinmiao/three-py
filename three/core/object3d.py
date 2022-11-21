@@ -214,7 +214,7 @@ class Object3D(EventDispatcher):
 
     def lookAt( self, x, y=None, z=None ):
         # This method does not support objects having non-uniformly-scaled parent(s)
-        if x.isVector3:
+        if isinstance(x, Vector3):
             _target.copy( x )
         else:
             _target.set( x, y, z )

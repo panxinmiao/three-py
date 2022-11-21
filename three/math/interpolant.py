@@ -27,7 +27,7 @@ class Interpolant(NoneAttribute):
                 if t1 is None:
                     if t<0: break
 
-                    i1 = pp.length
+                    i1 = len(pp)
                     self._cachedIndex = i1
                     return self.afterEnd_( i1 - 1, t, t0 )
 

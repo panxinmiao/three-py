@@ -333,7 +333,10 @@ class WgpuTextures:
         # @TODO: Consider to support valid buffer layouts with other formats like RGB
         data = image.data
         bytesPerTexel = self._getBytesPerTexel( format )
-        bytesPerRow = math.ceil( image.width * bytesPerTexel / 256 ) * 256
+        
+        # need align to 256 bytes?
+        # bytesPerRow = math.ceil( image.width * bytesPerTexel / 256 ) * 256
+        bytesPerRow = image.width * bytesPerTexel
 
         queue: wgpu.GPUQueue = self.device.queue
 
