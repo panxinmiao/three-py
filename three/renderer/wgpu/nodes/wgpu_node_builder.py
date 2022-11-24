@@ -110,13 +110,17 @@ class WgpuNodeBuilder(NodeBuilder):
 
 
     def build(self):
-
-        if self.material is not None:
-            fromMaterial(self.material).build(self)
+        if self.material.vertexShader and self.material.fragmentShader:
+            self.vertexShader = self.material.vertexShader
+            self.fragmentShader = self.material.fragmentShader
+            return self
         else:
-            self.addFlow('compute', self.object)
+            if self.material is not None:
+                fromMaterial(self.material).build(self)
+            else:
+                self.addFlow('compute', self.object)
 
-        return super().build()
+            return super().build()
 
     def addFlowCode( self, code ):
         if not _flow_p.match(code):
@@ -187,7 +191,7 @@ class WgpuNodeBuilder(NodeBuilder):
             if type == 'texture' or type == 'cubeTexture':
                 return name
             elif type == 'buffer' or type == 'storageBuffer':
-                return f'NodeBuffer_{node.node.id}.{name}'
+                return f'NodeBuffer_{node.name}.{name}'
             else:
                 return f'NodeUniforms.{name}'
 
@@ -228,7 +232,7 @@ class WgpuNodeBuilder(NodeBuilder):
             elif type == 'buffer' or type == 'storageBuffer':
                 #buffer = WgpuUniformBuffer( 'NodeBuffer_' + str(node.id), node.value )
                 bufferClass = WgpuStorageBuffer if type=='storageBuffer' else WgpuUniformBuffer
-                buffer = bufferClass('NodeBuffer_' + str(node.id), node.value)
+                buffer = bufferClass('NodeBuffer_' + uniformNode.name, node.value)
                 buffer.setVisibility(gpuShaderStageLib[shaderStage])
                 # add first textures in sequence and group for last
                 lastBinding = bindings[ - 1 ] if bindings else None
@@ -399,7 +403,9 @@ class WgpuNodeBuilder(NodeBuilder):
                 bufferSnippet = f'\t{uniform.name} : array< {bufferType}{bufferCountSnippet} >\n'
                 bufferAccessMode = 'storage,read_write' if bufferNode.isStorageBufferNode else 'uniform'
 
-                bufferSnippets.append( self._getWGSLStructBinding( 'NodeBuffer_' + str(bufferNode.id), bufferSnippet, bufferAccessMode, index ) )
+                # bufferNode.wgslAlias
+
+                bufferSnippets.append( self._getWGSLStructBinding( 'NodeBuffer_' + uniform.name, bufferSnippet, bufferAccessMode, index ) )
                 index += 1
 
             else:

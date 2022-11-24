@@ -12,7 +12,8 @@ def _isSubType(cls_name:str, cls: type):
 class NoneAttribute:
     def __getattr__(self, name:str):
         # cache attribute
-        setattr(self, name, None)
+        # setattr(self, name, None)
+        self.__dict__[name] = None
         return None
 
     def __hash__(self) -> int:
