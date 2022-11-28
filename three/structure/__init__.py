@@ -1,3 +1,6 @@
 from .dict_obj import *
 from .none_attribute import *
-from .typedarray import *
+try:
+    from .typedarray_np import *
+except ImportError:
+    from .typedarray import *

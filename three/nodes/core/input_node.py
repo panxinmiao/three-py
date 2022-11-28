@@ -1,5 +1,4 @@
 #from three.renderer.nodes import Node
-from three.structure.typedarray import TypedArray
 from .node import Node
 from warnings import warn
 from .node_utils import getValueType, getValueFromType
