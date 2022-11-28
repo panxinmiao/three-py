@@ -110,17 +110,15 @@ class WgpuNodeBuilder(NodeBuilder):
 
 
     def build(self):
-        if self.material.vertexShader and self.material.fragmentShader:
-            self.vertexShader = self.material.vertexShader
-            self.fragmentShader = self.material.fragmentShader
-            return self
+        if self.material is not None:
+            if self.material.vertexShader and self.material.fragmentShader:
+                self.vertexShader = self.material.vertexShader
+                self.fragmentShader = self.material.fragmentShader
+                return self
+            fromMaterial(self.material).build(self)
         else:
-            if self.material is not None:
-                fromMaterial(self.material).build(self)
-            else:
-                self.addFlow('compute', self.object)
-
-            return super().build()
+            self.addFlow('compute', self.object)
+        return super().build()
 
     def addFlowCode( self, code ):
         if not _flow_p.match(code):

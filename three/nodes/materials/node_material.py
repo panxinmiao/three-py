@@ -1,7 +1,6 @@
 from inspect import isfunction
 from three.materials import ShaderMaterial
 from ..core.expression_node import ExpressionNode
-from ..core.attribute_node import AttributeNode
 from ..core.node_utils import getCacheKey
 
 from ..shadernode.shader_node_elements import (

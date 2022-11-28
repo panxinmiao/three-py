@@ -36,8 +36,6 @@ def fromMaterial( material ):
     nodeMaterial = materialLib[ type ]()
 
     for key in material.__dict__:
-        #if not key in nodeMaterial.__dict__:
-        if not hasattr( nodeMaterial, key ):
-            setattr(nodeMaterial, key, getattr(material, key))
+        setattr(nodeMaterial, key, getattr(material, key))
 
     return nodeMaterial
