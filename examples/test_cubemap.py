@@ -5,9 +5,6 @@ import numpy as np
 from pathlib import Path
 from wgpu.gui.auto import WgpuCanvas, run
 
-from loaders.texture_loader import TextureLoader, CubeTextureLoader
-
-
 canvas = WgpuCanvas(size=(640, 640), max_fps=60, title="wgpu_renderer")
 
 render = three.WgpuRenderer(canvas, antialias=True)
@@ -47,12 +44,7 @@ text = three.Texture(posy)
 text.needsUpdate = True
 
 cubeTexture = three.CubeTexture([posx, negx, posy, negy, posz, negz])
-# cubeTexture.type = three.UnsignedByteType
 cubeTexture.needsUpdate = True
-
-cubeTexture.encoding = three.sRGBEncoding
-
-# scene.add(three.AmbientLight(0x111111))
 material = three.MeshStandardMaterial()
 
 material.roughness = 0.05
@@ -64,13 +56,7 @@ geometry = three.SphereGeometry(2, 32, 32)
 mesh = three.Mesh(geometry, material)
 scene.add(mesh)
 
-
-
 scene.background = cubeTexture
-
-# scene.environmentNode = scene.background
-
-render.outputEncoding = three.sRGBEncoding
 
 camera.position.z = 5
 # camera.up.set(0, 0, 1)

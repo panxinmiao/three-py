@@ -115,15 +115,9 @@ def init_scene():
                      'posy.jpg', 'negy.jpg', 
                      'posz.jpg', 'negz.jpg']
 
-    # env_text_path = Path(__file__).parent / "textures" / "cube" / "pisaRGBM16"
-    # env_text_urls = ['px.png', 'nx.png',
-    #                  'py.png', 'ny.png',
-    #                  'pz.png', 'nz.png']
-
     loader = CubeTextureLoader(env_text_path)
-    # loader.imageLoader = RGBMLoader().setMaxRange(16)
 
-    env_texture = loader.load(env_text_urls)
+    env_texture = loader.load(env_text_urls, encoding=three.sRGBEncoding)
     env_texture.generateMipmaps = True
 
     scene.environmentNode = three.nodes.CubeTextureNode(env_texture)

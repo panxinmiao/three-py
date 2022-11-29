@@ -59,9 +59,10 @@ class RGBMLoader(ImageLoader):
 
 
 class TextureLoader(Loader):
-    def __init__(self, path=''):
+    def __init__(self, path='', encoding=three.LinearEncoding):
         super().__init__(path)
         self._imageLoader = ImageLoader(path)
+        self._encoding = encoding
 
     @property
     def imageLoader(self):
@@ -72,18 +73,18 @@ class TextureLoader(Loader):
         self._imageLoader = value
         self._imageLoader.path = self._imageLoader.path or self.path
 
-    def load(self, name, flip=False, encoding=three.sRGBEncoding):
+    def load(self, name, flip=False, encoding=None):
         image = self.imageLoader.load(name, flip)
         texture = three.Texture(image)
         texture.needsUpdate = True
         texture.type = _memoryview_format.get(image.data.format)
-        texture.encoding = encoding
+        texture.encoding = encoding or self._encoding
         return texture
 
 
 class CubeTextureLoader(TextureLoader):
 
-    def load(self, urls, flip = False):
+    def load(self, urls, flip=False, encoding=None):
         images = []
         for url in urls:
             image = self.imageLoader.load(url, flip)
@@ -91,7 +92,7 @@ class CubeTextureLoader(TextureLoader):
 
         cubeTexture = three.CubeTexture(images)
         cubeTexture.type = _memoryview_format.get(image.data.format)
-        cubeTexture.encoding = three.sRGBEncoding
+        cubeTexture.encoding = encoding or self._encoding
         cubeTexture.needsUpdate = True
 
         return cubeTexture

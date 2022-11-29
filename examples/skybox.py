@@ -19,9 +19,9 @@ dirLight = three.DirectionalLight(0xffffff)
 dirLight.position.set(1, 0, 1).normalize()
 scene.add(dirLight)
 
-# scene.add(three.AmbientLight(0x111111))
+scene.add(three.AmbientLight(0x111111))
 
-texture_loader = TextureLoader(Path(__file__).parent / "textures")
+texture_loader = TextureLoader(Path(__file__).parent / "textures", encoding=three.sRGBEncoding)
 
 earth_geometry = three.SphereGeometry(63.71, 100, 50)
 
@@ -38,15 +38,6 @@ earth_material = three.MeshPhongMaterial(
 
 earth_mesh = three.Mesh(earth_geometry, earth_material)
 scene.add(earth_mesh)
-
-earth_lights_material = three.MeshPhongMaterial(
-    map=texture_loader.load("planets/earth_lights_2048.png"),
-    transparent = True
-)
-
-# earth_lights = three.Mesh(earth_geometry, earth_lights_material)
-# earth_lights.rotation.z = 0.41
-# scene.add(earth_lights)
 
 earth_clouds_material = three.MeshPhongMaterial(
     map=texture_loader.load("planets/earth_clouds_2048.png"),
@@ -65,17 +56,11 @@ env_text_urls = ['dark-s_px.jpg', 'dark-s_nx.jpg',
                  'dark-s_pz.jpg', 'dark-s_nz.jpg']
 
 
-loader = CubeTextureLoader(env_text_path)
+loader = CubeTextureLoader(env_text_path, encoding=three.sRGBEncoding)
 env_texture = loader.load(env_text_urls)
 env_texture.generateMipmaps = True
 
 scene.background = three.nodes.CubeTextureNode(env_texture)
-
-# scene.environmentNode = scene.background
-
-# earth_material.envMap = env_texture
-# earth_material.combine = three.MultiplyOperation
-# earth_material.needsUpdate = True
 
 render.outputEncoding = three.sRGBEncoding
 
