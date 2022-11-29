@@ -96,8 +96,8 @@ def uniform(nodeOrType):
 
     return nodeObject( UniformNode( value, nodeType ))
 
-attribute = lambda name, nodeType: nodeObject( AttributeNode( name, nodeType ) )
-property = lambda name, nodeOrType: nodeObject( PropertyNode( name, getConstNodeType( nodeOrType ) ) )
+attribute = lambda name, nodeType=None: nodeObject( AttributeNode( name, nodeType ) )
+property = lambda name, nodeOrType=None: nodeObject( PropertyNode( name, getConstNodeType( nodeOrType ) ) )
 
 bypass = nodeProxy( BypassNode )
 code = nodeProxy( CodeNode )
@@ -112,8 +112,8 @@ varying = nodeProxy( VaryingNode )
 
 
 #accesors
-buffer = lambda value, nodeOrType, count: nodeObject( BufferNode( value, getConstNodeType( nodeOrType ), count ) )
-storage = lambda value, nodeOrType, count: nodeObject( StorageBufferNode( value, getConstNodeType( nodeOrType ), count ) )
+buffer = lambda value, nodeOrType, count=0: nodeObject( BufferNode( value, getConstNodeType( nodeOrType ), count ) )
+storage = lambda value, nodeOrType, count=0: nodeObject( StorageBufferNode( value, getConstNodeType( nodeOrType ), count ) )
 
 cameraProjectionMatrix = nodeImmutable(CameraNode, CameraNode.PROJECTION_MATRIX )
 cameraViewMatrix = nodeImmutable(CameraNode, CameraNode.VIEW_MATRIX)

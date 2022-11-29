@@ -1,12 +1,11 @@
 from inspect import isfunction
 from three.materials import ShaderMaterial
 from ..core.expression_node import ExpressionNode
-from ..core.attribute_node import AttributeNode
 from ..core.node_utils import getCacheKey
 
 from ..shadernode.shader_node_elements import (
     float, vec3, vec4,
-    assign, label, mul, bypass,
+    assign, label, mul, bypass, attribute,
     positionLocal, skinning, instance, modelViewProjection, lightingContext, colorSpace,
     materialAlphaTest, materialColor, materialOpacity)
 
@@ -61,16 +60,16 @@ class NodeMaterial(ShaderMaterial):
     def generateDiffuseColor(self, builder):
 
         # < FRAGMENT STAGE >
-        if not self.colorNode and self.vertexColors == True:
-            self.colorNode = AttributeNode('color', 'vec3')
 
         colorNode = vec4( self.colorNode or materialColor )
 
         # TODO - add support for flatShading?
-        # if self.flatShading:
-        #     colorNode = add(mul(normalize(cross(dFdx(positionWorld), dFdy(positionWorld))), 0.5), 0.5)
 
         opacityNode = float( self.opacityNode ) if self.opacityNode else materialOpacity
+
+        # VERTEX COLORS
+        if builder.geometry.hasAttribute( 'color' ) and self.vertexColors == True:
+            colorNode = vec4( mul( colorNode.xyz, attribute( 'color' ) ), colorNode.a )
 
         # COLOR
         colorNode = builder.addFlow( 'fragment', label( colorNode, 'Color' ) )

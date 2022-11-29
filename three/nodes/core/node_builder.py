@@ -40,7 +40,7 @@ class NodeBuilder(NoneAttribute):
         self.hashNodes = Dict({})
 
         self.scene = None
-        self.lightNode = None
+        self.lightsNode = None
         self.fogNode = None
 
         self.vertexShader = None
@@ -207,10 +207,12 @@ class NodeBuilder(NoneAttribute):
         return node.name
 
     def isVector(self, type ):
-        return re.fullmatch('vec\d', type) is not None
+        # return re.fullmatch('vec\d', type) is not None
+        return type.startswith('vec')
 
     def isMatrix(self, type ):
-        return re.fullmatch('mat\d', type) is not None
+        # return re.fullmatch('mat\d', type) is not None
+        return type.startswith('mat')
 
     def isReference( self, type ):
         return type == 'void' or type == 'property' or type == 'sampler' or type == 'texture' or type == 'cubeTexture'
@@ -263,9 +265,15 @@ class NodeBuilder(NoneAttribute):
         vecType = self.getVectorType( type )
 
         if vecType:
-            vecNum = re.findall('vec([2-4])', vecType)
-            if len(vecNum) != 0:
-                return int( vecNum[ 0 ] )
+            # vecNum = re.findall('vec([2-4])', vecType)
+            # if len(vecNum) != 0:
+            #     return int( vecNum[ 0 ] )
+            if 'vec2' in vecType:
+                return 2
+            if 'vec3' in vecType:
+                return 3
+            if 'vec4' in vecType:
+                return 4
             if vecType == 'float' or vecType == 'bool' or vecType == 'int' or vecType == 'uint':
                 return 1
             if 'mat3' in type:

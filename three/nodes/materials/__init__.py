@@ -29,15 +29,13 @@ def fromType( type ):
 def fromMaterial( material ):
     type = material._type.replace( 'Material', 'NodeMaterial' )
     if not type in materialLib:
-        return material # is already a node material or cannot be converted
+        if not isinstance( material, NodeMaterial ):
+            raise Exception( 'Material not supported: %s' % material._type )
+        return material # is already a node material
 
-
-    nodeMaterial = materialLib[ type ]( material )
+    nodeMaterial = materialLib[ type ]()
 
     for key in material.__dict__:
-        #if not key in nodeMaterial.__dict__:
-        if not hasattr( nodeMaterial, key ):
-            setattr(nodeMaterial, key, getattr(material, key))
-            # nodeMaterial.__dict__[ key ] = material.__dict__[ key ]  # currently this is needed only for material.alphaTest
+        setattr(nodeMaterial, key, getattr(material, key))
 
     return nodeMaterial

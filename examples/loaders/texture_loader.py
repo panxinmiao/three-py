@@ -72,11 +72,12 @@ class TextureLoader(Loader):
         self._imageLoader = value
         self._imageLoader.path = self._imageLoader.path or self.path
 
-    def load(self, name, flip = False):
+    def load(self, name, flip=False, encoding=three.sRGBEncoding):
         image = self.imageLoader.load(name, flip)
         texture = three.Texture(image)
         texture.needsUpdate = True
         texture.type = _memoryview_format.get(image.data.format)
+        texture.encoding = encoding
         return texture
 
 
@@ -90,6 +91,7 @@ class CubeTextureLoader(TextureLoader):
 
         cubeTexture = three.CubeTexture(images)
         cubeTexture.type = _memoryview_format.get(image.data.format)
+        cubeTexture.encoding = three.sRGBEncoding
         cubeTexture.needsUpdate = True
 
         return cubeTexture

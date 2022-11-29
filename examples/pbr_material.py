@@ -56,7 +56,6 @@ def load_gltf(path):
         material.metalnessMap = metallicRoughnessMap
 
         material.normalMap = __parse_texture(pbrmaterial.normalTexture)
-        material.normalScale = three.Vector2(1, -1)
 
         material.aoMap = __parse_texture(pbrmaterial.occlusionTexture)
         material.aoMapIntensity = 1.0
