@@ -34,7 +34,7 @@ env_map_urls = ["posx.jpg", "negx.jpg", "posy.jpg", "negy.jpg", "posz.jpg", "neg
 
 
 loader = CubeTextureLoader(env_map_path)
-envMap = loader.load(env_map_urls)
+envMap = loader.load(env_map_urls, encoding=three.sRGBEncoding)
 envMap.generateMipmaps = True
 
 scene.background = three.nodes.CubeTextureNode(envMap)
