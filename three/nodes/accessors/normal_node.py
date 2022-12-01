@@ -11,8 +11,8 @@ from .camera_node import CameraNode
 class NormalNode(Node):
     GEOMETRY = 'geometry'
     LOCAL = 'local'
-    WORLD = 'world'
     VIEW = 'view'
+    WORLD = 'world'
 
     def __init__(self, scope = LOCAL ) -> None:
         super().__init__(nodeType='vec3')
@@ -30,15 +30,15 @@ class NormalNode(Node):
         elif scope == NormalNode.LOCAL:
             outputNode = VaryingNode( NormalNode( NormalNode.GEOMETRY ) )
         elif scope == NormalNode.VIEW:
-            vertexNormalNode = OperatorNode( '*', ModelNode( ModelNode.NORMAL_MATRIX ), NormalNode( NormalNode.LOCAL ) )
-            outputNode = MathNode( MathNode.NORMALIZE, VaryingNode( vertexNormalNode ) )
+            vertexNode = OperatorNode( '*', ModelNode( ModelNode.NORMAL_MATRIX ), NormalNode( NormalNode.LOCAL ) )
+            outputNode = MathNode( MathNode.NORMALIZE, VaryingNode( vertexNode ) )
         elif scope == NormalNode.WORLD:
             
             #vertexNormalNode = inverseTransformDirection.call( { 'dir': NormalNode( NormalNode.VIEW ), 'matrix': CameraNode( CameraNode.VIEW_MATRIX ) } )
             # To use INVERSE_TRANSFORM_DIRECTION only inverse the param order like this: MathNode( ..., Vector, Matrix );
 
-            vertexNormalNode = MathNode( MathNode.TRANSFORM_DIRECTION, NormalNode( NormalNode.VIEW ), CameraNode( CameraNode.VIEW_MATRIX ) )
-            outputNode = MathNode( MathNode.NORMALIZE, VaryingNode( vertexNormalNode ) )
+            vertexNode = MathNode( MathNode.TRANSFORM_DIRECTION, NormalNode( NormalNode.VIEW ), CameraNode( CameraNode.VIEW_MATRIX ) )
+            outputNode = MathNode( MathNode.NORMALIZE, VaryingNode( vertexNode ) )
 
-        return outputNode.build( builder )
+        return outputNode.build( builder, self.getNodeType( builder ) )
 

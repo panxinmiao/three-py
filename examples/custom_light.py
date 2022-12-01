@@ -42,7 +42,7 @@ materialPoints =  three.nodes.PointsNodeMaterial()
 
 
 def _light_model(inputs, *args):
-    inputs.reflectedLight.directDiffuse.add( inputs.lightColor )
+    inputs["reflectedLight"].directDiffuse.add( inputs["lightColor"] )
 
 customLightingModel = three.nodes.ShaderNode(_light_model)
 

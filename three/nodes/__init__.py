@@ -1,5 +1,3 @@
-# TODO Redefine the visibility of classes && functions
-
 # core
 from .core.array_uniform_node import ArrayUniformNode
 from .core.attribute_node import AttributeNode
@@ -29,6 +27,7 @@ from .core.var_node import VarNode
 from .core.varying_node import VaryingNode 
 
 # accessors
+from .accessors.bitangent_node import BitangentNode
 from .accessors.buffer_node import BufferNode 
 from .accessors.camera_node import CameraNode 
 from .accessors.cube_texture_node import CubeTextureNode
@@ -43,6 +42,7 @@ from .accessors.point_uv_node import PointUVNode
 from .accessors.position_node import PositionNode 
 from .accessors.reference_node import ReferenceNode
 from .accessors.skinning_node import SkinningNode 
+from .accessors.tangent_node import TangentNode
 from .accessors.texture_node import TextureNode 
 from .accessors.uv_node import UVNode
 from .accessors.userdata_node import UserDataNode
@@ -51,6 +51,7 @@ from .accessors.userdata_node import UserDataNode
 from .gpgpu.compute_node import ComputeNode
 
 # display
+from .display.blend_mode_node import BlendModeNode
 from .display.color_adjustment_node import ColorAdjustmentNode
 from .display.color_space_node import ColorSpaceNode 
 from .display.front_facing_node import FrontFacingNode
@@ -81,6 +82,7 @@ from .utils.join_node import JoinNode
 from .utils.matcap_uv_node import MatcapUVNode
 from .utils.max_mip_level_node import MaxMipLevelNode
 from .utils.osc_node import OscNode 
+from .utils.remap_node import RemapNode
 from .utils.split_node import SplitNode 
 from .utils.sprite_sheet_uv_node import SpriteSheetUVNode 
 from .utils.timer_node import TimerNode 

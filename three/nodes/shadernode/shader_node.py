@@ -18,8 +18,10 @@ nodeObjectsCacheMap = weakref.WeakKeyDictionary()
 def ShaderNodeObject(obj):
     if isinstance(obj, int) or isinstance(obj, float) or isinstance(obj, bool):
         return ShaderNodeObject(getAutoTypedConstNode(obj))
+    elif isinstance(obj, dict):
+        return ShaderNodeObjects(obj)
     elif isinstance(obj, object):
-        if isinstance(obj, Node) and not isinstance(obj, ProxyNode):
+        if isinstance(obj, Node):
             nodeObject = nodeObjectsCacheMap.get(obj, None)
             if not nodeObject:
                 nodeObject = ProxyNode( obj )
@@ -43,16 +45,22 @@ def ShaderNodeArray( array ):
 
     return array
 
-def ShaderNodeProxy( NodeClass, scope = None, factor = None ):
+def ShaderNodeProxy( NodeClass, scope = None, factor = None, settings = None ):
+
+    def assignNode( node ):
+        if settings:
+            node.__dict__.update(settings)
+        return nodeObject(node)
+
     if scope is None:
-        return lambda *params : ShaderNodeObject( NodeClass( *ShaderNodeArray( params ) ) )
+        return lambda *params : assignNode( NodeClass( *ShaderNodeArray( params ) ) )
     
-    elif factor is None:
-        return lambda *params: ShaderNodeObject(NodeClass(scope, *ShaderNodeArray(params)))
+    elif factor is not None:
+        factor = ShaderNodeObject(factor)
+        return lambda *params: assignNode(NodeClass(scope, *ShaderNodeArray(params), factor))
 
     else:
-        factor = ShaderNodeObject(factor)
-        return lambda *params: ShaderNodeObject(NodeClass(scope, *ShaderNodeArray(params), factor))
+        return lambda *params: assignNode(NodeClass(scope, *ShaderNodeArray(params)))
 
 
 def ShaderNodeImmutable(NodeClass, *args):
@@ -65,7 +73,7 @@ nodeArray = ShaderNodeArray
 nodeProxy = ShaderNodeProxy
 nodeImmutable = ShaderNodeImmutable
 
-
+# TODO: move this logic to Node object?
 class ProxyNode:
     p1 = re.compile(r'^[xyzwrgbastpq]{1,4}$')
     p2 = re.compile(r'^\d+$')
@@ -85,8 +93,7 @@ class ProxyNode:
                 return ShaderNodeObject(SplitNode(node, prop))
             
             elif ProxyNode.p2.match(prop):
-                return ShaderNodeObject(ArrayElementNode(node, ConstNode(float(prop), 'uint')))
-                #return shader_node_object( ArrayElementNode( node, uint( float( prop ), 'uint' ) ) )
+                return ShaderNodeObject(ArrayElementNode(node, ConstNode(int(prop), 'uint')))
                 
         return getattr(node, prop)
 
@@ -162,27 +169,29 @@ class ProxyNode:
         return nodeProxy(MathNode, 'pow')(self, other)
 
 
-class ShaderNode:
+class ShaderNode(Node):
     def __init__(self, func) -> None:
         if not callable(func):
             raise ValueError("ShaderNode func must be callable")
+        super().__init__()
         self.func = func
-
-    def build(self, builder, *args):
-        self.call({}, builder)
-        return ""
 
     def call(self, *args, **kwds):
         return self(*args, **kwds)
 
     def __call__(self, *args, **kwds):
-        if args:
-            inputs = args[0]
-            nodeObjects(inputs)
 
-            return nodeObject(self.func(Dict(inputs), *args[1:], **kwds))
-        else:
-            return nodeObject(self.func(*args, **kwds))
+        # 
+        args = nodeArray(args)
+        kwds = nodeObjects(kwds)
+
+        return nodeObject(self.func(*args, **kwds))
+    
+    def generate(self, builder, output):
+        nodeCall = self.call( {}, builder )
+        if nodeCall is None:
+            return ""
+        return builder.format( nodeCall.build( builder ), nodeCall.getNodeType( builder ), output )
 
 
 bools = [ False, True ]
@@ -254,7 +263,7 @@ class ConvertType:
                 return nodeObject( nodes[ 0 ] if nodes[ 0 ].nodeType == type else ConvertNode( nodes[ 0 ], type ) )
 
         
-            return nodeObject(ConvertNode( JoinNode( nodes ), type )) 
+            return nodeObject(JoinNode(nodes, type)) 
 
 
 def getConstNodeType(value):

@@ -1,7 +1,7 @@
 from ...structure import Dict
 from ..shadernode.shader_node import ShaderNode
 from ..shadernode.shader_node_base_elements import (
-    mul, saturate, dot, transformedNormalView, property,
+    mul, clamp, dot, transformedNormalView, property,
     diffuseColor, specularColor)
 
 from .BSDF.BRDF_BlinnPhong import BRDF_BlinnPhong
@@ -13,7 +13,7 @@ def __RE_Direct_BlinnPhong(inputs, *args):
     lightColor = inputs['lightColor']
     reflectedLight = inputs['reflectedLight']
 
-    dotNL = saturate( dot( transformedNormalView, lightDirection ) )
+    dotNL = clamp( dot( transformedNormalView, lightDirection ) )
     irradiance = mul( dotNL, lightColor )
 
     # shininess = nodeImmutable(PropertyNode, 'Shininess', 'float')

@@ -3,7 +3,7 @@
 from ..core.node import Node
 from ..core.constants import NodeUpdateType
 from ..shadernode.shader_node import ShaderNode
-from ..shadernode.shader_node_base_elements import attribute, buffer, mat4, uniform, positionLocal, normalLocal, assign, element, add,  mul, transformDirection
+from ..shadernode.shader_node_base_elements import attribute, buffer, mat4, uniform, positionLocal, normalLocal, tangentLocal, assign, element, add,  mul, transformDirection
 
 
 class SkinningNode(Node):
@@ -53,6 +53,9 @@ class SkinningNode(Node):
 
         assign( positionLocal, skinPosition ).build( builder )
         assign( normalLocal, skinNormal ).build( builder )
+
+        if builder.hasGeometryAttribute('tangent'):
+            assign( tangentLocal, skinNormal ).build( builder )
 
     __Skinning = ShaderNode(__skinning_func)
 

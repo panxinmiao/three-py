@@ -1,3 +1,4 @@
+from warnings import warn
 from .node import Node
 from .varying_node import VaryingNode
 from .node_builder import NodeBuilder
@@ -10,12 +11,15 @@ class AttributeNode(Node):
     def getHash(self, builder ):
         return self.getAttributeName( builder )
 
-    def getNodeType(self, builder):
+    def getNodeType(self, builder:'NodeBuilder'):
         nodeType = super().getNodeType(builder)
         if nodeType is None:
             attributeName = self.getAttributeName(builder)
-            attribute = builder.geometry.getAttribute(attributeName)
-            nodeType = builder.getTypeFromLength(attribute.itemSize)
+            if builder.hasGeometryAttribute(attributeName):
+                attribute = builder.geometry.getAttribute( attributeName )
+                nodeType = builder.getTypeFromLength(attribute.itemSize)
+            else:
+                nodeType = 'float'
  
         return nodeType
 
@@ -28,12 +32,20 @@ class AttributeNode(Node):
         return self._attributeName
 
     def generate( self, builder:'NodeBuilder'):
-        attribute = builder.getAttribute( self.getAttributeName( builder ), self.getNodeType( builder ) )
-        if builder.isShaderStage( 'vertex' ):
-            return attribute.name
+        attributeName = self.getAttributeName( builder )
+        nodeType = self.getNodeType( builder )
+
+        if builder.hasGeometryAttribute( attributeName ):
+            nodeAttribute = builder.getAttribute( attributeName, nodeType )
+
+            if builder.isShaderStage( 'vertex' ):
+                return nodeAttribute.name
+            else:
+                nodeVarying = VaryingNode( self )
+                return nodeVarying.build( builder, nodeAttribute.type )
         else:
-            nodeVarying = VaryingNode( self )
-            return nodeVarying.build( builder, attribute.type )
+            warn( f'Attribute {attributeName} is not found' )
+            return builder.getConst( nodeType )
 
     
 

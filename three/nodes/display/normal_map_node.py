@@ -3,7 +3,7 @@ from ..core.node_builder import NodeBuilder
 from ..accessors.model_node import ModelNode
 
 from ..shadernode.shader_node import ShaderNode
-from ..shadernode.shader_node_base_elements import positionView, normalView, uv, vec3, add, sub, mul, dFdx, dFdy, cross, max, dot, normalize, inversesqrt, faceDirection
+from ..shadernode.shader_node_base_elements import positionView, normalView, uv, vec3, add, sub, mul, dFdx, dFdy, cross, max, dot, normalize, inversesqrt, faceDirection, modelNormalMatrix, TBNViewMatrix 
 
 import three
 
@@ -61,17 +61,19 @@ class NormalMapNode(TempNode):
         outputNode = None
 
         if normalMapType == three.ObjectSpaceNormalMap:
-            vertexNormalNode = mul( ModelNode( ModelNode.NORMAL_MATRIX ), normalMap )
-            outputNode = normalize(vertexNormalNode)
+            outputNode = normalize( mul(modelNormalMatrix, normalMap) )
 
         elif normalMapType == three.TangentSpaceNormalMap:
             
-            outputNode = perturbNormal2ArbNode({
-                'eye_pos': positionView,
-                'surf_norm': normalView,
-                'mapN': normalMap,
-                'uv': uv()
-            } )
+            if builder.hasGeometryAttribute('tangent'):
+                outputNode = normalize( mul( TBNViewMatrix, normalMap ) )
+            else:
+                outputNode = perturbNormal2ArbNode({
+                    'eye_pos': positionView,
+                    'surf_norm': normalView,
+                    'mapN': normalMap,
+                    'uv': uv()
+                } )
         
         return outputNode
 

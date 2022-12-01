@@ -19,8 +19,8 @@ class TypedArray(metaclass=abc.ABCMeta):
 
     def __init__(self, __initializer: list = []) -> None:
         self._uuid = uuid.uuid1()
-        if type(__initializer) == int:
-            self._ndarray = np.zeros(__initializer, dtype=self._dtype)
+        if isinstance(__initializer, (np.number, int, float)):
+            self._ndarray = np.zeros(int(__initializer), dtype=self._dtype)
         elif isinstance(__initializer, TypedArray):
             self._ndarray =np.array(__initializer._ndarray, dtype=self._dtype)
         elif isinstance(__initializer, Iterable):
@@ -74,8 +74,7 @@ class TypedArray(metaclass=abc.ABCMeta):
         return self.length
 
     def __getitem__(self, n):
-        if isinstance(n, int):
-            return self._ndarray[n]
+        return self._ndarray[n]
     
     def __setitem__(self, n , v):
         self._ndarray[n] = v
@@ -85,6 +84,9 @@ class TypedArray(metaclass=abc.ABCMeta):
 
     def __iter__(self):
         return self._ndarray.__iter__()
+
+    def __next__(self):
+        return self._ndarray.__next__()
 
     def set(self, v, offset=0):
         self[offset: offset+len(v)] = v

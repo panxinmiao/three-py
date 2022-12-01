@@ -55,9 +55,9 @@ class TypedArray(metaclass=abc.ABCMeta):
 
     def __init__(self, __initializer: list = []) -> None:
         self._uuid = uuid.uuid1()
-        if type(__initializer) == int:
+        if type(__initializer) == int or type(__initializer) == float:
             self._length = __initializer
-            self._buffer = bytearray(__initializer * self.bytes_per_element)
+            self._buffer = bytearray(int(__initializer) * self.bytes_per_element)
         elif isinstance(__initializer, Iterable):
             self._length = len(__initializer)
             bytes = struct.pack(f'{self._length}{self.struct_symbol}', *__initializer)
