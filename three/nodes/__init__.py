@@ -41,6 +41,7 @@ from .accessors.object3d_node import Object3DNode
 from .accessors.point_uv_node import PointUVNode 
 from .accessors.position_node import PositionNode 
 from .accessors.reference_node import ReferenceNode
+from .accessors.reflect_vector_node import ReflectVectorNode
 from .accessors.skinning_node import SkinningNode 
 from .accessors.tangent_node import TangentNode
 from .accessors.texture_node import TextureNode 
