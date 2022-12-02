@@ -7,6 +7,7 @@ class TimerNode(UniformNode):
     LOCAL = 'local'
     GLOBAL = 'global'
     DELTA = 'delta'
+    FRAME = 'frame'
 
     def __init__(self, scope = LOCAL, scale = 1, value = 0) -> None:
         super().__init__(value)
@@ -24,7 +25,8 @@ class TimerNode(UniformNode):
 
         elif scope == TimerNode.DELTA:
             self.value = frame.deltaTime * scale
-
+        elif scope == TimerNode.FRAME:
+            self.value = frame.frameId
         else:
             # global
             self.value = frame.time * scale

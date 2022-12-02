@@ -274,6 +274,9 @@ element = nodeProxy(ArrayElementNode)
 
 # miscellaneous
 
+lumaCoeffs = vec3( 0.2125, 0.7154, 0.0721 )
+luminance = lambda color, luma = None: dot( color, luma or lumaCoeffs )
+
 difference = lambda a, b: nodeObject(abs(sub(a, b)))
 dotNV = clamp(dot(transformedNormalView, positionViewDirection))
 TBNViewMatrix = mat3( tangentView, bitangentView, normalView )

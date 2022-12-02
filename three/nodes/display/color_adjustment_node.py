@@ -1,23 +1,22 @@
 from ..core.temp_node import TempNode
 from ..shadernode.shader_node import ShaderNode
 from ..shadernode.shader_node_base_elements import (
-    vec3, mat3, add, sub, mul, max, div, dot, float, mix, cos, sin, atan2, sqrt
+    vec3, mat3, add, sub, mul, max, div, dot, float, mix, cos, sin, atan2, sqrt, luminance
 )
 
 
-def __luminance( inputs , *args):
-    color = inputs['color']
-    LUMA = vec3(0.2125, 0.7154, 0.0721)
-    return dot(color, LUMA)
+# def __luminance( inputs , *args):
+#     color = inputs['color']
+#     LUMA = vec3(0.2125, 0.7154, 0.0721)
+#     return dot(color, LUMA)
 
-luminanceNode = ShaderNode(__luminance)
+# luminanceNode = ShaderNode(__luminance)
 
 
 def __saturation( inputs , *args):
     color = inputs['color']
     adjustment = inputs['adjustment']
-    intensityNode = luminanceNode.call({color})
-    return mix(intensityNode, color, adjustment)
+    return mix(luminance( color ), color, adjustment)
 
 saturationNode = ShaderNode(__saturation)
 

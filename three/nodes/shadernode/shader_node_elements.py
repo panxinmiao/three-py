@@ -85,6 +85,7 @@ spritesheetUV = nodeProxy(SpriteSheetUVNode)
 timerLocal = lambda timeScale, value=0 : nodeObject( TimerNode( TimerNode.LOCAL, timeScale, value ) )
 timerGlobal = lambda timeScale, value=0 : nodeObject( TimerNode( TimerNode.GLOBAL, timeScale, value ) )
 timerDelta = lambda timeScale, value=0 : nodeObject( TimerNode( TimerNode.DELTA, timeScale, value ) )
+frameId = nodeImmutable( TimerNode, TimerNode.FRAME )
 
 # geometry
 
