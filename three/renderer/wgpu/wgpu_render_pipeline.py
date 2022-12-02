@@ -144,7 +144,11 @@ class WgpuRenderPipeline():
                     'operation': GPUBlendOperation.Add
                 }
         elif blending == AdditiveBlending:
-            pass
+            alphaBlend = {
+                'src_factor': GPUBlendFactor.Zero,
+                'dst_factor': GPUBlendFactor.One,
+                'operation': GPUBlendOperation.Add
+            }
         elif blending == SubtractiveBlending:
             if premultipliedAlpha == True:
                 alphaBlend = {
@@ -258,6 +262,7 @@ class WgpuRenderPipeline():
         if blending == AdditiveBlending:
             return {
                 'src_factor': GPUBlendFactor.One if premultipliedAlpha else GPUBlendFactor.SrcAlpha,
+                'dst_factor': GPUBlendFactor.One,
                 'operation': GPUBlendOperation.Add
             }
         

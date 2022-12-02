@@ -20,6 +20,7 @@ from ..utils.matcap_uv_node import MatcapUVNode
 from ..utils.max_mip_level_node import MaxMipLevelNode
 from ..utils.osc_node import OscNode
 from ..utils.remap_node import RemapNode
+from ..utils.rotate_uv_node import RotateUVNode
 from ..utils.sprite_sheet_uv_node import SpriteSheetUVNode
 from ..utils.timer_node import TimerNode
 
@@ -77,11 +78,13 @@ oscSawtooth = nodeProxy(OscNode, OscNode.SAWTOOTH)
 remap = nodeProxy(RemapNode, None, None, {'doClamp': False})
 remapClamp = nodeProxy(RemapNode)
 
+rotateUV = nodeProxy( RotateUVNode )
+
 spritesheetUV = nodeProxy(SpriteSheetUVNode)
 
-timerLocal = lambda timeScale : nodeObject( TimerNode( TimerNode.LOCAL, timeScale ) )
-timerGlobal = lambda timeScale : nodeObject( TimerNode( TimerNode.GLOBAL, timeScale ) )
-timerDelta = lambda timeScale : nodeObject( TimerNode( TimerNode.DELTA, timeScale ) )
+timerLocal = lambda timeScale, value=0 : nodeObject( TimerNode( TimerNode.LOCAL, timeScale, value ) )
+timerGlobal = lambda timeScale, value=0 : nodeObject( TimerNode( TimerNode.GLOBAL, timeScale, value ) )
+timerDelta = lambda timeScale, value=0 : nodeObject( TimerNode( TimerNode.DELTA, timeScale, value ) )
 
 # geometry
 

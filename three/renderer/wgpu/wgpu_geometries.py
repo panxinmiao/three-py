@@ -9,12 +9,15 @@ class WgpuGeometries:
 
         self.geometries = WeakKeyDictionary()
 
+    def has( self, geometry ):
+        return self.geometries.get( geometry ) is not None
+
     def update( self, geometry ):
         
         if self.geometries.get( geometry ) is None:
             disposeCallback = self.onGeometryDispose
             
-            self.geometries.setdefault( geometry, disposeCallback )
+            self.geometries[geometry] = disposeCallback
             
             self.info.memory.geometries +=1
 

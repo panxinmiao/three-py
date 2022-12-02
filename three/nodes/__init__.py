@@ -84,6 +84,7 @@ from .utils.matcap_uv_node import MatcapUVNode
 from .utils.max_mip_level_node import MaxMipLevelNode
 from .utils.osc_node import OscNode 
 from .utils.remap_node import RemapNode
+from .utils.rotate_uv_node import RotateUVNode
 from .utils.split_node import SplitNode 
 from .utils.sprite_sheet_uv_node import SpriteSheetUVNode 
 from .utils.timer_node import TimerNode 

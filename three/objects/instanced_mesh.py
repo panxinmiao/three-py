@@ -79,4 +79,4 @@ class InstancedMesh(Mesh):
         pass
 
     def dispose(self):
-        self.dispatchEvent({type: 'dispose'})
+        self.dispatchEvent('dispose')
