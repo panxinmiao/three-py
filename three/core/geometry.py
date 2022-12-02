@@ -308,7 +308,7 @@ class Geometry(EventDispatcher):
         normals = attributes.normal.array
         uvs = attributes.uv.array
 
-        nVertices = positions.length / 3
+        nVertices = positions.length // 3
 
         if self.hasAttribute( 'tangent' ) == False:
             self.setAttribute( 'tangent', BufferAttribute( Float32Array( 4 * nVertices ), 4 ) )
@@ -319,8 +319,8 @@ class Geometry(EventDispatcher):
         tan2:'list[Vector3]' = []
 
         for i in range(nVertices):
-            tan1[ i ] = Vector3()
-            tan2[ i ] = Vector3()
+            tan1.append(Vector3())
+            tan2.append(Vector3())
 
 
         vA = Vector3()
@@ -350,12 +350,18 @@ class Geometry(EventDispatcher):
             uvB.sub( uvA )
             uvC.sub( uvA )
 
-            r = 1.0 / ( uvB.x * uvC.y - uvC.x * uvB.y )
-
             # silently ignore degenerate uv triangles having coincident or colinear vertices
-            
-            if not math.isfinite( r ) :
+            r_1 = uvB.x * uvC.y - uvC.x * uvB.y
+            if r_1 == 0:
                 return
+            r = 1.0 / r_1
+            # try:
+            #     r = 1.0 / ( uvB.x * uvC.y - uvC.x * uvB.y )
+            # except ZeroDivisionError :
+            #     return
+
+            # if not math.isfinite( r ) :
+            #     return
 
             sdir.copy( vB ).multiplyScalar( uvC.y ).addScaledVector( vC, - uvB.y ).multiplyScalar( r )
             tdir.copy( vC ).multiplyScalar( uvB.x ).addScaledVector( vB, - uvC.x ).multiplyScalar( r )
@@ -371,10 +377,10 @@ class Geometry(EventDispatcher):
         groups = self.groups
 
         if len(groups) == 0:
-            groups = [ {
+            groups = [ Dict({
                 'start': 0,
                 'count': indices.length
-            } ]
+            }) ]
 
         for i in range(len(groups)):
             group = groups[ i ]
@@ -699,4 +705,4 @@ class Geometry(EventDispatcher):
         return self
 
     def dispose(self):
-        self.dispatchEvent( { 'type': 'dispose' } )
+        self.dispatchEvent('dispose')

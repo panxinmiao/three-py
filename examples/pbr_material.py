@@ -126,6 +126,8 @@ def init_scene():
 
     gltf_path = Path(__file__).parent / "models" / "DamagedHelmet" / "glTF" / "DamagedHelmet.gltf"
     meshes = load_gltf(gltf_path)
+
+    # meshes[0].geometry.computeTangents()  # optional: use tangent to compute normalMap
     scene.add(*meshes)
 
     render.toneMappingNode = three.nodes.ToneMappingNode(three.LinearToneMapping, 1)

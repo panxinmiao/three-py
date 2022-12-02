@@ -13,20 +13,22 @@ from ..core.code_node import CodeNode
 from ..core.expression_node import ExpressionNode
 from ..core.varying_node import VaryingNode
 
+from ..accessors.bitangent_node import BitangentNode
 from ..accessors.buffer_node import BufferNode
-from ..accessors.storage_buffer_node import StorageBufferNode
 from ..accessors.camera_node import CameraNode
 from ..accessors.material_node import MaterialNode
-from ..accessors.model_node import ModelNode
+from ..accessors.material_reference_node import MaterialReferenceNode
 from ..accessors.model_view_projection_node import ModelViewProjectionNode
 from ..accessors.normal_node import NormalNode
-from ..accessors.position_node import PositionNode
-from ..accessors.texture_node import TextureNode
-from ..accessors.uv_node import UVNode
-from ..accessors.reference_node import ReferenceNode
-from ..accessors.material_reference_node import MaterialReferenceNode
+from ..accessors.model_node import ModelNode
 from ..accessors.point_uv_node import PointUVNode
+from ..accessors.position_node import PositionNode
+from ..accessors.reference_node import ReferenceNode
+from ..accessors.storage_buffer_node import StorageBufferNode
+from ..accessors.tangent_node import TangentNode
+from ..accessors.texture_node import TextureNode
 from ..accessors.userdata_node import UserDataNode
+from ..accessors.uv_node import UVNode
 
 # display
 from ..display.front_facing_node import FrontFacingNode
@@ -110,66 +112,6 @@ label = nodeProxy( VarNode )
 temp = label
 varying = nodeProxy( VaryingNode )
 
-
-#accesors
-buffer = lambda value, nodeOrType, count=0: nodeObject( BufferNode( value, getConstNodeType( nodeOrType ), count ) )
-storage = lambda value, nodeOrType, count=0: nodeObject( StorageBufferNode( value, getConstNodeType( nodeOrType ), count ) )
-
-cameraProjectionMatrix = nodeImmutable(CameraNode, CameraNode.PROJECTION_MATRIX )
-cameraViewMatrix = nodeImmutable(CameraNode, CameraNode.VIEW_MATRIX)
-cameraNormalMatrix = nodeImmutable(CameraNode, CameraNode.NORMAL_MATRIX)
-cameraWorldMatrix = nodeImmutable(CameraNode, CameraNode.WORLD_MATRIX)
-cameraPosition = nodeImmutable(CameraNode, CameraNode.POSITION)
-
-materialAlphaTest = nodeImmutable(MaterialNode, MaterialNode.ALPHA_TEST)
-materialColor = nodeImmutable(MaterialNode, MaterialNode.COLOR)
-materialEmissive = nodeImmutable(MaterialNode, MaterialNode.EMISSIVE)
-materialOpacity = nodeImmutable(MaterialNode, MaterialNode.OPACITY)
-# materialSpecular = nodeImmutable(MaterialNode, MaterialNode.SPECULAR)
-materialRoughness = nodeImmutable(MaterialNode, MaterialNode.ROUGHNESS)
-materialMetalness = nodeImmutable(MaterialNode, MaterialNode.METALNESS)
-materialRotation = nodeImmutable(MaterialNode, MaterialNode.ROTATION)
-
-diffuseColor = nodeImmutable(PropertyNode, 'DiffuseColor', 'vec4')
-roughness = nodeImmutable(PropertyNode, 'Roughness', 'float')
-metalness = nodeImmutable(PropertyNode, 'Metalness', 'float')
-alphaTest = nodeImmutable(PropertyNode, 'AlphaTest', 'float')
-specularColor = nodeImmutable(PropertyNode, 'SpecularColor', 'color')
-
-reference = lambda name, nodeOrType, object=None: nodeObject(ReferenceNode(name, getConstNodeType(nodeOrType), object))
-materialReference = lambda name, nodeOrType, material=None: nodeObject(MaterialReferenceNode(name, getConstNodeType(nodeOrType), material))
-userData = lambda name, inputType, userData=None: nodeObject(UserDataNode(name, inputType, userData))
-
-modelViewProjection = nodeProxy(ModelViewProjectionNode)
-
-normalGeometry = nodeImmutable(NormalNode, NormalNode.GEOMETRY)
-normalLocal = nodeImmutable(NormalNode, NormalNode.LOCAL)
-normalWorld = nodeImmutable(NormalNode, NormalNode.WORLD)
-normalView = nodeImmutable(NormalNode, NormalNode.VIEW)
-transformedNormalView = nodeImmutable(VarNode, normalView, 'TransformedNormalView')
-
-modelViewMatrix = nodeImmutable(ModelNode, ModelNode.VIEW_MATRIX)
-modelNormalMatrix = nodeImmutable(ModelNode, ModelNode.NORMAL_MATRIX)
-modelWorldMatrix = nodeImmutable(ModelNode, ModelNode.WORLD_MATRIX)
-modelPosition = nodeImmutable(ModelNode, ModelNode.POSITION)
-modelViewPosition = nodeImmutable(ModelNode, ModelNode.VIEW_POSITION)
-
-positionGeometry = nodeImmutable(PositionNode, PositionNode.GEOMETRY)
-positionLocal = nodeImmutable(PositionNode, PositionNode.LOCAL)
-positionWorld = nodeImmutable(PositionNode, PositionNode.WORLD)
-positionView = nodeImmutable(PositionNode, PositionNode.VIEW)
-positionViewDirection = nodeImmutable(PositionNode, PositionNode.VIEW_DIRECTION)
-
-texture = nodeProxy(TextureNode)
-sampler = lambda texture: nodeObject(ConvertNode(texture if texture.isNode else TextureNode(texture), 'sampler'))
-uv = lambda *args: nodeObject(UVNode(*args))
-pointUV = nodeImmutable(PointUVNode)
-
-
-# gpgpu
-
-compute = lambda node, count, workgroupSize = None: nodeObject(ComputeNode(nodeObject(node), count, workgroupSize))
-
 # math
 
 EPSILON = float( 1e-6 )
@@ -222,7 +164,7 @@ negate = nodeProxy( MathNode, MathNode.NEGATE )
 invert = nodeProxy( MathNode, MathNode.INVERT )
 dFdx = nodeProxy( MathNode, MathNode.DFDX )
 dFdy = nodeProxy( MathNode, MathNode.DFDY )
-saturate = nodeProxy( MathNode, MathNode.SATURATE )
+# saturate = nodeProxy( MathNode, MathNode.SATURATE )
 round = nodeProxy( MathNode, MathNode.ROUND )
 
 atan2 = nodeProxy(MathNode, MathNode.ATAN2)
@@ -241,10 +183,85 @@ pow4 = nodeProxy(MathNode, MathNode.POW, 4)
 transformDirection = nodeProxy(MathNode, MathNode.TRANSFORM_DIRECTION)
 
 mix = nodeProxy( MathNode, MathNode.MIX )
-clamp = nodeProxy( MathNode, MathNode.CLAMP )
+# clamp = nodeProxy( MathNode, MathNode.CLAMP )
+clamp = lambda value, low=0, high=1: nodeObject( MathNode( MathNode.CLAMP, nodeObject( value ), nodeObject( low ), nodeObject( high ) ) )
 refract = nodeProxy( MathNode, MathNode.REFRACT )
 smoothstep = nodeProxy( MathNode, MathNode.SMOOTHSTEP )
 faceforward = nodeProxy( MathNode, MathNode.FACEFORWARD )
+
+#accesors
+
+buffer = lambda value, nodeOrType, count=0: nodeObject( BufferNode( value, getConstNodeType( nodeOrType ), count ) )
+storage = lambda value, nodeOrType, count=0: nodeObject( StorageBufferNode( value, getConstNodeType( nodeOrType ), count ) )
+
+cameraProjectionMatrix = nodeImmutable(CameraNode, CameraNode.PROJECTION_MATRIX )
+cameraViewMatrix = nodeImmutable(CameraNode, CameraNode.VIEW_MATRIX)
+cameraNormalMatrix = nodeImmutable(CameraNode, CameraNode.NORMAL_MATRIX)
+cameraWorldMatrix = nodeImmutable(CameraNode, CameraNode.WORLD_MATRIX)
+cameraPosition = nodeImmutable(CameraNode, CameraNode.POSITION)
+
+materialAlphaTest = nodeImmutable(MaterialNode, MaterialNode.ALPHA_TEST)
+materialColor = nodeImmutable(MaterialNode, MaterialNode.COLOR)
+materialEmissive = nodeImmutable(MaterialNode, MaterialNode.EMISSIVE)
+materialOpacity = nodeImmutable(MaterialNode, MaterialNode.OPACITY)
+# materialSpecular = nodeImmutable(MaterialNode, MaterialNode.SPECULAR)
+materialRoughness = nodeImmutable(MaterialNode, MaterialNode.ROUGHNESS)
+materialMetalness = nodeImmutable(MaterialNode, MaterialNode.METALNESS)
+materialRotation = nodeImmutable(MaterialNode, MaterialNode.ROTATION)
+
+diffuseColor = nodeImmutable(PropertyNode, 'DiffuseColor', 'vec4')
+roughness = nodeImmutable(PropertyNode, 'Roughness', 'float')
+metalness = nodeImmutable(PropertyNode, 'Metalness', 'float')
+alphaTest = nodeImmutable(PropertyNode, 'AlphaTest', 'float')
+specularColor = nodeImmutable(PropertyNode, 'SpecularColor', 'color')
+
+reference = lambda name, nodeOrType, object=None: nodeObject(ReferenceNode(name, getConstNodeType(nodeOrType), object))
+materialReference = lambda name, nodeOrType, material=None: nodeObject(MaterialReferenceNode(name, getConstNodeType(nodeOrType), material))
+userData = lambda name, inputType, userData=None: nodeObject(UserDataNode(name, inputType, userData))
+
+modelViewProjection = nodeProxy(ModelViewProjectionNode)
+
+normalGeometry = nodeImmutable(NormalNode, NormalNode.GEOMETRY)
+normalLocal = nodeImmutable(NormalNode, NormalNode.LOCAL)
+normalView = nodeImmutable(NormalNode, NormalNode.VIEW)
+normalWorld = nodeImmutable(NormalNode, NormalNode.WORLD)
+transformedNormalView = nodeImmutable(VarNode, normalView, 'TransformedNormalView')
+transformedNormalWorld = normalize(transformDirection(transformedNormalView, cameraViewMatrix))
+
+tangentGeometry = nodeImmutable(TangentNode, TangentNode.GEOMETRY)
+tangentLocal = nodeImmutable(TangentNode, TangentNode.LOCAL)
+tangentView = nodeImmutable(TangentNode, TangentNode.VIEW)
+tangentWorld = nodeImmutable(TangentNode, TangentNode.WORLD)
+transformedTangentView = nodeImmutable(VarNode, tangentView, 'TransformedTangentView')
+transformedTangentWorld = normalize(transformDirection(transformedTangentView, cameraViewMatrix))
+
+bitangentGeometry = nodeImmutable(BitangentNode, BitangentNode.GEOMETRY)
+bitangentLocal = nodeImmutable(BitangentNode, BitangentNode.LOCAL)
+bitangentView = nodeImmutable(BitangentNode, BitangentNode.VIEW)
+bitangentWorld = nodeImmutable(BitangentNode, BitangentNode.WORLD)
+transformedBitangentView = normalize(mul(cross( transformedNormalView, transformedTangentView), tangentGeometry.w))
+transformedBitangentWorld = normalize(transformDirection(transformedBitangentView, cameraViewMatrix))
+
+modelViewMatrix = nodeImmutable(ModelNode, ModelNode.VIEW_MATRIX)
+modelNormalMatrix = nodeImmutable(ModelNode, ModelNode.NORMAL_MATRIX)
+modelWorldMatrix = nodeImmutable(ModelNode, ModelNode.WORLD_MATRIX)
+modelPosition = nodeImmutable(ModelNode, ModelNode.POSITION)
+modelViewPosition = nodeImmutable(ModelNode, ModelNode.VIEW_POSITION)
+
+positionGeometry = nodeImmutable(PositionNode, PositionNode.GEOMETRY)
+positionLocal = nodeImmutable(PositionNode, PositionNode.LOCAL)
+positionWorld = nodeImmutable(PositionNode, PositionNode.WORLD)
+positionView = nodeImmutable(PositionNode, PositionNode.VIEW)
+positionViewDirection = nodeImmutable(PositionNode, PositionNode.VIEW_DIRECTION)
+
+texture = nodeProxy(TextureNode)
+sampler = lambda texture: nodeObject(ConvertNode(texture if texture.isNode else TextureNode(texture), 'sampler'))
+uv = lambda *args: nodeObject(UVNode(*args))
+pointUV = nodeImmutable(PointUVNode)
+
+# gpgpu
+
+compute = lambda node, count, workgroupSize=None: nodeObject(ComputeNode(nodeObject(node), count, workgroupSize))
 
 # display
 
@@ -257,5 +274,9 @@ element = nodeProxy(ArrayElementNode)
 
 # miscellaneous
 
-dotNV = saturate(dot(transformedNormalView, positionViewDirection))
-transformedNormalWorld = normalize(transformDirection(transformedNormalView, cameraViewMatrix))
+lumaCoeffs = vec3( 0.2125, 0.7154, 0.0721 )
+luminance = lambda color, luma = None: dot( color, luma or lumaCoeffs )
+
+difference = lambda a, b: nodeObject(abs(sub(a, b)))
+dotNV = clamp(dot(transformedNormalView, positionViewDirection))
+TBNViewMatrix = mat3( tangentView, bitangentView, normalView )

@@ -108,7 +108,9 @@ def _phong_light_model(inputs, *args):
     specularColor = specularStrength * lightColor
 
     total = (ambientColor + diffuseColor+ specularColor) * materialColor
-    inputs.reflectedLight.directDiffuse.add(total)
+
+    reflectedLight = inputs['reflectedLight']
+    reflectedLight.directDiffuse.add(total)
     
 
 

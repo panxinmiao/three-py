@@ -1,9 +1,9 @@
 import math
 from .F_Schlick import F_Schlick
 from ...shadernode.shader_node import ShaderNode
-from ...shadernode.shader_node_base_elements import add, mul, saturate, dot, pow, normalize, transformedNormalView, positionViewDirection
+from ...shadernode.shader_node_base_elements import add, mul, clamp, dot, pow, normalize, transformedNormalView, positionViewDirection
 
-def __G_BlinnPhong_Implicit( **kwargs ):
+def __G_BlinnPhong_Implicit():
     return 0.25
 
 G_BlinnPhong_Implicit = ShaderNode( __G_BlinnPhong_Implicit )
@@ -25,8 +25,8 @@ def __BRDF_BlinnPhong( inputs ):
 
     halfDir = normalize( add( lightDirection, positionViewDirection ) )
 
-    dotNH = saturate( dot( transformedNormalView, halfDir ) )
-    dotVH = saturate( dot( positionViewDirection, halfDir ) )
+    dotNH = clamp( dot( transformedNormalView, halfDir ) )
+    dotVH = clamp( dot( positionViewDirection, halfDir ) )
 
     F = F_Schlick( { 'f0':specularColor, 'f90':1.0, 'dotVH':dotVH } )
 

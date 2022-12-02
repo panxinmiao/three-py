@@ -89,4 +89,4 @@ class RenderTarget(EventDispatcher):
 
 
     def dispose(self):
-        self.dispatchEvent( { type: 'dispose' } )
+        self.dispatchEvent('dispose')

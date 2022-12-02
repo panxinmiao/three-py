@@ -2,7 +2,7 @@ import math
 from ...structure import Dict
 from ..shadernode.shader_node import ShaderNode
 from ..shadernode.shader_node_base_elements import (
-    vec3, mul, saturate, add, sub, dot, div, transformedNormalView,
+    vec3, mul, clamp, add, sub, dot, div, transformedNormalView,
     pow, exp2, dotNV,
     diffuseColor, specularColor, roughness, temp)
 
@@ -69,7 +69,7 @@ def __RE_Direct_Physical(inputs, *args):
     lightColor = inputs['lightColor']
     reflectedLight = inputs['reflectedLight']
 
-    dotNL = saturate( dot( transformedNormalView, lightDirection ) )
+    dotNL = clamp( dot( transformedNormalView, lightDirection ) )
     irradiance = mul( dotNL, lightColor )
 
     reflectedLight.directSpecular.add( mul( irradiance, BRDF_GGX( { 'lightDirection': lightDirection, 'f0': specularColor, 'f90': 1, 'roughness': roughness } ) ) )
@@ -87,7 +87,7 @@ def __RE_AmbientOcclusion_Physical(inputs, *args):
     aoNV = add(dotNV, ambientOcclusion)
     aoExp = exp2(sub(mul(- 16.0, roughness), 1.0))
 
-    aoNode = saturate(add(sub(pow(aoNV, aoExp), 1.0), ambientOcclusion))
+    aoNode = clamp(add(sub(pow(aoNV, aoExp), 1.0), ambientOcclusion))
 
     reflectedLight.indirectDiffuse.mul(ambientOcclusion)
 

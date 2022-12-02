@@ -31,7 +31,7 @@ class OperatorNode(TempNode):
         elif op == '=' or op == '%':
             return typeA
         elif op == '&' or op == '|' or op == '^' or op == '>>' or op == '<<':
-            return 'int'
+            return builder.getIntegerType( typeA )
         elif op == '==' or op == '&&' or op == '||' or op == '^^' :
             return 'bool'
         elif op == '<=' or op == '>=' or op =='<' or op == '>':
@@ -77,6 +77,10 @@ class OperatorNode(TempNode):
                 else:
                     typeA = typeB = 'float'
 
+            elif op == '>>' or op == '<<':
+                typeA = type
+                typeB = builder.changeComponentType( typeB, 'uint' )
+
             elif builder.isMatrix( typeA ) and builder.isVector( typeB ):
                 # matrix x vector
                 typeB = builder.getVectorFromMatrix( typeA )
@@ -100,14 +104,18 @@ class OperatorNode(TempNode):
                 builder.addFlowCode( f"{a} {self.op} {b}" )
 
                 return a
-            
-            elif op == '>' and outputLength > 1:
-               # return f"{ builder.getMethod( 'greaterThan' ) }( {a}, {b} )"
-                return builder.format( f"{ builder.getMethod( 'greaterThan' ) }( {a}, {b} )", type, output )
+
+            elif op == '<' and outputLength > 1:
+                return builder.format( f"{ builder.getMethod( 'lessThan' ) }( {a}, {b} )", type, output )
 
             elif op == '<=' and outputLength > 1:
-                # return f"{ builder.getMethod( 'lessThanEqual' ) }( {a}, {b} )"
                 return builder.format( f"{ builder.getMethod( 'lessThanEqual' ) }( {a}, {b} )", type, output )
+
+            elif op == '>' and outputLength > 1:
+                return builder.format( f"{ builder.getMethod( 'greaterThan' ) }( {a}, {b} )", type, output )
+
+            elif op == '>=' and outputLength > 1:
+                return builder.format( f"{ builder.getMethod( 'greaterThanEqual' ) }( {a}, {b} )", type, output )
 
             else:
                 #return f"( {a} {self.op} {b} )"

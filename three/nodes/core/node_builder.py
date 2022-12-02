@@ -16,7 +16,6 @@ shaderStages = [*defaultShaderStages, 'compute']
 vector = ['x', 'y', 'z', 'w']
 
 typeFromLength = {
-    1: "float",
     2: "vec2",
     3: "vec3",
     4: "vec4",
@@ -30,8 +29,8 @@ class NodeBuilder(NoneAttribute):
 
     def __init__(self, object, renderer, parser) -> None:
         self.object = object
-        self.material = object.material
-        self.geometry = object.geometry
+        self.material:three.Material = object.material
+        self.geometry:three.Geometry = object.geometry
         self.renderer = renderer
         self.parser = parser
 
@@ -150,7 +149,21 @@ class NodeBuilder(NoneAttribute):
         warnings.warn( 'Abstract function.' )
 
     # rename to generateConst
-    def getConst(self, type, value ):
+    def getConst(self, type, value=None ):
+        if value is None:
+            if type == 'float' or type == 'int' or type == 'uint':
+                value = 0
+            elif type == 'bool':
+                value = False
+            elif type == 'color':
+                value = three.Color()
+            elif type == 'vec2':
+                value = three.Vector2()
+            elif type == 'vec3':
+                value = three.Vector3()
+            elif type == 'vec4':
+                value = three.Vector4()
+
         if type == 'float':
             # return str(value) + ('' if value % 1 else '.0')
             return str(float(value))
@@ -182,13 +195,18 @@ class NodeBuilder(NoneAttribute):
         raise Exception(f"NodeBuilder: Type '{type}' not found in generate constant attempt." )
 
 
-    def getType(self, type ):
+    def getType(self, type):
         return type
 
-    def generateMethod(self, method ):
+    def generateMethod(self, method):
         return method
 
-    def getAttribute(self, name, type ):
+    def hasGeometryAttribute(self, name):
+        if self.geometry is None:
+            return False
+        return self.geometry.hasAttribute(name)
+
+    def getAttribute(self, name, type):
         attributes = self.attributes
 
         #find attribute
@@ -234,6 +252,10 @@ class NodeBuilder(NoneAttribute):
 
     def getComponentType( self, type ):
         type = self.getVectorType( type )
+
+        if type == 'float' or type == 'bool' or type == 'int' or type == 'uint':
+            return type
+        
         match = _componet_exp.match(type)
         if match is None:
             return None
@@ -257,8 +279,12 @@ class NodeBuilder(NoneAttribute):
         return type
 
 
-    def getTypeFromLength(self, length ):
-        return typeFromLength.get(length)
+    def getTypeFromLength(self, length, componentType='float'):
+        if length == 1:
+            return componentType
+        baseType = typeFromLength.get( length )
+        prefix = '' if componentType == 'float' else componentType[ 0 ]
+        return prefix + baseType
 
 
     def getTypeLength(self, type:str ):
@@ -284,8 +310,18 @@ class NodeBuilder(NoneAttribute):
         return 0
 
 
-    def getVectorFromMatrix(self, type:'str' ):
+    def getVectorFromMatrix(self, type:'str'):
         return type.replace("mat", "vec")
+
+    def changeComponentType(self, type, newComponentType):
+        typeLength = self.getTypeLength( type )
+        return self.getTypeFromLength(typeLength, newComponentType)
+    
+    def getIntegerType(self, type):
+        componentType = self.getComponentType(type)
+        if componentType == 'int' or componentType == 'uint':
+            return type
+        return self.changeComponentType(type, 'int')
     
     def getDataFromNode(self, node, shaderStage = None):
         if shaderStage is None:

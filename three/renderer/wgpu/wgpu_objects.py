@@ -16,11 +16,17 @@ class WgpuObjects:
         geometry = object.geometry
         updateMap = self.updateMap
         frame = self.info.render.frame
-        
-        if not geometry.isBufferGeometry:
-            raise ValueError( 'THREE.WebGPURenderer: This renderer only supports THREE.BufferGeometry for geometries.' )
 
-        if updateMap.get( geometry ) != frame:
+        # "_needsUpdate" is a flag that to force update geometry.
+        # since geometry maybe a shared resource in different object, we usually need to update it only once per frame.
+        # but in some cases, different objects may need to update it separately. 
+        # (in RangeNode for example, geometry attribute maybe added by different objects)
+        # See: RangeNode
+        # TODO: remove this flag, and use a more elegant way to update geometry.
+        forceUpdate = geometry._needsUpdate
+        if forceUpdate or self.geometries.has(geometry) == False or updateMap.get( geometry ) != frame:
+            if forceUpdate:
+                geometry._needsUpdate = False
             self.geometries.update( geometry )
             updateMap[geometry] = frame
 

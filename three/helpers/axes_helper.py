@@ -25,6 +25,7 @@ class AxesHelper(LineSegments):
 
         material = LineBasicMaterial( { 'vertexColors': True, 'toneMapped': False } )
         
+        self._type = 'AxesHelper'
         super().__init__( geometry, material )
 
     

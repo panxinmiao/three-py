@@ -9,7 +9,7 @@ from ..core.node_builder import NodeBuilder
 
 def __LinearTosRGB(inputs):
     
-    value = inputs.value
+    value = inputs["value"]
     rgb = value.rgb
     a = sub( mul( pow( value.rgb, vec3( 0.41666 ) ), 1.055 ), vec3( 0.055 ) )
     b = mul( rgb, 12.92 )
@@ -18,7 +18,7 @@ def __LinearTosRGB(inputs):
     return vec4(rgbResult, value.a)
 
 
-LinearToLinear = ShaderNode(lambda inputs : inputs.value )
+LinearToLinear = ShaderNode(lambda inputs : inputs["value"] )
 
 LinearTosRGB = ShaderNode(__LinearTosRGB)
 

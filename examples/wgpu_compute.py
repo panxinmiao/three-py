@@ -1,5 +1,4 @@
 import three, math
-from random import random
 from wgpu.gui.auto import WgpuCanvas, run
 import three.nodes as nodes
 from three.nodes import (ShaderNode, compute,

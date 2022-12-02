@@ -1,5 +1,5 @@
 from ...shadernode.shader_node import ShaderNode
-from ...shadernode.shader_node_base_elements import div, max, sub, mul, saturate, pow, pow2, pow4, cond, greaterThan
+from ...shadernode.shader_node_base_elements import div, max, sub, mul, clamp, pow, pow2, pow4, cond, greaterThan
 
 def __getDistanceAttenuation( inputs ):
     lightDistance = inputs['lightDistance']
@@ -13,7 +13,7 @@ def __getDistanceAttenuation( inputs ):
 
     return cond(
       greaterThan( cutoffDistance, 0 ),
-      mul( distanceFalloff, pow2( saturate( sub( 1.0, pow4( div( lightDistance, cutoffDistance ) ) ) ) ) ),
+      mul( distanceFalloff, pow2( clamp( sub( 1.0, pow4( div( lightDistance, cutoffDistance ) ) ) ) ) ),
       distanceFalloff
     )
 

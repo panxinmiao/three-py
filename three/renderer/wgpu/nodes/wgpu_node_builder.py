@@ -84,8 +84,8 @@ fn smoothstep( low : f32, high : f32, x : f32 ) -> f32 {
 }
 ''' ),
     'repeatWrapping': CodeNode( '''
-fn repeatWrapping( uv : vec2<f32>, dimension : vec2<i32> ) -> vec2<i32> {
-    let uvScaled = vec2<i32>( uv * vec2<f32>( dimension ) );
+fn repeatWrapping( uv : vec2<f32>, dimension : vec2<u32> ) -> vec2<u32> {
+    let uvScaled = vec2<u32>( uv * vec2<f32>( dimension ) );
     return ( ( uvScaled % dimension ) + dimension ) % dimension;
 }
 ''' )

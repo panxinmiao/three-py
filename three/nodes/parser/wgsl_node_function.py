@@ -38,7 +38,7 @@ def _parse( source: str ):
             name = propsMatches[ i ]
             i += 1
             type = propsMatches[ i ]
-            type = wgslTypeLib[type] or type
+            type = wgslTypeLib.get(type, type)
             i += 1
 
             #precision = propsMatches[ i ]

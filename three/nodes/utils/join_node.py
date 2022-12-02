@@ -3,11 +3,14 @@ from ..core.temp_node import TempNode
 
 class JoinNode(TempNode):
 
-    def __init__(self, nodes = []) -> None:
-        super().__init__()
+    def __init__(self, nodes = [], nodeType=None) -> None:
+        super().__init__(nodeType)
         self.nodes = nodes
 
     def getNodeType( self, builder, *args ):
+        if self.nodeType is not None:
+            return builder.getVectorType( self.nodeType )
+
         count = 0
         for node in self.nodes:
             count += builder.getTypeLength( node.getNodeType( builder ) )

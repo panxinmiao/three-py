@@ -2,7 +2,7 @@ from .F_Schlick import F_Schlick
 from .V_GGX_SmithCorrelated import V_GGX_SmithCorrelated
 from .D_GGX import D_GGX
 from ...shadernode.shader_node import ShaderNode
-from ...shadernode.shader_node_base_elements import dotNV, add, mul, saturate, dot, pow2, normalize, transformedNormalView, positionViewDirection
+from ...shadernode.shader_node_base_elements import dotNV, add, mul, clamp, dot, pow2, normalize, transformedNormalView, positionViewDirection
 
 def __BRDF_GGX( inputs ):
     #const { lightDirection, f0, f90, roughness } = inputs
@@ -16,10 +16,10 @@ def __BRDF_GGX( inputs ):
 
     halfDir = normalize( add( lightDirection, positionViewDirection ) )
 
-    dotNL = saturate( dot( transformedNormalView, lightDirection ) )
-    #dotNV = saturate( dot( transformedNormalView, positionViewDirection ) )
-    dotNH = saturate( dot( transformedNormalView, halfDir ) )
-    dotVH = saturate( dot( positionViewDirection, halfDir ) )
+    dotNL = clamp( dot( transformedNormalView, lightDirection ) )
+    #dotNV = clamp( dot( transformedNormalView, positionViewDirection ) )
+    dotNH = clamp( dot( transformedNormalView, halfDir ) )
+    dotVH = clamp( dot( positionViewDirection, halfDir ) )
 
     F = F_Schlick( { 'f0':f0, 'f90':f90, 'dotVH':dotVH } )
 

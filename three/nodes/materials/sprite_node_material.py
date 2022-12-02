@@ -3,8 +3,8 @@ from three.materials import SpriteMaterial
 
 from ..shadernode.shader_node_elements import (
     vec2, vec3, vec4,
-   	assign, add, mul, sub,
-   	positionLocal, bypass, length, cos, sin, uniform,
+   	uniform, add, mul, sub,
+   	positionLocal, length, cos, sin,
    	modelViewMatrix, cameraProjectionMatrix, modelWorldMatrix, materialRotation
 )
 
@@ -37,12 +37,12 @@ class SpriteNodeMaterial(NodeMaterial):
     def generatePosition(self, builder):
         # < VERTEX STAGE >
 
+        positionNode = self.positionNode
         vertex = positionLocal
 
-        if self.positionNode:
-            vertex = bypass(vertex, assign(positionLocal, self.positionNode))
-
-        mvPosition = mul(modelViewMatrix, vec4(0, 0, 0, 1))
+        # if self.positionNode:
+        #     vertex = bypass(vertex, assign(positionLocal, self.positionNode))
+        mvPosition = mul(modelViewMatrix, vec4(positionNode.xyz, 1) if positionNode else vec4(0, 0, 0, 1))
 
         scale = vec2(
             length(vec3(modelWorldMatrix[0].x, modelWorldMatrix[0].y, modelWorldMatrix[0].z)),

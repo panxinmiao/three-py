@@ -5,6 +5,7 @@ from ..accessors.reflect_vector_node import ReflectVectorNode
 from ..accessors.skinning_node import SkinningNode
 
 # display
+from ..display.blend_mode_node import BlendModeNode
 from ..display.color_adjustment_node import ColorAdjustmentNode
 from ..display.color_space_node import ColorSpaceNode
 from ..display.normal_map_node import NormalMapNode
@@ -18,8 +19,11 @@ from ..lighting.lighting_context_node import LightingContextNode
 from ..utils.matcap_uv_node import MatcapUVNode
 from ..utils.max_mip_level_node import MaxMipLevelNode
 from ..utils.osc_node import OscNode
+from ..utils.remap_node import RemapNode
+from ..utils.rotate_uv_node import RotateUVNode
 from ..utils.sprite_sheet_uv_node import SpriteSheetUVNode
 from ..utils.timer_node import TimerNode
+from ..utils.triplanar_textures_node import TriplanarTexturesNode
 
 # geometry
 from ..geometry.range_node import RangeNode
@@ -37,12 +41,17 @@ from .shader_node_base_elements import *
 
 # accessors
 
-cubeTexture = nodeProxy( CubeTextureNode )
+cubeTexture = nodeProxy(CubeTextureNode)
 instance = nodeProxy(InstanceNode)
 reflectVector = nodeImmutable(ReflectVectorNode)
 skinning = nodeProxy(SkinningNode)
 
 # diaplay
+
+burn = nodeProxy(BlendModeNode, BlendModeNode.BURN)
+dodge = nodeProxy(BlendModeNode, BlendModeNode.DODGE)
+overlay = nodeProxy(BlendModeNode, BlendModeNode.OVERLAY)
+screen = nodeProxy(BlendModeNode, BlendModeNode.SCREEN)
 
 saturation = nodeProxy(ColorAdjustmentNode, ColorAdjustmentNode.SATURATION)
 vibrance = nodeProxy(ColorAdjustmentNode, ColorAdjustmentNode.VIBRANCE)
@@ -67,11 +76,20 @@ oscSquare = nodeProxy(OscNode, OscNode.SQUARE)
 oscTriangle = nodeProxy(OscNode, OscNode.TRIANGLE)
 oscSawtooth = nodeProxy(OscNode, OscNode.SAWTOOTH)
 
+remap = nodeProxy(RemapNode, None, None, {'doClamp': False})
+remapClamp = nodeProxy(RemapNode)
+
+rotateUV = nodeProxy( RotateUVNode )
+
 spritesheetUV = nodeProxy(SpriteSheetUVNode)
 
-timerLocal = lambda timeScale : nodeObject( TimerNode( TimerNode.LOCAL, timeScale ) )
-timerGlobal = lambda timeScale : nodeObject( TimerNode( TimerNode.GLOBAL, timeScale ) )
-timerDelta = lambda timeScale : nodeObject( TimerNode( TimerNode.DELTA, timeScale ) )
+timerLocal = lambda timeScale, value=0 : nodeObject( TimerNode( TimerNode.LOCAL, timeScale, value ) )
+timerGlobal = lambda timeScale, value=0 : nodeObject( TimerNode( TimerNode.GLOBAL, timeScale, value ) )
+timerDelta = lambda timeScale, value=0 : nodeObject( TimerNode( TimerNode.DELTA, timeScale, value ) )
+frameId = nodeImmutable( TimerNode, TimerNode.FRAME )
+
+triplanarTextures = nodeProxy( TriplanarTexturesNode )
+triplanarTexture = lambda texture, *args, **kwargs: triplanarTextures( texture, texture, texture, *args, **kwargs )
 
 # geometry
 

@@ -19,7 +19,7 @@ class OscNode(Node):
     def getNodeType( self, builder, *args ):
         return self.timeNode.getNodeType( builder )
 
-    def generate( self, builder ):
+    def construct( self, builder ):
         method = self.method
         timeNode = self.timeNode
         outputNode = None
@@ -36,4 +36,4 @@ class OscNode(Node):
         elif method == OscNode.SAWTOOTH:
             outputNode = fract( timeNode )
 
-        return outputNode.build( builder )
+        return outputNode

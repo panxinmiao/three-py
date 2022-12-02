@@ -34,7 +34,7 @@ class MathNode(TempNode):
     INVERT = 'invert'
     DFDX = 'dFdx'
     DFDY = 'dFdy'
-    SATURATE = 'saturate'
+    # SATURATE = 'saturate'
     ROUND = 'round'
 
     # 2 inputs
@@ -139,9 +139,9 @@ class MathNode(TempNode):
             return MathNode( MathNode.NORMALIZE, mulNode ).build( builder )
 
 
-        if method == MathNode.SATURATE:
-            # return f'clamp( { a.build( builder, inputType ) }, 0.0, 1.0 )'
-            return builder.format( f'clamp( { a.build( builder, inputType ) }, 0.0, 1.0 )', type, output )
+        # if method == MathNode.SATURATE:
+        #     # return f'clamp( { a.build( builder, inputType ) }, 0.0, 1.0 )'
+        #     return builder.format( f'clamp( { a.build( builder, inputType ) }, 0.0, 1.0 )', type, output )
 
         if method == MathNode.NEGATE:
             # return '( -' + a.build( builder, inputType ) + ' )'
