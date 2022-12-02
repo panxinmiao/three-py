@@ -88,6 +88,7 @@ from .utils.rotate_uv_node import RotateUVNode
 from .utils.split_node import SplitNode 
 from .utils.sprite_sheet_uv_node import SpriteSheetUVNode 
 from .utils.timer_node import TimerNode 
+from .utils.triplanar_textures_node import TriplanarTexturesNode
 
 # loaders
 

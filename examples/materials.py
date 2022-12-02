@@ -1,80 +1,147 @@
 import time, math
+import random
 import three
 import three.nodes
+from three.nodes import ShaderNode, vec3, dot, triplanarTexture, sampler
 from pathlib import Path
 from wgpu.gui.auto import WgpuCanvas, run
 
-from loaders.texture_loader import CubeTextureLoader
+from loaders.texture_loader import TextureLoader
+from pathlib import Path
 
 canvas = WgpuCanvas(size=(640, 480), title="materials")
 renderer = three.WgpuRenderer(canvas, antialias=True)
 renderer.init()
 
 camera = three.PerspectiveCamera(45, 640 / 480, 0.1, 2500)
-camera.position.set(0, 400, 1200)
+camera.position.set(0, 200, 800)
 scene = three.Scene()
 
 
+# Grid
 
-# Lights
+helper = three.GridHelper( 1000, 40, 0x303030, 0x303030 )
+helper.position.y = - 75
+scene.add( helper )
 
-scene.add(three.AmbientLight(0x222222))
-directional_light = three.DirectionalLight(0xFFFFFF, 1)
-directional_light.position.set(1, 1, 1)
-scene.add(directional_light)
-point_light = three.PointLight(0xFFFFFF, 2)
-scene.add(point_light)
+# Materials
+materials = []
 
-# light_helper = three.PointLightHelper(point_light, size=4)
-# scene.add(light_helper)
+loader = TextureLoader(Path(__file__).parent / "textures" )
 
+texture = loader.load("uv_grid.jpg")
+texture.wrapS = three.RepeatWrapping
+texture.wrapT = three.RepeatWrapping
 
-env_map_path = Path(__file__).parent / "textures" / "cube" / "Park2"
-env_map_urls = ["posx.jpg", "negx.jpg", "posy.jpg", "negy.jpg", "posz.jpg", "negz.jpg"]
-
-
-loader = CubeTextureLoader(env_map_path)
-envMap = loader.load(env_map_urls, encoding=three.sRGBEncoding)
-envMap.generateMipmaps = True
-
-scene.background = three.nodes.CubeTextureNode(envMap)
-
-scene.environmentNode = scene.background
+opacityTexture = loader.load('alphaMap.jpg')
+opacityTexture.wrapS = three.RepeatWrapping
+opacityTexture.wrapT = three.RepeatWrapping
 
 
-cube_width = 400
-numbers_per_side = 2
-sphere_radius = (cube_width / numbers_per_side) * 0.8 * 0.5
-step_size = 1.0 / numbers_per_side
+# BASIC
 
-geometry = three.SphereGeometry(sphere_radius, 32, 16)
+# PositionNode.LOCAL
+material = three.nodes.MeshBasicNodeMaterial()
+material.colorNode = three.nodes.PositionNode( three.nodes.PositionNode.LOCAL )
+materials.append( material )
 
-basicMaterial = three.MeshBasicMaterial(color=0xFFFF00)
-# basicMaterial.envMap = envMap
+# NormalNode.LOCAL
+material = three.nodes.MeshBasicNodeMaterial()
+material.colorNode = three.nodes.NormalNode( three.nodes.NormalNode.LOCAL )
+materials.append( material )
 
-mesh = three.Mesh(geometry, basicMaterial)
+# NormalNode.WORLD
+material = three.nodes.MeshBasicNodeMaterial()
+material.colorNode = three.nodes.NormalNode( three.nodes.NormalNode.WORLD )
+materials.append( material )
 
-mesh.position.set(-200, 0, 0)
-scene.add(mesh)
+# NormalNode.VIEW
+material = three.nodes.MeshBasicNodeMaterial()
+material.colorNode = three.nodes.NormalNode( three.nodes.NormalNode.VIEW )
+materials.append( material )
 
-standardMaterial = three.MeshStandardMaterial(color=0xFFFF00)
-standardMaterial.roughness = 0.1
-standardMaterial.metalness = 1.0
-standardMaterial.envMap = envMap
+# TextureNode
+material = three.nodes.MeshBasicNodeMaterial()
+material.colorNode = three.nodes.TextureNode( texture )
+materials.append( material )
 
-mesh2 = three.Mesh(geometry, standardMaterial)
+# Opacity
+material = three.nodes.MeshBasicNodeMaterial()
+material.colorNode = three.nodes.UniformNode( three.Color( 0x0099FF ) )
+material.opacityNode = three.nodes.TextureNode( texture )
+material.transparent = True
+materials.append( material )
 
-scene.add(mesh2)
+# AlphaTest
+material = three.nodes.MeshBasicNodeMaterial()
+material.colorNode = three.nodes.TextureNode( texture )
+material.opacityNode = three.nodes.TextureNode( opacityTexture )
+material.alphaTestNode = three.nodes.UniformNode( 0.5 )
+materials.append( material )
 
-phongMaterial = three.MeshPhongMaterial(color=0xFFFF00, shininess=100)
-phongMaterial.envMap = envMap
 
-mesh3 = three.Mesh(geometry, phongMaterial)
+# ADVANCED
 
-mesh3.position.set(200, 0, 0)
-scene.add(mesh3)
+# Custom ShaderNode ( desaturate filter )
 
-renderer.outputEncoding = three.sRGBEncoding
+desaturateShaderNode = ShaderNode( lambda color: dot( vec3( 0.299, 0.587, 0.114 ), color.xyz ))
+
+material = three.nodes.MeshBasicNodeMaterial()
+material.colorNode = desaturateShaderNode( color = three.nodes.TextureNode( texture ) )
+materials.append( material )
+
+
+# Custom WGSL ( desaturate filter )
+
+desaturateWGSLNode = three.nodes.FunctionNode('''
+    fn desaturate( color:vec3<f32> ) -> vec3<f32> {
+        let lum = vec3<f32>( 0.299, 0.587, 0.114 );
+        return vec3<f32>( dot( lum, color ) );
+    }
+''')
+
+material = three.nodes.MeshBasicNodeMaterial()
+material.colorNode = desaturateWGSLNode( { 'color': three.nodes.TextureNode( texture ) } )
+materials.append( material )
+
+# Custom WGSL ( get texture from keywords )
+
+getWGSLTextureSample = three.nodes.FunctionNode('''
+    fn getWGSLTextureSample( tex: texture_2d<f32>, tex_sampler: sampler, uv:vec2<f32> ) -> vec4<f32> {
+        return textureSample( tex, tex_sampler, uv ) * vec4<f32>( 0.0, 1.0, 0.0, 1.0 );
+    }
+''')
+
+textureNode = three.nodes.TextureNode( texture )
+# getWGSLTextureSample.keywords = { 'tex': textureNode, 'tex_sampler': sampler( textureNode ) }
+material = three.nodes.MeshBasicNodeMaterial()
+material.colorNode = getWGSLTextureSample( { 'tex': textureNode, 'tex_sampler': textureNode, 'uv': three.nodes.UVNode() } )
+materials.append( material )
+
+# Triplanar Texture Mapping
+material = three.nodes.MeshBasicNodeMaterial()
+material.colorNode = triplanarTexture( three.nodes.TextureNode( texture ) )
+materials.append( material )
+
+# Geometry
+objects = []
+
+# geometry = three.TeapotGeometry( 50, 18 )
+geometry = three.SphereGeometry(50, 32, 16)
+
+def addMesh( geometry, material ):
+    mesh = three.Mesh( geometry, material )
+    mesh.position.x = ( len(objects) % 4 ) * 200 - 300
+    mesh.position.z = math.floor( len(objects) / 4 ) * 200 - 200
+    mesh.rotation.x = random.random() * 200 - 100
+    mesh.rotation.y = random.random() * 200 - 100
+    mesh.rotation.z = random.random() * 200 - 100
+    objects.append( mesh )
+    scene.add( mesh )
+
+for material in materials:
+    addMesh( geometry, material )
+
 
 three.OrbitControls(camera, canvas)
 
@@ -85,14 +152,7 @@ def on_resize(event):
 canvas.add_event_handler(on_resize, 'resize')
 
 def animate():
-    timer = time.time() * 0.25
-
-    point_light.position.x = math.sin(timer * 7) * 300
-    point_light.position.y = math.cos(timer * 5) * 400
-    point_light.position.z = math.cos(timer * 3) * 300
-
     renderer.render(scene, camera)
-
 
 renderer.setAnimationLoop(animate)
 

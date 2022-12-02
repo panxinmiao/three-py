@@ -32,7 +32,9 @@ class FunctionNode(CodeNode):
 
     def call(self, parameters = None ):
         return FunctionCallNode( self, parameters or {} )
-
+    
+    def __call__(self, *args, **kwds) :
+        return self.call(*args, **kwds)
 
     def generate(self, builder:'NodeBuilder', output ):
 
@@ -47,7 +49,7 @@ class FunctionNode(CodeNode):
 
         if name != '' :
             # use a custom property name
-            nodeCode.name = self.name
+            nodeCode.name = name
 
 
         propertyName = builder.getPropertyName( nodeCode )

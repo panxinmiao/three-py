@@ -23,6 +23,7 @@ from ..utils.remap_node import RemapNode
 from ..utils.rotate_uv_node import RotateUVNode
 from ..utils.sprite_sheet_uv_node import SpriteSheetUVNode
 from ..utils.timer_node import TimerNode
+from ..utils.triplanar_textures_node import TriplanarTexturesNode
 
 # geometry
 from ..geometry.range_node import RangeNode
@@ -86,6 +87,9 @@ timerLocal = lambda timeScale, value=0 : nodeObject( TimerNode( TimerNode.LOCAL,
 timerGlobal = lambda timeScale, value=0 : nodeObject( TimerNode( TimerNode.GLOBAL, timeScale, value ) )
 timerDelta = lambda timeScale, value=0 : nodeObject( TimerNode( TimerNode.DELTA, timeScale, value ) )
 frameId = nodeImmutable( TimerNode, TimerNode.FRAME )
+
+triplanarTextures = nodeProxy( TriplanarTexturesNode )
+triplanarTexture = lambda texture, *args, **kwargs: triplanarTextures( texture, texture, texture, *args, **kwargs )
 
 # geometry
 
