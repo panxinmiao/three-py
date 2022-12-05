@@ -1,5 +1,3 @@
-#from three.renderer.nodes import Node, NodeBuilder, NodeShaderStage
-
 from .node import Node
 from .node_builder import NodeBuilder
 from .constants import NodeShaderStage
@@ -27,6 +25,9 @@ class VaryingNode(Node):
         name = self.name
         
         nodeVarying = builder.getVaryingFromNode( self, type )
+
+        # this property can be used to check if the varying can be optimized for a var
+        nodeVarying.needsInterpolation = nodeVarying.needsInterpolation or builder.shaderStage == 'fragment'
 
         if name is not None :
             nodeVarying.name = name

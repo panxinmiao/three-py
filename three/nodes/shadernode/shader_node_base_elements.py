@@ -100,6 +100,7 @@ def uniform(nodeOrType):
 
 attribute = lambda name, nodeType=None: nodeObject( AttributeNode( name, nodeType ) )
 property = lambda name, nodeOrType=None: nodeObject( PropertyNode( name, getConstNodeType( nodeOrType ) ) )
+convert = lambda node, types: nodeObject( ConvertNode( nodeObject( node ), types ) )
 
 bypass = nodeProxy( BypassNode )
 code = nodeProxy( CodeNode )
@@ -251,6 +252,7 @@ modelViewPosition = nodeImmutable(ModelNode, ModelNode.VIEW_POSITION)
 positionGeometry = nodeImmutable(PositionNode, PositionNode.GEOMETRY)
 positionLocal = nodeImmutable(PositionNode, PositionNode.LOCAL)
 positionWorld = nodeImmutable(PositionNode, PositionNode.WORLD)
+positionWorldDirection = nodeImmutable(PositionNode, PositionNode.WORLD_DIRECTION)
 positionView = nodeImmutable(PositionNode, PositionNode.VIEW)
 positionViewDirection = nodeImmutable(PositionNode, PositionNode.VIEW_DIRECTION)
 

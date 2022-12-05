@@ -27,7 +27,7 @@ class Sprite(Object3D):
 
             interleavedBuffer = InterleavedBuffer(float32Array, 5)
 
-            Sprite._geometry.setIndex([0, 1, 2,	0, 2, 3])
+            Sprite._geometry.setIndex([0, 1, 2, 0, 2, 3])
             Sprite._geometry.setAttribute('position', InterleavedBufferAttribute(interleavedBuffer, 3, 0, False))
             Sprite._geometry.setAttribute('uv', InterleavedBufferAttribute(interleavedBuffer, 2, 3, False))
 

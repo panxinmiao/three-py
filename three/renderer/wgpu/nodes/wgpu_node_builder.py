@@ -178,7 +178,7 @@ class WgpuNodeBuilder(NodeBuilder):
         if shaderStage is None:
             shaderStage =  self.shaderStage 
 
-        if node.isNodeVarying:
+        if node.isNodeVarying and node.needsInterpolation:
             if shaderStage == 'vertex':
                 return f'NodeVaryings.{ node.name }'
 
@@ -302,6 +302,12 @@ class WgpuNodeBuilder(NodeBuilder):
 
     def getFrontFacing(self):
         return self.getBuiltin('front_facing', 'isFront', 'bool')
+    
+    def getFragCoord(self):
+        return self.getBuiltin('position', 'fragCoord', 'vec4<f32>', 'fragment')
+    
+    def isFlipY(self):
+        return False
 
     def getAttributes(self, shaderStage ):
         snippets = []
@@ -344,14 +350,26 @@ class WgpuNodeBuilder(NodeBuilder):
             self.getBuiltin('position', 'Vertex', 'vec4<f32>', 'vertex')
 
             varyings = self.varyings
+            vars = self.vars[ shaderStage ]
 
             for index, varying in enumerate(varyings):
-                snippets.append(f'@location( {index} ) { varying.name } : { self.getType( varying.type ) }' )
+
+                if varying.needsInterpolation:
+                    snippets.append(f'@location( {index} ) { varying.name } : { self.getType( varying.type ) }')
+                elif not varying in vars:
+                    vars.append( varying )
 
         elif shaderStage == 'fragment':
             varyings = self.varyings
+            vars = self.vars[ shaderStage ]
+
             for index, varying in enumerate(varyings):
-                snippets.append( f'@location( {index} ) { varying.name } : { self.getType( varying.type ) }' )
+
+                if varying.needsInterpolation:
+                    snippets.append(f'@location( {index} ) { varying.name } : { self.getType( varying.type ) }')
+                elif not varying in vars:
+                    vars.append( varying )
+
 
         for val in self.builtins[shaderStage].values():
             name = val["name"]

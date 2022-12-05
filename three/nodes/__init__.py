@@ -79,6 +79,7 @@ from .lighting.ambient_light_node import AmbientLightNode
 # utils
 from .utils.array_element_node import ArrayElementNode 
 from .utils.convert_node import ConvertNode 
+from .utils.equirect_uv_node import EquirectUVNode
 from .utils.join_node import JoinNode
 from .utils.matcap_uv_node import MatcapUVNode
 from .utils.max_mip_level_node import MaxMipLevelNode

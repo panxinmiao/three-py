@@ -3,6 +3,8 @@
 from ..core.node import Node
 from ..core.const_node import ConstNode
 from ..accessors.uv_node import UVNode
+from ..math.operator_node import OperatorNode
+from ..math.math_node import MathNode
 from .split_node import SplitNode
 from .join_node import JoinNode
 
@@ -15,9 +17,8 @@ class SpriteSheetUVNode(Node):
         self.uvNode = uvNode or UVNode()
         self.frameNode = frameNode or ConstNode( 0 )
 
-    def generate( self, builder ):
-        from ..math.operator_node import OperatorNode
-        from ..math.math_node import MathNode
+    def construct( self, *args ):
+
 
         count = self.countNode
         uv = self.uvNode
@@ -48,4 +49,4 @@ class SpriteSheetUVNode(Node):
         uvScale = OperatorNode( '*', uv, scale )
         uvFrame = OperatorNode( '+', uvScale, uvFrameOffset )
         
-        return uvFrame.build( builder, self.getNodeType( builder ) )
+        return uvFrame

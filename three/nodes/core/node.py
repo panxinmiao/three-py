@@ -77,7 +77,7 @@ class Node(NoneAttribute):
                 if childNode and isinstance(childNode, Node):
                     childNode.build(builder)
 
-    def generate(self, builder, output):
+    def generate(self, builder, output=None):
         outputNode = builder.getNodeProperties(self).outputNode
 
         if outputNode and outputNode.isNode:

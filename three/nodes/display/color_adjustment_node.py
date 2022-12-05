@@ -1,7 +1,7 @@
 from ..core.temp_node import TempNode
 from ..shadernode.shader_node import ShaderNode
 from ..shadernode.shader_node_base_elements import (
-    vec3, mat3, add, sub, mul, max, div, dot, float, mix, cos, sin, atan2, sqrt, luminance
+    vec3, mat3, add, sub, mul, max, div, float, mix, cos, sin, atan2, sqrt, luminance
 )
 
 
