@@ -10,6 +10,7 @@ class PositionNode(Node):
     GEOMETRY = 'geometry'
     LOCAL = 'local'
     WORLD = 'world'
+    WORLD_DIRECTION = 'worldDirection'
     VIEW = 'view'
     VIEW_DIRECTION = 'viewDirection'
 
@@ -41,6 +42,10 @@ class PositionNode(Node):
 
         elif scope == PositionNode.VIEW_DIRECTION:
             vertexPositionNode = MathNode( MathNode.NEGATE, PositionNode( PositionNode.VIEW ) )
+            outputNode = MathNode( MathNode.NORMALIZE, VaryingNode( vertexPositionNode ) )
+        
+        elif scope == PositionNode.WORLD_DIRECTION:
+            vertexPositionNode = MathNode( MathNode.NEGATE, PositionNode( PositionNode.WORLD ) )
             outputNode = MathNode( MathNode.NORMALIZE, VaryingNode( vertexPositionNode ) )
 
         return outputNode.build( builder, self.getNodeType( builder ) )

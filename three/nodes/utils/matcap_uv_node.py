@@ -7,10 +7,8 @@ class MatcapUVNode(TempNode):
     def __init__(self) -> None:
         super().__init__('vec2')
 
-    def generate( self, builder ):
+    def construct( self, *args ):
         x = normalize( vec3( positionViewDirection.z, 0, negate( positionViewDirection.x ) ) )
         y = cross( positionViewDirection, x )
 
-        uv = add( mul( vec2( dot( x, transformedNormalView ), dot( y, transformedNormalView ) ), 0.495 ), 0.5 )
-
-        uv.build( builder, self.getNodeType( builder ) )
+        return add( mul( vec2( dot( x, transformedNormalView ), dot( y, transformedNormalView ) ), 0.495 ), 0.5 )

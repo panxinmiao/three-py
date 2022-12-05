@@ -103,14 +103,14 @@ class LatheGeometry(BufferGeometry):
 
                 vertices.extend([vertex.x, vertex.y, vertex.z])
 
-				# uv
+                # uv
 
                 uv.x = i / segments
                 uv.y = j / ( pointsLength - 1 )
 
                 uvs.extend([uv.x, uv.y])
 
-				# normal
+                # normal
 
                 x = initNormals[ 3 * j + 0 ] * sin
                 y = initNormals[ 3 * j + 1 ]

@@ -10,6 +10,7 @@ from ..display.color_adjustment_node import ColorAdjustmentNode
 from ..display.color_space_node import ColorSpaceNode
 from ..display.normal_map_node import NormalMapNode
 from ..display.tone_mapping_node import ToneMappingNode
+from ..display.viewport_node import ViewportNode
 
 # lighting
 from ..lighting.lights_node import LightsNode
@@ -17,6 +18,7 @@ from ..lighting.lighting_context_node import LightingContextNode
 
 # utils
 from ..utils.matcap_uv_node import MatcapUVNode
+from ..utils.equirect_uv_node import EquirectUVNode
 from ..utils.max_mip_level_node import MaxMipLevelNode
 from ..utils.osc_node import OscNode
 from ..utils.remap_node import RemapNode
@@ -61,6 +63,13 @@ colorSpace = lambda node, encoding : nodeObject( ColorSpaceNode( None, nodeObjec
 normalMap = nodeProxy(NormalMapNode)
 toneMapping =lambda mapping, exposure, color : nodeObject(ToneMappingNode(mapping, nodeObject(exposure), nodeObject(color)))
 
+viewportCoordinate = nodeImmutable(ViewportNode, ViewportNode.COORDINATE)
+viewportResolution = nodeImmutable(ViewportNode, ViewportNode.RESOLUTION)
+viewportTopLeft = nodeImmutable(ViewportNode, ViewportNode.TOP_LEFT)
+viewportBottomLeft = nodeImmutable(ViewportNode, ViewportNode.BOTTOM_LEFT)
+viewportTopRight = nodeImmutable(ViewportNode, ViewportNode.TOP_RIGHT)
+viewportBottomRight = nodeImmutable(ViewportNode, ViewportNode.BOTTOM_RIGHT)
+
 # lighting
 
 lights = lambda lights: nodeObject(LightsNode().fromLights(lights))
@@ -69,6 +78,7 @@ lightingContext = nodeProxy(LightingContextNode)
 # utils
 
 matcapUV = nodeImmutable(MatcapUVNode)
+equirectUV = nodeProxy(EquirectUVNode)
 maxMipLevel = nodeProxy(MaxMipLevelNode)
 
 oscSine = nodeProxy(OscNode, OscNode.SINE)

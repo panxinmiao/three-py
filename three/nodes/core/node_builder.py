@@ -132,6 +132,12 @@ class NodeBuilder(NoneAttribute):
     def getFrontFacing(self, *args):
         warnings.warn('Abstract function.')
 
+    def getFragCoord(self, *args):
+        warnings.warn( 'Abstract function.' )
+
+    def isFlipY(self):
+        return False
+
     def getTexture(self, *args ):
         '''/* textureProperty, uvSnippet */'''
         warnings.warn( 'Abstract function.' )

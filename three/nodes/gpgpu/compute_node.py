@@ -30,8 +30,8 @@ class ComputeNode(Node):
     def onInit(self, *, renderer, **kwargs):
         pass
 
-    def update(self, params):
-        renderer = params['renderer']
+    def update(self, frame):
+        renderer = frame.renderer
         renderer.compute(self)
 
     def generate(self, builder):

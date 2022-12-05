@@ -3,9 +3,9 @@ from three.materials import SpriteMaterial
 
 from ..shadernode.shader_node_elements import (
     vec2, vec3, vec4,
-   	uniform, add, mul, sub,
-   	positionLocal, length, cos, sin,
-   	modelViewMatrix, cameraProjectionMatrix, modelWorldMatrix, materialRotation
+    uniform, add, mul, sub,
+    positionLocal, length, cos, sin,
+    modelViewMatrix, cameraProjectionMatrix, modelWorldMatrix, materialRotation
 )
 
 defaultValues = SpriteMaterial()

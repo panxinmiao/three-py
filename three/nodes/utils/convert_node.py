@@ -1,33 +1,25 @@
-#from three.renderer.nodes import Node
-
 from ..core.node import Node
 
 class ConvertNode(Node):
     def __init__(self, node, convertTo ) -> None:
         super().__init__()
         self.node = node
-        self.convertTo = convertTo
+        self.convertTo:str = convertTo
 
-    def getNodeType( self, *args):
-        return self.convertTo
+    def getNodeType( self, builder ):
+        requestType = self.node.getNodeType(builder)
+
+        convertTo = None
+        for overloadingType in self.convertTo.split( '|' ):
+            if convertTo == None or builder.getTypeLength( requestType ) == builder.getTypeLength( overloadingType ):
+                convertTo = overloadingType
+
+        return convertTo
 
     def generate( self, builder, output ):
-        convertTo = self.convertTo
         node = self.node
         type = self.getNodeType(builder)
+        snippet = node.build( builder, type )
 
-        # convertToSnippet = builder.getType( convertTo )
-        # nodeSnippet = self.node.build( builder, convertTo )
-        snippet = None
-
-        if builder.isReference( convertTo ) == False:
-            # convertToSnippet = builder.getType( convertTo )
-            nodeSnippet = node.build( builder, convertTo )
-
-            #return f'{ builder.getVectorType( convertToSnippet ) }( { nodeSnippet } )'
-            snippet = builder.format(nodeSnippet, type, convertTo)
-        else:
-            snippet = node.build(builder, convertTo)
-
-        return builder.format(snippet, type, output)
+        return builder.format( snippet, type, output )
 

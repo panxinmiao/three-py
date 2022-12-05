@@ -1,4 +1,5 @@
 import warnings
+import math
 from .wgpu_uniform_buffer import WgpuUniformBuffer
 from ...structure import Float32Array
 from .constants import GPUChunkSize
@@ -63,8 +64,8 @@ class WgpuUniformsGroup(WgpuUniformBuffer):
             uniform.offset = ( offset / self.bytesPerElement )
             offset += ( uniform.itemSize * self.bytesPerElement )
 
-        offset = (int(offset / GPUChunkSize) + 1)*GPUChunkSize
-        return offset
+        # offset = (int(offset / GPUChunkSize) + 1)*GPUChunkSize
+        return math.ceil( offset / GPUChunkSize ) * GPUChunkSize
 
     def update(self):
         updated = False
