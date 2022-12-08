@@ -1,3 +1,4 @@
+from warnings import warn
 from inspect import isfunction
 from three.materials import ShaderMaterial
 from ..core.expression_node import ExpressionNode
@@ -7,7 +8,7 @@ from ..shadernode.shader_node_elements import (
     float, vec3, vec4,
     assign, label, mul, bypass, attribute,
     positionLocal, skinning, instance, modelViewProjection, lightingContext, colorSpace,
-    materialAlphaTest, materialColor, materialOpacity)
+    materialAlphaTest, materialColor, materialOpacity, reference, rangeFog, exp2Fog)
 
 class NodeMaterial(ShaderMaterial):
 
@@ -119,8 +120,22 @@ class NodeMaterial(ShaderMaterial):
         outputNode = colorSpace( outputNode, builder.renderer.outputEncoding )
 
         # FOG
-        if builder.fogNode:
-            outputNode = vec4(vec3(builder.fogNode.mix(outputNode)), outputNode.w)
+        # if builder.fogNode:
+        #     outputNode = vec4(vec3(builder.fogNode.mix(outputNode)), outputNode.w)
+
+        fogNode = builder.fogNode
+
+        if (fogNode is None or fogNode.isNode != True) and builder.scene.fog:
+            fog = builder.scene.fog
+            if fog.isFogExp2:
+                fogNode = exp2Fog( reference( 'color', 'color', fog ), reference( 'density', 'float', fog ) )
+            elif fog.isFog:
+                fogNode = rangeFog( reference( 'color', 'color', fog ), reference( 'near', 'float', fog ), reference( 'far', 'float', fog ) )
+            else:
+                warn(f'THREE.NodeMaterial: Unsupported fog configuration. {fog}')
+
+        if fogNode:
+            outputNode = vec4( vec3( fogNode.mix( outputNode ) ), outputNode.w )
 
         # RESULT
         builder.addFlow( 'fragment', label( outputNode, 'Output' ) )

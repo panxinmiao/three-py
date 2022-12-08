@@ -13,9 +13,9 @@ class SpecularMipLevelNode(Node):
     def construct(self, *args):
 
         # http://casual-effects.blogspot.ca/2011/08/plausible-environment-lighting-in-two.html
-        maxMIPLevelScalar = maxMipLevel(self.textureNode)
+        maxMipLevelScalar = maxMipLevel(self.textureNode)
 
         sigma = div(mul(math.pi, mul(self.roughnessNode, self.roughnessNode)), add(1.0, self.roughnessNode))
-        desiredMIPLevel = add(maxMIPLevelScalar, log2(sigma))
+        desiredMipLevel = add(maxMipLevelScalar, log2(sigma))
 
-        return clamp(desiredMIPLevel, 0.0, maxMIPLevelScalar)
+        return clamp(desiredMipLevel, 0.0, maxMipLevelScalar)

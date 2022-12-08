@@ -10,8 +10,5 @@ class FogRangeNode(FogNode):
         self.nearNode = nearNode
         self.farNode = farNode
 
-    def generate( self, builder ):
+    def construct( self, *args ):
         self.factorNode = smoothstep(self.nearNode, self.farNode, negate( positionView.z ) )
-        return super().generate( builder )
-
-    

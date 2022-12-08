@@ -2,6 +2,8 @@ from ..core.node import Node
 
 class ArrayElementNode(Node):
 
+    isArrayElementNode = True
+
     def __init__(self, node, indexNode ) -> None:
         super().__init__()
         self.node = node

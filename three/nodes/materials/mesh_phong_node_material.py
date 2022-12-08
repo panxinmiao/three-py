@@ -125,27 +125,21 @@ class MeshPhongNodeMaterial(NodeMaterial):
             vec3(self.emissiveNode or materialEmissive), outgoingLightNode)
 
         # ENV MAPPING
-        if not self.envNode:
-            if builder.material.envMap and builder.material.envMap.isTexture:
-                self.envNode = cubeTexture(builder.material.envMap)
+        envNode = self.envNode or builder.material.envMap or builder.scene.environmentNode or builder.scene.environment
 
-        if not self.envNode:
-            if builder.scene.environmentNode:
-                if builder.scene.environmentNode.isTexture:
-                    self.envNode = cubeTexture(builder.scene.environmentNode)
-                else:
-                    self.envNode = nodeObject(builder.scene.environmentNode)
-            elif builder.scene.environment:
-                self.envNode = cubeTexture(builder.scene.environment)
+        if envNode and envNode.isTexture:
+            envNode = cubeTexture(envNode)
+        else:
+            envNode = nodeObject(envNode)
 
-        if self.envNode:
+        if envNode:
             reflectivity = MaterialReferenceNode('reflectivity', 'float')
             if builder.material.combine == MultiplyOperation:
-                outgoingLightNode = mix(outgoingLightNode, mul(outgoingLightNode, self.envNode.xyz), mul(property('SpecularStrength', 'float'), reflectivity))
+                outgoingLightNode = mix(outgoingLightNode, mul(outgoingLightNode, envNode.xyz), mul(property('SpecularStrength', 'float'), reflectivity))
             elif builder.material.combine == MixOperation:
-                outgoingLightNode = mix(outgoingLightNode, self.envNode.xyz, mul(property('SpecularStrength', 'float'), reflectivity))
+                outgoingLightNode = mix(outgoingLightNode, envNode.xyz, mul(property('SpecularStrength', 'float'), reflectivity))
             elif builder.material.combine == AddOperation:
-                outgoingLightNode = add(outgoingLightNode, mul(self.envNode.xyz, mul(property('SpecularStrength', 'float'), reflectivity)))
+                outgoingLightNode = add(outgoingLightNode, mul(envNode.xyz, mul(property('SpecularStrength', 'float'), reflectivity)))
 
         # TONE MAPPING
         if renderer.toneMappingNode:

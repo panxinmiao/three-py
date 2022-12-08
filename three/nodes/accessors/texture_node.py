@@ -37,7 +37,7 @@ class TextureNode(UniformNode):
             levelNode = builder.context.getSamplerLevelNode(self)
 
         properties.uvNode = uvNode
-        properties.levelNode = builder.context.getMIPLevelAlgorithmNode(self, levelNode) if levelNode else None
+        properties.levelNode = builder.context.getMipLevelAlgorithmNode(self, levelNode) if levelNode else None
 
     def generate( self, builder, output ):
         properties = builder.getNodeProperties(self)

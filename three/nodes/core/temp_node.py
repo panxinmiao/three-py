@@ -19,7 +19,9 @@ class TempNode(Node):
         if buildStage == 'generate':
             type = builder.getVectorType(self.getNodeType(builder, output))
             nodeData = builder.getDataFromNode(self)
+
             if builder.context.tmpRead != False and nodeData.propertyName:
+
                 return builder.format(nodeData.propertyName, type, output)
 
             elif builder.context.tempWrite != False and type != 'void' and output != 'void' and self.hasDependencies(builder):

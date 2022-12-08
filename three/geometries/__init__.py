@@ -12,3 +12,4 @@ from .dodecahedron_geometry import DodecahedronGeometry
 from .icosahedron_geometry import IcosahedronGeometry
 from .octahedron_geometry import OctahedronGeometry
 from .tetrahedron_geometry import TetrahedronGeometry
+from .teapot_geometry import TeapotGeometry

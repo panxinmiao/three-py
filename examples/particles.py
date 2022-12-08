@@ -1,4 +1,3 @@
-import time, math
 import three
 from wgpu.gui.auto import WgpuCanvas, run
 import three.nodes

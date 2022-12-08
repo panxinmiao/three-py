@@ -137,8 +137,7 @@ materials.append( material )
 # Geometry
 objects = []
 
-# geometry = three.TeapotGeometry( 50, 18 )
-geometry = three.SphereGeometry(50, 32, 16)
+geometry = three.TeapotGeometry( 50, 18 )
 
 def addMesh( geometry, material ):
     mesh = three.Mesh( geometry, material )
@@ -154,7 +153,7 @@ for material in materials:
     addMesh( geometry, material )
 
 
-three.OrbitControls(camera, canvas)
+# three.OrbitControls(camera, canvas)
 
 def on_resize(event):
     camera.aspect = event['width'] / event['height']

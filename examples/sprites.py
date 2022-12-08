@@ -19,7 +19,10 @@ camera = three.PerspectiveCamera(70, 640 / 480, 0.01, 2100)
 camera.position.z = 1500
 
 scene = three.Scene()
-scene.fogNode = three.nodes.FogRangeNode(color(0x0000ff), float(1500), float(2100))
+
+scene.fog = three.Fog(0x0000ff, 1500, 2100)
+
+# scene.fogNode = three.nodes.FogRangeNode(color(0x0000ff), float(1500), float(2100))
 
 amount = 100
 radius = 500

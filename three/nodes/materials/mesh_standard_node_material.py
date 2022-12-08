@@ -54,20 +54,10 @@ class MeshStandardNodeMaterial(NodeMaterial):
         diffuseColorNode = diffuseColor['diffuseColorNode']
 
         # envNode = self.envNode or builder.scene.environmentNode
-        envNode = self.envNode
+        envNode = self.envNode or builder.material.envMap or builder.scene.environmentNode or builder.scene.environment
 
-        if not envNode:
-            if builder.material.envMap and builder.material.envMap.isTexture:
-                envNode = cubeTexture(builder.material.envMap)
-
-        if not envNode:
-            if builder.scene.environmentNode:
-                if builder.scene.environmentNode.isTexture:
-                    envNode = cubeTexture(builder.scene.environmentNode)
-                else:
-                    envNode = nodeObject(builder.scene.environmentNode)
-            elif builder.scene.environment:
-                envNode = cubeTexture(builder.scene.environment)
+        if envNode and envNode.isTexture:
+            envNode = cubeTexture(envNode)
 
         diffuseColorNode = self.generateStandardMaterial( builder, { 'colorNode': colorNode, 'diffuseColorNode': diffuseColorNode } )
 
