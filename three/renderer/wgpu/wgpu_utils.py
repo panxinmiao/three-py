@@ -43,7 +43,12 @@ class WgpuUtils:
         return format
 
     def getPrimitiveTopology( self, object ):
-        if object.isMesh or object.isSprite:
+        if object.isMesh:
+            if object.material.wireframe:
+                return GPUPrimitiveTopology.LineList
+            else:
+                return GPUPrimitiveTopology.TriangleList
+        if object.isSprite:
             return GPUPrimitiveTopology.TriangleList
         elif object.isPoints:
             return GPUPrimitiveTopology.PointList

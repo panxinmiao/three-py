@@ -2,6 +2,7 @@
 from ..accessors.cube_texture_node import CubeTextureNode
 from ..accessors.instance_node import InstanceNode
 from ..accessors.reflect_vector_node import ReflectVectorNode
+from ..accessors.refract_vector_node import RefractVectorNode
 from ..accessors.skinning_node import SkinningNode
 
 # display
@@ -36,6 +37,7 @@ from ..procedural.checker_node import CheckerNode
 # fog
 from ..fog.fog_node import FogNode
 from ..fog.fog_range_node import FogRangeNode
+from ..fog.fog_exp2_node import FogExp2Node
 
 from .shader_node import nodeObject, nodeProxy, nodeImmutable
 
@@ -46,6 +48,7 @@ from .shader_node_base_elements import *
 cubeTexture = nodeProxy(CubeTextureNode)
 instance = nodeProxy(InstanceNode)
 reflectVector = nodeImmutable(ReflectVectorNode)
+refractVector = nodeImmutable(RefractVectorNode)
 skinning = nodeProxy(SkinningNode)
 
 # diaplay
@@ -79,7 +82,7 @@ lightingContext = nodeProxy(LightingContextNode)
 
 matcapUV = nodeImmutable(MatcapUVNode)
 equirectUV = nodeProxy(EquirectUVNode)
-specularMIPLevel = nodeProxy(SpecularMipLevelNode)
+specularMipLevel = nodeProxy(SpecularMipLevelNode)
 
 oscSine = nodeProxy(OscNode, OscNode.SINE)
 oscSquare = nodeProxy(OscNode, OscNode.SQUARE)
@@ -113,3 +116,4 @@ checker = nodeProxy( CheckerNode )
 
 fog = nodeProxy( FogNode )
 rangeFog = nodeProxy( FogRangeNode )
+exp2Fog = nodeProxy( FogExp2Node )

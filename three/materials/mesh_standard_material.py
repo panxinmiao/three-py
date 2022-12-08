@@ -50,6 +50,8 @@ class MeshStandardMaterial(Material):
         self.envMap = None
         self.envMapIntensity = 1.0
 
+        self.refractionRatio = 0.98
+
         self.wireframe = False
         self.wireframeLinewidth = 1
         self.wireframeLinecap = 'round'

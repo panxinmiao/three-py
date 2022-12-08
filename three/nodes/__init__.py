@@ -45,6 +45,7 @@ from .accessors.point_uv_node import PointUVNode
 from .accessors.position_node import PositionNode 
 from .accessors.reference_node import ReferenceNode
 from .accessors.reflect_vector_node import ReflectVectorNode
+from .accessors.refract_vector_node import RefractVectorNode
 from .accessors.skinning_node import SkinningNode 
 from .accessors.tangent_node import TangentNode
 from .accessors.texture_node import TextureNode 
@@ -106,6 +107,7 @@ from .procedural.checker_node import CheckerNode
 # fog
 from .fog.fog_node import FogNode 
 from .fog.fog_range_node import FogRangeNode 
+from .fog.fog_exp2_node import FogExp2Node
 
 # constants
 from .core.constants import *

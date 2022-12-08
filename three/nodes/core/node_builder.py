@@ -62,7 +62,7 @@ class NodeBuilder(NoneAttribute):
         self.context = Dict({
             'keywords': NodeKeywords(),
             'material': object.material,
-            'getMIPLevelAlgorithmNode': lambda textureNode, levelNode: mul(levelNode, maxMipLevel(textureNode))
+            'getMipLevelAlgorithmNode': lambda textureNode, levelNode: mul(levelNode, maxMipLevel(textureNode))
         })
 
         # self.nodesData = weakref.WeakKeyDictionary()

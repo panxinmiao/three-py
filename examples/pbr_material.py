@@ -120,9 +120,9 @@ def init_scene():
     env_texture = loader.load(env_text_urls, encoding=three.sRGBEncoding)
     env_texture.generateMipmaps = True
 
-    scene.environmentNode = three.nodes.CubeTextureNode(env_texture)
+    scene.environment = three.nodes.CubeTextureNode(env_texture)
 
-    scene.backgroundNode = scene.environmentNode
+    scene.background = scene.environment
 
     gltf_path = Path(__file__).parent / "models" / "DamagedHelmet" / "glTF" / "DamagedHelmet.gltf"
     meshes = load_gltf(gltf_path)

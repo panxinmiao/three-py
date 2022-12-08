@@ -13,5 +13,6 @@ from .lights import *
 from .controls import *
 from .helpers import *
 from .textures import *
+from .scenes import *
 
 __version__ = "0.0.2"

@@ -88,7 +88,15 @@ fn repeatWrapping( uv : vec2<f32>, dimension : vec2<u32> ) -> vec2<u32> {
     let uvScaled = vec2<u32>( uv * vec2<f32>( dimension ) );
     return ( ( uvScaled % dimension ) + dimension ) % dimension;
 }
-''' )
+''' ),
+    'refract': CodeNode( '''
+fn refract( light : vec3<f32>, normal : vec3<f32>, eta : f32 ) -> vec3<f32> {
+    let cosTheta = dot( -light, normal );
+    let rOutPerp = eta * ( light + cosTheta * normal );
+    let rOutParallel = -sqrt( abs( 1.0 - dot( rOutPerp, rOutPerp ) ) ) * normal;
+    return rOutPerp + rOutParallel;
+}
+'''),
 }
 
 class WgpuNodeBuilder(NodeBuilder):
@@ -107,6 +115,8 @@ class WgpuNodeBuilder(NodeBuilder):
             'compute': {},
             'attribute': {}
         }
+
+        self.includedMethods = {'vertex': [], 'fragment': [], 'compute': []}
 
 
     def build(self):
@@ -441,14 +451,6 @@ class WgpuNodeBuilder(NodeBuilder):
             index += 1
         
         return code
-
-        # if len(groupSnippet)>0:
-        #     # snippet += f'layout(set = 0, binding = {index}) uniform NodeUniforms {{ {groupSnippet} }} nodeUniforms; '
-        #     snippet += self._getWGSLUniforms( 'NodeUniforms', groupSnippet, index )
-        #     index += 1
-
-        # return snippet
-
     
     def buildCode(self):
         shadersData = Dict({'fragment': {}, 'vertex': {}}) if self.material is not None else Dict({'compute': {}})
@@ -513,7 +515,10 @@ class WgpuNodeBuilder(NodeBuilder):
         return name in supports and supports[ name ] == True
 
     def _include( self, name ):
-        wgslPolyfill[ name ].build( self )
+        includedMethods = self.includedMethods[self.shaderStage]
+        if name not in includedMethods:
+            wgslPolyfill[ name ].build( self )
+            includedMethods.append( name )
 
     def _getNodeUniform( self, uniformNode, type ):
         if type == 'float':

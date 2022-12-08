@@ -171,6 +171,7 @@ class ProxyNode:
 
 
 class ShaderNode(Node):
+
     def __init__(self, func) -> None:
         if not callable(func):
             raise ValueError("ShaderNode func must be callable")
@@ -181,7 +182,6 @@ class ShaderNode(Node):
         return self(*args, **kwds)
 
     def __call__(self, *args, **kwds):
-
         # 
         args = nodeArray(args)
         kwds = nodeObjects(kwds)

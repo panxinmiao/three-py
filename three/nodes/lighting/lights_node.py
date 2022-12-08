@@ -1,7 +1,7 @@
 #from three.renderer.nodes import Node, LightNode
 from weakref import WeakKeyDictionary
 from ..core.node import Node
-from .lighting_node import LightingNode
+from .analytic_light_node import AnalyticLightNode
 
 references = WeakKeyDictionary()
 
@@ -66,7 +66,7 @@ class LightsNode(Node):
             lightNode = self.getLightNodeByHash( light.uuid )
             if lightNode is None:
                 lightClass = light.__class__
-                lightNodeClass = references.get(lightClass, LightingNode)
+                lightNodeClass = references.get(lightClass, AnalyticLightNode)
  
                 lightNode = lightNodeClass(light)
             

@@ -61,7 +61,7 @@ class WgpuAttributes:
         buffer = ary.range_buffer()
 
         if ary.byteLength < size:
-            buffer = buffer + bytearray(size - ary.byteLength)
+            buffer = (buffer if isinstance(buffer, bytearray) else bytearray(buffer)) + bytearray(size - ary.byteLength)
 
         buffer: wgpu.GPUBuffer = self.device.create_buffer_with_data(
             data = buffer, usage = usage | GPUBufferUsage.COPY_DST       #, mapped_at_creation = True

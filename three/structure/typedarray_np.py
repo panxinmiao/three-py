@@ -51,7 +51,7 @@ class TypedArray(metaclass=abc.ABCMeta):
 
     @property
     def byteLength(self):
-        return self.length * self.bytes_per_element
+        return self._ndarray.nbytes
 
     @property
     def length(self):

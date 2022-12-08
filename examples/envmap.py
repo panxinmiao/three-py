@@ -19,10 +19,10 @@ scene = three.Scene()
 # Lights
 
 scene.add(three.AmbientLight(0x222222))
-directional_light = three.DirectionalLight(0xFFFFFF, 1)
+directional_light = three.DirectionalLight(0xFFFFFF, 2)
 directional_light.position.set(1, 1, 1)
 scene.add(directional_light)
-point_light = three.PointLight(0xFFFFFF, 2)
+point_light = three.PointLight(0xFFFFFF, 2, decay=0)
 scene.add(point_light)
 
 # light_helper = three.PointLightHelper(point_light, size=4)
@@ -38,41 +38,43 @@ envMap = loader.load(env_map_urls, encoding=three.sRGBEncoding)
 envMap.generateMipmaps = True
 
 scene.background = three.nodes.CubeTextureNode(envMap)
+scene.environment = scene.background
 
-scene.environmentNode = scene.background
+refractMap = three.nodes.CubeTextureNode(envMap, three.nodes.refractVector)
 
+geometry = three.TeapotGeometry( 80, 18 )
 
-cube_width = 400
-numbers_per_side = 2
-sphere_radius = (cube_width / numbers_per_side) * 0.8 * 0.5
-step_size = 1.0 / numbers_per_side
+basicMaterial = three.MeshBasicMaterial()
+basicMaterial.envMap = refractMap
 
-geometry = three.SphereGeometry(sphere_radius, 32, 16)
-
-basicMaterial = three.MeshBasicMaterial(color=0x0099FF)
-# basicMaterial.envMap = envMap
-
-mesh = three.Mesh(geometry, basicMaterial)
-
-mesh.position.set(-200, 0, 0)
+mesh = three.Mesh(geometry, three.MeshBasicMaterial())
+mesh.position.set(-300, 0, 0)
 scene.add(mesh)
 
-standardMaterial = three.MeshStandardMaterial(color=0x0099FF)
-standardMaterial.roughness = 0.1
-standardMaterial.metalness = 1.0
-standardMaterial.envMap = envMap
+mesh = three.Mesh(geometry, three.MeshBasicMaterial(envMap = refractMap))
+mesh.position.set(-300, 300, 0)
+scene.add(mesh)
 
-mesh2 = three.Mesh(geometry, standardMaterial)
 
-scene.add(mesh2)
+mesh = three.Mesh(geometry, three.MeshStandardMaterial(roughness=0.1, metalness=1.0))
+scene.add(mesh)
 
-phongMaterial = three.MeshPhongMaterial(color=0x0099FF, shininess=100)
-phongMaterial.envMap = envMap
+standardMaterial = three.MeshStandardMaterial(
+    roughness=0.1, metalness=1.0, 
+    envMap=three.nodes.CubeTextureNode(envMap, three.nodes.refractVector, 0) # force sampling from LOD 0
+)
+mesh = three.Mesh(geometry, standardMaterial)
+mesh.position.set(0, 300, 0)
+scene.add(mesh)
 
-mesh3 = three.Mesh(geometry, phongMaterial)
 
-mesh3.position.set(200, 0, 0)
-scene.add(mesh3)
+mesh = three.Mesh(geometry, three.MeshPhongMaterial(shininess=30))
+mesh.position.set(300, 0, 0)
+scene.add(mesh)
+
+mesh = three.Mesh(geometry, three.MeshPhongMaterial(shininess=30, envMap=refractMap))
+mesh.position.set(300, 300, 0)
+scene.add(mesh)
 
 renderer.outputEncoding = three.sRGBEncoding
 

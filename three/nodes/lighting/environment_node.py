@@ -10,21 +10,6 @@ from ..shadernode.shader_node_elements import (
 from ..core.cache_node import CacheNode
 from ..utils.specular_mip_level_node import SpecularMipLevelNode
 
-# def __getSpecularMIPLevel(inputs, *args):
-#     texture = inputs['texture']
-#     levelNode = inputs['levelNode']
-
-#     maxMIPLevelScalar = MaxMipLevelNode(texture)
-
-#     sigma = div(mul(math.pi, mul(levelNode, levelNode)), add(1.0, levelNode))
-#     desiredMIPLevel = add(maxMIPLevelScalar, log2(sigma))
-
-#     return clamp(desiredMIPLevel, 0.0, maxMIPLevelScalar)
-
-
-# _getSpecularMIPLevel = ShaderNode(__getSpecularMIPLevel)
-
-
 class EnvironmentNode(LightingNode):
 
     def __init__(self, envNode=None) -> None:
@@ -35,15 +20,6 @@ class EnvironmentNode(LightingNode):
     def construct(self, builder):
         envNode = self.envNode
         properties = builder.getNodeProperties(self)
-
-        #flipNormalWorld = vec3(negate(transformedNormalWorld.x), transformedNormalWorld.yz)
-
-        # reflectVec = reflect(negate(positionViewDirection), transformedNormalView)
-        # reflectVec = normalize(mix(reflectVec, transformedNormalView, mul(roughness, roughness)))
-        # reflectVec = transformDirection(reflectVec, cameraViewMatrix)
-        #reflectVec = vec3(negate(reflectVec.x), reflectVec.yz)
-
-        # reflectVec = normalize(mix(new ReflectNode(), flipNormalWorld, mul(roughness, roughness)))
 
         reflectVec = None
         radianceTextureUVNode = None
@@ -72,7 +48,7 @@ class EnvironmentNode(LightingNode):
         radianceContext = ContextNode(envNode, {
             "getUVNode": _getRadianceUVNode,
             "getSamplerLevelNode": lambda *args: roughness,
-            "getMIPLevelAlgorithmNode": lambda textureNode, levelNode: SpecularMipLevelNode(textureNode, levelNode)
+            "getMipLevelAlgorithmNode": lambda textureNode, levelNode: SpecularMipLevelNode(textureNode, levelNode)
         })
 
         def _getIrradianceUVNode(textureNode):
@@ -92,7 +68,7 @@ class EnvironmentNode(LightingNode):
         irradianceContext = ContextNode(envNode, {
             "getUVNode": _getIrradianceUVNode,
             "getSamplerLevelNode": lambda *args: float(1),
-            "getMIPLevelAlgorithmNode": lambda textureNode, levelNode: SpecularMipLevelNode(textureNode, levelNode)
+            "getMipLevelAlgorithmNode": lambda textureNode, levelNode: SpecularMipLevelNode(textureNode, levelNode)
         })
 
 
