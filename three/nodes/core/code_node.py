@@ -7,10 +7,10 @@ class CodeNode(Node):
 
     isCodeNode = True
 
-    def __init__(self, code='', nodeType='code') -> None:
-        super().__init__(nodeType=nodeType)
+    def __init__(self, code='', includes = None) -> None:
+        super().__init__('code')
         self.code = code
-        self._includes = []
+        self._includes = includes or []
 
     def setIncludes( self, includes ):
         self._includes = includes

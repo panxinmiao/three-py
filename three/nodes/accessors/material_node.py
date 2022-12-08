@@ -37,7 +37,7 @@ class MaterialNode(Node):
         else:
             raise Exception( 'Unknown scope: ' + scope )
 
-    def generate( self, builder, output ):
+    def construct( self, builder ):
         material = builder.getContextValue( 'material' )
         scope = self.scope
         node = None
@@ -84,4 +84,4 @@ class MaterialNode(Node):
             outputType = self.getNodeType( builder )
             node = MaterialReferenceNode( scope, outputType )
 
-        return node.build( builder, output )
+        return node

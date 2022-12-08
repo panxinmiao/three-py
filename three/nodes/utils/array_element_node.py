@@ -1,8 +1,6 @@
-#from three.renderer.nodes import Node
+from ..core.node import Node
 
-from ..core.temp_node import TempNode
-
-class ArrayElementNode(TempNode):
+class ArrayElementNode(Node):
 
     def __init__(self, node, indexNode ) -> None:
         super().__init__()

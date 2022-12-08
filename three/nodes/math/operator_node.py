@@ -19,6 +19,9 @@ class OperatorNode(TempNode):
         self.aNode = aNode
         self.bNode = bNode
 
+    def hasDependencies(self, builder):
+        return super().hasDependencies(builder) if self.op != '=' else False
+
     def getNodeType( self, builder:'three.NodeBuilder', output = None ):
 
         op = self.op

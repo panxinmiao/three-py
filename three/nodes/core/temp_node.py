@@ -1,4 +1,3 @@
-#from three.renderer.nodes import Node, NodeBuilder
 from .node import Node
 from .node_builder import NodeBuilder
 
@@ -8,6 +7,10 @@ class TempNode(Node):
 
     def __init__(self, type = None) -> None:
         super().__init__(type)
+
+    def hasDependencies(self, builder):
+        nodeData = builder.getDataFromNode(self)
+        return nodeData.dependenciesCount and nodeData.dependenciesCount > 1
 
     def build( self, builder:'NodeBuilder', output = None ):
 
@@ -19,7 +22,7 @@ class TempNode(Node):
             if builder.context.tmpRead != False and nodeData.propertyName:
                 return builder.format(nodeData.propertyName, type, output)
 
-            elif builder.context.tempWrite != False and type != 'void ' and output != 'void' and nodeData.dependenciesCount and nodeData.dependenciesCount > 1:
+            elif builder.context.tempWrite != False and type != 'void' and output != 'void' and self.hasDependencies(builder):
 
                 snippet = super().build( builder, type )
 

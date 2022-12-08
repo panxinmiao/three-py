@@ -5,10 +5,11 @@ class TextureNode(UniformNode):
 
     isTextureNode = True
 
-     # TODO now it use same UVNode as default parameter for all TextureNodes, make sure it's ok
+    defaultUV = None
+
     def __init__(self, value, uvNode=None, levelNode=None) -> None:
         super().__init__(value, 'vec4')
-        self.uvNode = uvNode or UVNode()
+        self.uvNode = uvNode
         self.levelNode = levelNode
 
     def getUniformHash( self, *args): #  /*builder*/ 
@@ -17,7 +18,31 @@ class TextureNode(UniformNode):
     def getInputType( self, *args): #  /*builder*/ 
         return 'texture'
 
+    def getDefaultUV(self):
+        TextureNode.defaultUV = TextureNode.defaultUV or UVNode()
+        return TextureNode.defaultUV
+
+    def construct(self, builder):
+        properties = builder.getNodeProperties(self)
+
+        uvNode = self.uvNode
+        if uvNode is None and builder.context.getUVNode:
+            uvNode = builder.context.getUVNode(self)
+        
+        uvNode = uvNode or self.getDefaultUV()
+
+        levelNode = self.levelNode
+
+        if levelNode is None and builder.context.getSamplerLevelNode:
+            levelNode = builder.context.getSamplerLevelNode(self)
+
+        properties.uvNode = uvNode
+        properties.levelNode = builder.context.getMIPLevelAlgorithmNode(self, levelNode) if levelNode else None
+
     def generate( self, builder, output ):
+        properties = builder.getNodeProperties(self)
+        uvNode = properties.uvNode
+        levelNode = properties.levelNode
         texture = self.value
 
         if texture is None or texture.isTexture != True:
@@ -31,19 +56,24 @@ class TextureNode(UniformNode):
             return textureProperty
         else:
             nodeData = builder.getDataFromNode( self )
-            snippet = nodeData.snippet
-            if snippet is None:
-                uvSnippet = self.uvNode.build( builder, 'vec2' )
-                levelNode = self.levelNode
+            propertyName = nodeData.propertyName
 
-                if levelNode:
+            if propertyName is None:
+                uvSnippet = uvNode.build( builder, 'vec2' )
+                nodeVar = builder.getVarFromNode( self, 'vec4' )
+                propertyName = builder.getPropertyName( nodeVar )
+
+                if levelNode and levelNode.isNode:
                     levelSnippet = levelNode.build(builder, 'float')
                     snippet = builder.getTextureLevel( textureProperty, uvSnippet, levelSnippet )
                 else:
                     snippet = builder.getTexture( textureProperty, uvSnippet )
 
+                builder.addFlowCode(f'{propertyName} = {snippet}')
+
                 nodeData.snippet = snippet
-            return builder.format( snippet, 'vec4', output )
+                nodeData.propertyName = propertyName
+            return builder.format( propertyName, 'vec4', output )
 
 
     def serialize( self, data ):

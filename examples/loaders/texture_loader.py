@@ -220,7 +220,7 @@ class TextureLoader(Loader):
             # provide a interface in image loader to override these properties?
             texture.magFilter = three.LinearFilter
             texture.minFilter = three.LinearFilter
-            texture.encoding = three.LinearEncoding
+            texture.encoding = encoding or three.LinearEncoding
             texture.type = three.FloatType
 
         return texture

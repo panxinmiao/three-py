@@ -1,17 +1,18 @@
 from ..core.node import Node
-from ..core.property_node import PropertyNode
-from ..core.var_node import VarNode
 from ..core.attribute_node import AttributeNode
-from ..core.uniform_node import UniformNode
 from ..core.bypass_node import BypassNode
-from ..core.instance_index_node import InstanceIndexNode
-from ..core.vertex_index_node import VertexIndexNode
-from ..core.context_node import ContextNode
-from ..core.function_node import FunctionNode
-from ..core.function_call_node import FunctionCallNode
+from ..core.cache_node import CacheNode
 from ..core.code_node import CodeNode
+from ..core.context_node import ContextNode
 from ..core.expression_node import ExpressionNode
+from ..core.function_call_node import FunctionCallNode
+from ..core.function_node import FunctionNode
+from ..core.instance_index_node import InstanceIndexNode
+from ..core.property_node import PropertyNode
+from ..core.uniform_node import UniformNode
+from ..core.var_node import VarNode
 from ..core.varying_node import VaryingNode
+from ..core.vertex_index_node import VertexIndexNode
 
 from ..accessors.bitangent_node import BitangentNode
 from ..accessors.buffer_node import BufferNode
@@ -44,9 +45,10 @@ from ..math.math_node import MathNode
 # util nodes
 from ..utils.array_element_node import ArrayElementNode
 from ..utils.convert_node import ConvertNode
+from ..utils.max_mip_level_node import MaxMipLevelNode
 
 # shader node base
-from .shader_node import nodeObject, nodeProxy, ConvertType, cacheMaps, getConstNodeType, nodeImmutable
+from .shader_node import nodeObject, nodeArray, nodeProxy, ConvertType, cacheMaps, getConstNodeType, nodeImmutable
 
 color = ConvertType( 'color' )
 
@@ -83,9 +85,9 @@ bmat4 = ConvertType( 'bmat4' )
 # core
 # func = lambda *args: nodeObject( FunctionNode( *args ) )
 
-def func(code):
-    node = nodeObject(FunctionNode(code))
-    node.call = lambda *args: nodeObject(node.call(*args))
+def func(code, includes):
+    node = nodeObject(FunctionNode(code, includes))
+    node.call = lambda *args: nodeObject(node.call( nodeArray(args) if len(args) > 1 or isinstance(args[0], Node) else nodeObject(args[0])))
     return node
 
 
@@ -98,11 +100,15 @@ def uniform(nodeOrType):
 
     return nodeObject( UniformNode( value, nodeType ))
 
+fn = lambda code, includes: func(code, includes).call
+
 attribute = lambda name, nodeType=None: nodeObject( AttributeNode( name, nodeType ) )
 property = lambda name, nodeOrType=None: nodeObject( PropertyNode( name, getConstNodeType( nodeOrType ) ) )
 convert = lambda node, types: nodeObject( ConvertNode( nodeObject( node ), types ) )
+maxMipLevel = nodeProxy( MaxMipLevelNode )
 
 bypass = nodeProxy( BypassNode )
+cache = nodeProxy( CacheNode )
 code = nodeProxy( CodeNode )
 context = nodeProxy( ContextNode )
 expression = nodeProxy( ExpressionNode )

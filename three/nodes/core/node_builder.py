@@ -10,8 +10,10 @@ from .node_uniform import NodeUniform
 from .node_var import NodeVar
 from .node_varying import NodeVarying
 from .node_keywords import NodeKeywords
+from .node_cache import NodeCache
 
 defaultShaderStages = ['fragment', 'vertex']
+defaultBuildStages = ['construct', 'analyze', 'generate']
 shaderStages = [*defaultShaderStages, 'compute']
 vector = ['x', 'y', 'z', 'w']
 
@@ -56,12 +58,17 @@ class NodeBuilder(NoneAttribute):
         self.flow = { 'code': '' }
         self.stack = []
 
+        from ..shadernode.shader_node_base_elements import mul, maxMipLevel
         self.context = Dict({
             'keywords': NodeKeywords(),
-            'material': object.material
+            'material': object.material,
+            'getMIPLevelAlgorithmNode': lambda textureNode, levelNode: mul(levelNode, maxMipLevel(textureNode))
         })
 
-        self.nodesData = weakref.WeakKeyDictionary()
+        # self.nodesData = weakref.WeakKeyDictionary()
+        self.cache = NodeCache()
+        self.globalCache = self.cache
+
         self.flowsData = weakref.WeakKeyDictionary()
 
         self.shaderStage = None
@@ -114,6 +121,12 @@ class NodeBuilder(NoneAttribute):
 
     def getContext(self):
         return self.context
+    
+    def setCache(self, cache ):
+        self.cache = cache
+    
+    def getCache(self):
+        return self.cache
 
     def getContextValue(self, name ):
         return self.context[ name ]
@@ -333,24 +346,23 @@ class NodeBuilder(NoneAttribute):
         if shaderStage is None:
             shaderStage = self.shaderStage
 
-        nodeData = self.nodesData.get( node, None )
+        cache = self.globalCache if node.isGlobal(self) else self.cache
+        nodeData = cache.getNodeData( node )
 
         if nodeData is None:
             nodeData = Dict({'vertex': {}, 'fragment': {}, 'compute': {}})
-            self.nodesData[node] = nodeData
+            cache.setNodeData( node, nodeData )
 
         return nodeData[ shaderStage ] if shaderStage is not None else nodeData
 
     def getNodeProperties(self, node, shaderStage=None):
         shaderStage = shaderStage or self.shaderStage
 
-        nodeData = self.getDataFromNode(self, shaderStage)
-        constructHash = node.getConstructHash(self)
+        nodeData = self.getDataFromNode( node, shaderStage )
 
-        nodeData.setdefault("properties", Dict())
-        nodeData.properties.setdefault( constructHash, Dict({"outputNode": None}) )
+        nodeData.setdefault("properties", Dict({"outputNode": None}))
 
-        return nodeData.properties[constructHash]
+        return nodeData.properties
 
 
     def getUniformFromNode(self, node, shaderStage, type ):
@@ -359,8 +371,8 @@ class NodeBuilder(NoneAttribute):
         nodeUniform = nodeData.uniform
 
         if nodeUniform is None:
-            self.uniforms['index'] += 1 
             index = self.uniforms['index']
+            self.uniforms['index'] += 1 
 
             nodeUniform = NodeUniform( 'nodeUniform' + str(index), type, node )
             self.uniforms[ shaderStage ].append( nodeUniform )
@@ -507,42 +519,29 @@ class NodeBuilder(NoneAttribute):
 
 
     def build(self):
-        # stage 1: generate shader node
-        self.setBuildStage('construct')
-        for shaderStage in shaderStages:
-            self.setShaderStage( shaderStage )
-            flowNodes = self.flowNodes[ shaderStage ]
-            for node in flowNodes:
-                node.build( self )
+        
+        # construct() -> stage 1: create possible new nodes and returns an output reference node
+        # analyze()   -> stage 2: analyze nodes to possible optimization and validation
+        # generate()  -> stage 3: generate shader
 
-        # stage 2: analyze nodes to possible optimization and validation
-        self.setBuildStage('analyze')
+        for buildStage in defaultBuildStages:
+            self.setBuildStage( buildStage )
+            if self.context.vertex and self.context.vertex.isNode:
+                self.flowNodeFromShaderStage( 'vertex', self.context.vertex )
 
-        for shaderStage in shaderStages:
-            self.setShaderStage(shaderStage)
-            flowNodes = self.flowNodes[shaderStage]
-            for node in flowNodes:
-                node.build(self)
-
-        # stage 3: pre-build vertex code used in fragment shader
-        self.setBuildStage('generate')
-
-        if self.context.vertex and self.context.vertex.isNode:
-            self.flowNodeFromShaderStage( 'vertex', self.context.vertex )
-
-        # stage 4: generate shader
-        self.setBuildStage( 'generate' )
-
-        for shaderStage in shaderStages:
-            self.setShaderStage( shaderStage )
-            flowNodes = self.flowNodes[ shaderStage ]
-            for node in flowNodes:
-                self.flowNode( node)
-
+            for shaderStage in shaderStages:
+                self.setShaderStage( shaderStage )
+                flowNodes = self.flowNodes[ shaderStage ]
+                for node in flowNodes:
+                    if buildStage == 'generate':
+                        self.flowNode( node )
+                    else:
+                        node.build( self )
+        
         self.setBuildStage( None )
         self.setShaderStage( None )
 
-        # stage 5: build code for a specific output
+        # stage 4: build code for a specific output
         self.buildCode()
 
         return self

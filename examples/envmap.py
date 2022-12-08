@@ -49,7 +49,7 @@ step_size = 1.0 / numbers_per_side
 
 geometry = three.SphereGeometry(sphere_radius, 32, 16)
 
-basicMaterial = three.MeshBasicMaterial(color=0xFFFF00)
+basicMaterial = three.MeshBasicMaterial(color=0x0099FF)
 # basicMaterial.envMap = envMap
 
 mesh = three.Mesh(geometry, basicMaterial)
@@ -57,7 +57,7 @@ mesh = three.Mesh(geometry, basicMaterial)
 mesh.position.set(-200, 0, 0)
 scene.add(mesh)
 
-standardMaterial = three.MeshStandardMaterial(color=0xFFFF00)
+standardMaterial = three.MeshStandardMaterial(color=0x0099FF)
 standardMaterial.roughness = 0.1
 standardMaterial.metalness = 1.0
 standardMaterial.envMap = envMap
@@ -66,7 +66,7 @@ mesh2 = three.Mesh(geometry, standardMaterial)
 
 scene.add(mesh2)
 
-phongMaterial = three.MeshPhongMaterial(color=0xFFFF00, shininess=100)
+phongMaterial = three.MeshPhongMaterial(color=0x0099FF, shininess=100)
 phongMaterial.envMap = envMap
 
 mesh3 = three.Mesh(geometry, phongMaterial)

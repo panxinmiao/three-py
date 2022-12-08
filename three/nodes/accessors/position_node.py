@@ -18,7 +18,10 @@ class PositionNode(Node):
         super().__init__('vec3')
         self.scope = scope
 
-    def getHash(self, builder):
+    def isGlobal(self, *args):
+        return True
+
+    def getHash(self, *args):
         return f'position-{self.scope}'
 
     def generate(self, builder ):

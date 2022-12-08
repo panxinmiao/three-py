@@ -3,7 +3,7 @@ from wgpu.gui.auto import WgpuCanvas, run
 import three.nodes as nodes
 from three.nodes import (ShaderNode, compute,
                     uniform, element, storage, attribute, mul, sin, cos,
-                    temp, assign, add, sub, cond, abs, negate, max, min, length, float, vec2, vec3, color,
+                    add, sub, cond, abs, negate, max, min, length, float, vec2, vec3, color,
                     greaterThanEqual, lessThanEqual, instanceIndex)
 
 canvas = WgpuCanvas(size=(640, 640), max_fps=60, title="wgpu_renderer")
@@ -46,26 +46,25 @@ velocityBufferNode = storage(velocityBuffer, 'vec2', particleNum)
 # create function
 
 
-def __fn_node(inputs, builder):
+def __fn_node(inputs, stack):
     particle = element(particleBufferNode, instanceIndex)
     velocity = element(velocityBufferNode, instanceIndex)
 
     pointer = uniform(pointerVector)
     limit = uniform(scaleVector)
 
-    position = temp(add(particle, velocity), 'tempPos')
-    # @ TODO: this should work without 'tempPos' property name
-    position.build(builder)
+    position = add( particle, velocity )
 
-    assign(velocity.x, cond(greaterThanEqual(abs(position.x), limit.x),negate(velocity.x), velocity.x)).build(builder)
-    assign(velocity.y, cond(greaterThanEqual(abs(position.y), limit.y),negate(velocity.y), velocity.y)).build(builder)
+    stack.assign( velocity.x, cond( greaterThanEqual( abs( position.x ), limit.x ), negate( velocity.x ), velocity.x ) )
+    stack.assign( velocity.y, cond( greaterThanEqual( abs( position.y ), limit.y ), negate( velocity.y ), velocity.y ) )
 
-    assign(position, max(negate(limit), min(limit, position))).build(builder)
+    stack.assign( position, max( negate( limit ), min( limit, position ) ) )
+
 
     pointerSize = 0.1
     distanceFromPointer = length(sub(pointer, position))
 
-    assign(particle, cond(lessThanEqual(distanceFromPointer,pointerSize), vec3(), position)).build(builder)
+    stack.assign( particle, cond( lessThanEqual( distanceFromPointer, pointerSize ), vec3(), position ) )
 
 
 fnNode = ShaderNode(__fn_node)
@@ -76,7 +75,7 @@ computeNode = compute(fnNode, particleNum)
 
 # gpu init
 def _on_init(renderer):
-    def __precomputeShaderNode(inputs, builder):
+    def __precomputeShaderNode(inputs, stack):
         particleIndex = float( instanceIndex )
         randomAngle = mul( mul( particleIndex, .005 ), math.pi * 2 )
         randomSpeed = add( mul( particleIndex, 1e-8 ), 1e-7 )
@@ -85,7 +84,7 @@ def _on_init(renderer):
         velY = mul( cos( randomAngle ), randomSpeed )
         velocity = element( velocityBufferNode, instanceIndex )
 
-        assign( velocity.xy, vec2( velX, velY ) ).build( builder )
+        stack.assign( velocity.xy, vec2( velX, velY ) )
 
     precomputeShaderNode = ShaderNode(__precomputeShaderNode)
     renderer.compute( compute( precomputeShaderNode, computeNode.count ) )
