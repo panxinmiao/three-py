@@ -1,14 +1,14 @@
-#from three.renderer.nodes import TempNode, NodeBuilder
-
 from .temp_node import TempNode
 from .node_builder import NodeBuilder
 
 class FunctionCallNode(TempNode):
 
-    def __init__(self, functionNode = None, parameters = {}) -> None:
+    isFunctionCallNode = True
+
+    def __init__(self, functionNode = None, parameters = None) -> None:
         super().__init__()
         self.functionNode = functionNode
-        self.parameters = parameters
+        self.parameters = parameters or {}
 
     def setParameters( self, parameters ):
         self.parameters = parameters
@@ -29,16 +29,21 @@ class FunctionCallNode(TempNode):
         inputs = functionNode.getInputs( builder )
         parameters = self.parameters
 
-        for inputNode in inputs:
-            node = parameters[ inputNode.name ]
-
-            if node:
+        if isinstance( parameters, list ):
+            for i in range( len( parameters ) ):
+                inputNode = inputs[ i ]
+                node = parameters[ i ]
                 params.append( node.build( builder, inputNode.type ) )
-            else:
-                raise Exception( "FunctionCallNode: Input '{inputNode.name}' not found in FunctionNode." )
+        else:
 
+            for inputNode in inputs:
+                node = parameters[ inputNode.name ]
+
+                if node:
+                    params.append( node.build( builder, inputNode.type ) )
+                else:
+                    raise Exception( "FunctionCallNode: Input '{inputNode.name}' not found in FunctionNode." )
 
         functionName = functionNode.build( builder, 'property' )
-
 
         return f"{functionName}( {', '.join(params)} )"

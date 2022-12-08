@@ -29,6 +29,8 @@ class VarNode(Node):
     def div( self, *params ):
         return self.op( '/', *params )
         
+    def isGlobal(self, *args):
+        return True
 
     def getHash( self, builder ):
         if self.name:

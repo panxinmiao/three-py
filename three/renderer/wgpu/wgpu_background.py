@@ -63,7 +63,8 @@ class WgpuBackground:
 
                 else: # background.isNode
                     colorNode = context(background, {
-                        'uvNode': transformDirection(positionWorld, modelWorldMatrix)
+                        # 'uvNode': transformDirection(positionWorld, modelWorldMatrix)
+                        "getUVNode": lambda *args: transformDirection(positionWorld, modelWorldMatrix)
                     })
 
 

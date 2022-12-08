@@ -6,7 +6,7 @@ from ..core.constants import NodeUpdateType
 class ViewportNode(Node):
     _resolution = None
 
-    isScreenNode = True
+    isViewportNode = True
 
     COORDINATE = 'coordinate'
     RESOLUTION = 'resolution'

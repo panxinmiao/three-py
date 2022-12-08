@@ -5,6 +5,7 @@ from three.structure import Dict, NoneAttribute
 
 from ..core.node import Node
 from ..core.const_node import ConstNode
+from ..core.stack_node import StackNode
 from ..utils.split_node import SplitNode
 from ..utils.array_element_node import ArrayElementNode
 from ..utils.convert_node import ConvertNode
@@ -186,12 +187,22 @@ class ShaderNode(Node):
         kwds = nodeObjects(kwds)
 
         return nodeObject(self.func(*args, **kwds))
-    
-    def generate(self, builder, output):
-        nodeCall = self.call( {}, builder )
-        if nodeCall is None:
-            return ""
-        return builder.format( nodeCall.build( builder ), nodeCall.getNodeType( builder ), output )
+
+    def getNodeType(self, builder):
+        outputNode = builder.getNodeProperties(self).outputNode
+        return outputNode.getNodeType( builder ) if outputNode else super().getNodeType( builder )
+
+    def construct(self, builder):
+        stackNode = StackNode()
+        argLength = self.func.__code__.co_argcount
+        stackNode.outputNode = self.call(*[{}, stackNode, builder][:argLength])
+        return stackNode
+
+    # def generate(self, builder, output):
+    #     nodeCall = self.call( {}, builder )
+    #     if nodeCall is None:
+    #         return ""
+    #     return builder.format( nodeCall.build( builder ), nodeCall.getNodeType( builder ), output )
 
 
 bools = [ False, True ]

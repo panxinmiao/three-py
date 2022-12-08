@@ -7,6 +7,9 @@ class VaryingNode(Node):
         super().__init__()
         self.node = node
         self.name = name
+    
+    def isGlobal(self, *args):
+        return True
 
     def getHash( self, builder ):
         if self.name:

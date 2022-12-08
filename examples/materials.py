@@ -1,8 +1,8 @@
-import time, math
+import math, time
 import random
 import three
 import three.nodes
-from three.nodes import ShaderNode, vec3, dot, triplanarTexture, sampler
+from three.nodes import ShaderNode, vec3, dot, triplanarTexture, viewportBottomLeft
 from pathlib import Path
 from wgpu.gui.auto import WgpuCanvas, run
 
@@ -90,6 +90,12 @@ material = three.nodes.MeshBasicNodeMaterial()
 material.colorNode = desaturateShaderNode( color = three.nodes.TextureNode( texture ) )
 materials.append( material )
 
+# Custom ShaderNode(no inputs) > Approach 2
+
+desaturateNoInputsShaderNode = ShaderNode( lambda: dot( vec3( 0.299, 0.587, 0.114 ), three.nodes.texture( texture ).xyz ))
+material = three.nodes.MeshBasicNodeMaterial()
+material.colorNode = desaturateNoInputsShaderNode
+materials.append( material )
 
 # Custom WGSL ( desaturate filter )
 
@@ -123,6 +129,11 @@ material = three.nodes.MeshBasicNodeMaterial()
 material.colorNode = triplanarTexture( three.nodes.TextureNode( texture ) )
 materials.append( material )
 
+# Screen Projection Texture
+material = three.nodes.MeshBasicNodeMaterial()
+material.colorNode = three.nodes.texture( texture, viewportBottomLeft )
+materials.append( material )
+
 # Geometry
 objects = []
 
@@ -152,6 +163,15 @@ def on_resize(event):
 canvas.add_event_handler(on_resize, 'resize')
 
 def animate():
+    timer = time.time() * 0.1
+    camera.position.x = math.cos( timer ) * 1000
+    camera.position.z = math.sin( timer ) * 1000
+    camera.lookAt( scene.position )
+
+    for obj in objects:
+        obj.rotation.x += 0.01
+        obj.rotation.y += 0.005
+
     renderer.render(scene, camera)
 
 renderer.setAnimationLoop(animate)

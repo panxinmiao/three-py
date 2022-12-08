@@ -25,8 +25,8 @@ _xAxis = Vector3( 1, 0, 0 )
 _yAxis = Vector3( 0, 1, 0 )
 _zAxis = Vector3( 0, 0, 1 )
 
-_addedEvent = { type: 'added' }
-_removedEvent = { type: 'removed' }
+_addedEvent = { 'type': 'added' }
+_removedEvent = { 'type': 'removed' }
 
 class Object3D(EventDispatcher):
     isObject3D = True

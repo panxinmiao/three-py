@@ -19,10 +19,10 @@ from ..lighting.lighting_context_node import LightingContextNode
 # utils
 from ..utils.matcap_uv_node import MatcapUVNode
 from ..utils.equirect_uv_node import EquirectUVNode
-from ..utils.max_mip_level_node import MaxMipLevelNode
 from ..utils.osc_node import OscNode
 from ..utils.remap_node import RemapNode
 from ..utils.rotate_uv_node import RotateUVNode
+from ..utils.specular_mip_level_node import SpecularMipLevelNode
 from ..utils.sprite_sheet_uv_node import SpriteSheetUVNode
 from ..utils.timer_node import TimerNode
 from ..utils.triplanar_textures_node import TriplanarTexturesNode
@@ -79,7 +79,7 @@ lightingContext = nodeProxy(LightingContextNode)
 
 matcapUV = nodeImmutable(MatcapUVNode)
 equirectUV = nodeProxy(EquirectUVNode)
-maxMipLevel = nodeProxy(MaxMipLevelNode)
+specularMIPLevel = nodeProxy(SpecularMipLevelNode)
 
 oscSine = nodeProxy(OscNode, OscNode.SINE)
 oscSquare = nodeProxy(OscNode, OscNode.SQUARE)

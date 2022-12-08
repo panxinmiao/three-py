@@ -2,7 +2,7 @@ from .node import Node
 
 class VertexIndexNode(Node):
 
-    isInstanceIndexNode = True
+    isVertexIndexNode = True
 
     def __init__(self) -> None:
         super().__init__('uint')

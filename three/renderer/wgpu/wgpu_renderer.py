@@ -491,7 +491,6 @@ class WgpuRenderer(NoneAttribute):
             passEncoder.set_bind_group(0, bindGroup, [], 0, 99)
             passEncoder.dispatch_workgroups(computeNode.dispatchCount)
 
-
         passEncoder.end()
         device.queue.submit( [ cmdEncoder.finish() ] )
 

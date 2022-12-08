@@ -1,7 +1,8 @@
 # core
 from .core.array_uniform_node import ArrayUniformNode
 from .core.attribute_node import AttributeNode
-from .core.bypass_node import BypassNode 
+from .core.bypass_node import BypassNode
+from .core.cache_node import CacheNode
 from .core.code_node import CodeNode 
 from .core.const_node import ConstNode
 from .core.context_node import ContextNode
@@ -12,6 +13,7 @@ from .core.instance_index_node import InstanceIndexNode
 from .core.node import Node 
 from .core.node_attribute import NodeAttribute 
 from .core.node_builder import NodeBuilder 
+from .core.node_cache import NodeCache
 from .core.node_code import NodeCode 
 from .core.node_frame import NodeFrame 
 from .core.node_function import NodeFunction
@@ -20,8 +22,9 @@ from .core.node_keywords import NodeKeywords
 from .core.node_uniform import NodeUniform 
 from .core.node_var import NodeVar 
 from .core.node_varying import NodeVarying 
-from .core.property_node import PropertyNode 
-from .core.temp_node import TempNode 
+from .core.property_node import PropertyNode
+from .core.stack_node import StackNode
+from .core.temp_node import TempNode
 from .core.uniform_node import UniformNode 
 from .core.var_node import VarNode 
 from .core.varying_node import VaryingNode 
@@ -86,6 +89,7 @@ from .utils.max_mip_level_node import MaxMipLevelNode
 from .utils.osc_node import OscNode 
 from .utils.remap_node import RemapNode
 from .utils.rotate_uv_node import RotateUVNode
+from .utils.specular_mip_level_node import SpecularMipLevelNode
 from .utils.split_node import SplitNode 
 from .utils.sprite_sheet_uv_node import SpriteSheetUVNode 
 from .utils.timer_node import TimerNode 

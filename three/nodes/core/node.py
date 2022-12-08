@@ -21,17 +21,35 @@ class Node(NoneAttribute):
         self.id = _nodeId
         _nodeId += 1
 
+    @property
+    def type(self):
+        return self.__class__.__name__
+
+    def isGlobal(self, *args):  # ( builder )
+        return False
+
     def getChildren(self):
         children = []
         for property in self.__dict__:
-            object = self.__dict__[property]
-            if isinstance(object, list):
-                for child in object:
+            _object = self.__dict__[property]
+            if isinstance(_object, list):
+                for child in _object:
                     if child and isinstance(child, Node):
                         children.append(child)
 
-            elif object and isinstance(object, Node):
-                children.append(object)
+            elif _object and isinstance(_object, Node):
+                children.append(_object)
+            # elif isinstance(_object, object):
+            elif isinstance(_object, dict):
+                for property in _object:
+                    child = _object[property]
+                    if child and isinstance(child, Node):
+                        children.append(child)
+            # elif hasattr(_object, '__dict__'):
+            #     for property in _object.__dict__:
+            #         child = _object.__dict__[property]
+            #         if child and isinstance(child, Node):
+            #             children.append(child)
 
         return children
 
@@ -48,8 +66,8 @@ class Node(NoneAttribute):
     def getNodeType(self, *args):  # ( builder )s
         return self.nodeType
     
-    def getConstructHash(self, *args ):
-        return str(self.uuid)
+    # def getConstructHash(self, *args ):
+    #     return str(self.uuid)
 
     def getReference(self, builder):
         hash = self.getHash(builder)
@@ -111,6 +129,7 @@ class Node(NoneAttribute):
             if properties.initialized != True or builder.context.tempRead == False:
                 properties.initialized = True
                 properties["outputNode"] = self.construct(builder)
+
                 for childNode in properties.values():
                     if childNode and isinstance(childNode, Node):
                         childNode.build(builder)
@@ -139,41 +158,9 @@ class Node(NoneAttribute):
 
     
     def serialize( self, json ):
-
-        # const nodeKeys = getNodesKeys( this );
-
-        # if ( nodeKeys.length > 0 ) {
-
-        #     const inputNodes = {};
-
-        #     for ( const property of nodeKeys ) {
-
-        #         inputNodes[ property ] = this[ property ].toJSON( json.meta ).uuid;
-
-        #     }
-
-        #     json.inputNodes = inputNodes;
-
-        # }
-
         raise NotImplementedError
 
 
 
     def deserialize( self, json ):
-
-        # if ( json.inputNodes !== undefined ) {
-
-        #     const nodes = json.meta.nodes;
-
-        #     for ( const property in json.inputNodes ) {
-
-        #         const uuid = json.inputNodes[ property ];
-
-        #         this[ property ] = nodes[ uuid ];
-
-        #     }
-
-        # }
-
         raise NotImplementedError
