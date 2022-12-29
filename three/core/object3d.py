@@ -10,7 +10,7 @@ from typing import List
 id_provider = IdProvider()
 
 #_m1 = Matrix4()
-# TODO 重写
+# TODO rewrite this class
 
 _v1 = Vector3()
 _q1 = Quaternion()
@@ -69,7 +69,7 @@ class Object3D(EventDispatcher):
         self.modelViewMatrix = Matrix4()
         self.normalMatrix = Matrix3()
 
-        self._matrix = Matrix4()
+        self.matrix = Matrix4()
         self.matrixWorld = Matrix4()
         self.matrixAutoUpdate = True
         self.matrixWorldNeedsUpdate = False
@@ -111,28 +111,22 @@ class Object3D(EventDispatcher):
 
     @property
     def parent(self):
-        """Object's parent in the scene graph (read-only).
-        An object can have at most one parent.
-        """
         return self._parent
 
     @property
     def children(self):
-        """The child objects of self wold object (read-only tuple).
-        Use ``.add()`` and ``.remove()`` to change self list.
-        """
         return tuple(self._children)
 
-    @property
-    def matrix(self):
-        """The (settable) transformation matrix."""
-        return self._matrix
+    # @property
+    # def matrix(self):
+    #     """The (settable) transformation matrix."""
+    #     return self._matrix
 
-    @matrix.setter
-    def matrix(self, matrix):
-        self._matrix.copy(matrix)
-        self._matrix.decompose(self.position, self.rotation, self.scale)
-        self.matrixWorldNeedsUpdate = True
+    # @matrix.setter
+    # def matrix(self, matrix):
+    #     self._matrix.copy(matrix)
+    #     self._matrix.decompose(self.position, self.rotation, self.scale)
+    #     self.matrixWorldNeedsUpdate = True
 
     def onBeforeRender(self, *args):
         pass
@@ -371,7 +365,7 @@ class Object3D(EventDispatcher):
             parent.traverseAncestors( callback )
 
     def updateMatrix(self):
-        self._matrix.compose( self.position, self.quaternion, self.scale )
+        self.matrix.compose( self.position, self.quaternion, self.scale )
         self.matrixWorldNeedsUpdate = True
 
     def updateMatrixWorld( self, force= False ):
@@ -402,9 +396,9 @@ class Object3D(EventDispatcher):
             self.updateMatrix()
 
         if self.parent is None:
-            self.matrixWorld.copy( self._matrix )
+            self.matrixWorld.copy( self.matrix )
         else:
-            self.matrixWorld.multiplyMatrices( self.parent.matrixWorld, self._matrix )
+            self.matrixWorld.multiplyMatrices( self.parent.matrixWorld, self.matrix )
 
         # update children
 

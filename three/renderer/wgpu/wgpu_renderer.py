@@ -56,10 +56,8 @@ class WgpuRenderer(NoneAttribute):
 
         self._parameters = parameters.copy()
 
-        self._pixelRatio = 1
-        self._width, self._height = self._canvas.get_physical_size()
-        # self._width = self.domElement.width
-        # self._height = self.domElement.height
+        self._pixelRatio = self._canvas.get_pixel_ratio()
+        self._width, self._height = self._canvas.get_logical_size()
 
         self._viewport = None
         self._scissor = None
@@ -202,7 +200,7 @@ class WgpuRenderer(NoneAttribute):
 
         # @TODO: move this to animation loop?
 
-        cw, ch = self._canvas.get_physical_size()
+        cw, ch = self._canvas.get_logical_size()
 
         if self._width != cw or self._height != ch:
             if cw == 0 or ch == 0:
@@ -320,14 +318,17 @@ class WgpuRenderer(NoneAttribute):
         return self._context
 
     def getPixelRatio(self):
-        return self._canvas.get_pixel_ratio()
+        return self._pixelRatio
 
     def getDrawingBufferSize( self, target ):
         return target.set( self._width * self._pixelRatio, self._height * self._pixelRatio ).floor()
 
 
-    def getSize( self, target ):
-        return target.set(self._width, self._height)
+    def getSize( self, target=None ):
+        if target and target.isVector2:
+            return target.set(self._width, self._height)
+        else:
+            return (self._width, self._height)
 
     # def setPixelRatio( self, value = 1 ):
     #     self._pixelRatio = value
@@ -349,13 +350,12 @@ class WgpuRenderer(NoneAttribute):
     #     self._setupColorBuffer()
     #     self._setupDepthBuffer()
 
-    def setSize( self, width, height, updateStyle = True ):
+    def setSize( self, width, height ):
 
         self._width = width
         self._height = height
 
-        if updateStyle:
-            self._canvas.set_logical_size( width, height)
+        self._canvas.set_logical_size( width, height)
 
         self._configureContext()
         self._setupColorBuffer()

@@ -22,6 +22,7 @@ from ..accessors.material_reference_node import MaterialReferenceNode
 from ..accessors.model_view_projection_node import ModelViewProjectionNode
 from ..accessors.normal_node import NormalNode
 from ..accessors.model_node import ModelNode
+from ..accessors.object3d_node import Object3DNode
 from ..accessors.point_uv_node import PointUVNode
 from ..accessors.position_node import PositionNode
 from ..accessors.reference_node import ReferenceNode
@@ -254,6 +255,12 @@ modelNormalMatrix = nodeImmutable(ModelNode, ModelNode.NORMAL_MATRIX)
 modelWorldMatrix = nodeImmutable(ModelNode, ModelNode.WORLD_MATRIX)
 modelPosition = nodeImmutable(ModelNode, ModelNode.POSITION)
 modelViewPosition = nodeImmutable(ModelNode, ModelNode.VIEW_POSITION)
+
+objectViewMatrix = nodeProxy(Object3DNode, Object3DNode.VIEW_MATRIX)
+objectNormalMatrix = nodeProxy(Object3DNode, Object3DNode.NORMAL_MATRIX)
+objectWorldMatrix = nodeProxy(Object3DNode, Object3DNode.WORLD_MATRIX)
+objectPosition = nodeProxy(Object3DNode, Object3DNode.POSITION)
+objectViewPosition = nodeProxy(Object3DNode, Object3DNode.VIEW_POSITION)
 
 positionGeometry = nodeImmutable(PositionNode, PositionNode.GEOMETRY)
 positionLocal = nodeImmutable(PositionNode, PositionNode.LOCAL)

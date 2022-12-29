@@ -117,7 +117,7 @@ def on_mouse_move(event):
     x = event['x']
     y = event['y']
 
-    width, height = canvas.get_physical_size()
+    width, height = render.getSize()
     pointerVector.set(
         (x / width - 0.5) * 2.0,
         (- y / height + 0.5) * 2.0

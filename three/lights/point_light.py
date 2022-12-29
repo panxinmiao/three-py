@@ -32,8 +32,8 @@ class PointLight(Light):
     def dispose(self):
         self.shadow.dispose()
 
-    def copy( self, source:'PointLight' ):
-        super().copy( source )
+    def copy( self, source:'PointLight', recursive=True):
+        super().copy( source, recursive )
         self.distance = source.distance
         self.decay = source.decay
         self.shadow = source.shadow.clone()

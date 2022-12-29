@@ -1,13 +1,12 @@
 from .analytic_light_node import AnalyticLightNode
 from .lights_node import LightsNode
-from ..accessors.object3d_node import Object3DNode
 from ..functions.light.getDistanceAttenuation import getDistanceAttenuation
-from ..shadernode.shader_node_base_elements import uniform, mul, normalize, length, sub, positionView
+from ..shadernode.shader_node_base_elements import uniform, mul, normalize, length, sub, positionView, objectViewPosition
 
 from ...lights import PointLight
 
 
-class PunctualLightNode(AnalyticLightNode):
+class PointLightNode(AnalyticLightNode):
 
     def __init__(self, light=None) -> None:
         super().__init__(light)
@@ -26,9 +25,12 @@ class PunctualLightNode(AnalyticLightNode):
         colorNode = self.colorNode
         cutoffDistanceNode = self.cutoffDistanceNode
         decayExponentNode = self.decayExponentNode
+        light = self.light
 
-        lightPositionViewNode = Object3DNode(Object3DNode.VIEW_POSITION, self.light)
-        lVector = sub(lightPositionViewNode, positionView)
+        # lightPositionViewNode = Object3DNode(Object3DNode.VIEW_POSITION, self.light)
+        # lVector = sub(lightPositionViewNode, positionView)
+
+        lVector = sub(objectViewPosition(light), positionView)
 
         lightDirection = normalize(lVector)
         lightDistance = length(lVector)
@@ -52,4 +54,4 @@ class PunctualLightNode(AnalyticLightNode):
             }, builder)
 
 
-LightsNode.setReference( PointLight, PunctualLightNode )
+LightsNode.setReference( PointLight, PointLightNode )
