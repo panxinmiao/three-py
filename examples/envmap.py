@@ -68,7 +68,7 @@ mesh.position.set(0, 300, 0)
 scene.add(mesh)
 
 
-mesh = three.Mesh(geometry, three.MeshPhongMaterial(shininess=30))
+mesh = three.Mesh(geometry, three.MeshPhongMaterial(shininess=30, reflectivity=1.0))
 mesh.position.set(300, 0, 0)
 scene.add(mesh)
 

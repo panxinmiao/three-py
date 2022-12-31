@@ -1,7 +1,7 @@
 import math
 from .F_Schlick import F_Schlick
 from ...shadernode.shader_node import ShaderNode
-from ...shadernode.shader_node_base_elements import add, mul, clamp, dot, pow, normalize, transformedNormalView, positionViewDirection
+from ...shadernode.shader_node_base_elements import add, mul, clamp, dot, pow, normalize, transformedNormalView, positionViewDirection, shininess, specularColor
 
 def __G_BlinnPhong_Implicit():
     return 0.25
@@ -9,10 +9,9 @@ def __G_BlinnPhong_Implicit():
 G_BlinnPhong_Implicit = ShaderNode( __G_BlinnPhong_Implicit )
 
 def __D_BlinnPhong( **inputs ):
-
-    shininess = inputs['shininess']
     dotNH = inputs['dotNH']
     return (1/ math.pi) * ( shininess * 0.5 + 1.0 ) * pow( dotNH, shininess )
+    # return (shininess * (1/ math.pi) * 0.5 + 1.0) * pow( dotNH, shininess )
     # return mul( mul( 1/ math.pi, add(mul(shininess, 0.5), 1.0) ), pow( dotNH, shininess) )
 
 D_BlinnPhong = ShaderNode( __D_BlinnPhong )
@@ -20,8 +19,6 @@ D_BlinnPhong = ShaderNode( __D_BlinnPhong )
 def __BRDF_BlinnPhong( inputs ):
 
     lightDirection = inputs['lightDirection']
-    specularColor = inputs['specularColor']
-    shininess = inputs['shininess']
 
     halfDir = normalize( add( lightDirection, positionViewDirection ) )
 

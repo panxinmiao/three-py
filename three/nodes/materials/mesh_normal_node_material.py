@@ -1,9 +1,8 @@
 from .node_material import NodeMaterial
 from three.materials import MeshNormalMaterial
-from ..core.expression_node import ExpressionNode
 
 from ..shadernode.shader_node_elements import (
-    float, assign, label, mul, add, normalize, cross, dFdx, dFdy, vec4, 
+    float, mul, add, normalize, cross, dFdx, dFdy, vec4, diffuseColor, discard,
     positionView, normalView, materialAlphaTest, materialOpacity)
 
 defaultValues = MeshNormalMaterial()
@@ -34,32 +33,19 @@ class MeshNormalNodeMaterial(NodeMaterial):
         return super().copy( source )
 
     
-    def generateDiffuseColor(self, builder):
-
-        # < FRAGMENT STAGE >
+    def constructDiffuseColor(self, builder, stack):
 
         normalNode = normalize(cross(dFdx(positionView), dFdy(positionView))) if self.flatShading else normalView
-
         colorNode = vec4(add(mul(normalNode, 0.5), 0.5))
-
         opacityNode = float( self.opacityNode ) if self.opacityNode else materialOpacity
 
         # COLOR
-        colorNode = builder.addFlow( 'fragment', label( colorNode, 'Color' ) )
-        diffuseColorNode = builder.addFlow( 'fragment', label( colorNode, 'DiffuseColor' ) )
+        stack.assign( diffuseColor, colorNode )
 
         # OPACITY
-        opacityNode = builder.addFlow( 'fragment', label( opacityNode, 'OPACITY' ) )
-        builder.addFlow( 'fragment', assign( diffuseColorNode.a, mul( diffuseColorNode.a, opacityNode ) ) )
+        stack.assign( diffuseColor.a, diffuseColor.a * opacityNode )
 
         # ALPHA TEST
         if self.alphaTestNode or self.alphaTest > 0:
-
             alphaTestNode = float( self.alphaTestNode ) if self.alphaTestNode else materialAlphaTest
-
-            builder.addFlow( 'fragment', label( alphaTestNode, 'AlphaTest' ) )
-
-            # @TODO: remove ExpressionNode here and then possibly remove it completely
-            builder.addFlow( 'fragment', ExpressionNode( 'if ( DiffuseColor.a <= AlphaTest ) { discard; }' ) )
-
-        return { 'colorNode': colorNode, 'diffuseColorNode': diffuseColorNode }
+            stack.add( discard( diffuseColor.a <= alphaTestNode ) )

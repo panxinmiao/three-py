@@ -138,10 +138,10 @@ class ProxyNode:
     def __neg__(self):
         return nodeProxy(MathNode, 'negate')(self)
 
-    def __lq__(self, other):
+    def __lt__(self, other):
         return nodeProxy(OperatorNode, '<')(self, other)
 
-    def __gq__(self, other):
+    def __gt__(self, other):
         return nodeProxy(OperatorNode, '>')(self, other)
 
     def __le__(self, other):

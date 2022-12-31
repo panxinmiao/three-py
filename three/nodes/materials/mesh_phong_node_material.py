@@ -2,19 +2,12 @@ from three.materials import MeshPhongMaterial
 from three.constants import MultiplyOperation, MixOperation, AddOperation
 
 from .node_material import NodeMaterial
-from ..lighting.lights_node import LightsNode
-from ..lighting.ao_node import AONode
-from ..functions.phong_lighting_model import PhongLightingModel
-
-from ..display.normal_map_node import NormalMapNode
-from ..lighting.environment_node import EnvironmentNode
-from ..accessors.material_reference_node import MaterialReferenceNode
-from ..accessors.texture_node import TextureNode
-from ..utils.split_node import SplitNode
+from ..functions.phong_lighting_model import phongLightingModel
 
 from ..shadernode.shader_node_elements import (
-        vec3, vec4, normalView, add, context, cubeTexture, mix, mul, property, nodeObject, 
-        label, texture, uniform, materialEmissive)
+        vec3, add, lightingContext, cubeTexture, mix, mul, nodeObject, float, max, label, clamp,
+        materialShininess, shininess, materialSpecularColor, specularColor, diffuseColor, 
+        materialReflectivity, nodeObject, materialEmissive)
 
 defaultValues = MeshPhongMaterial()
 
@@ -26,126 +19,76 @@ class MeshPhongNodeMaterial(NodeMaterial):
 
         super().__init__()
 
+        self.lights = True
+
         self.colorNode = None
         self.opacityNode = None
 
-        self.alphaTestNode = None
-
-        self.normalNode = None
-
-        self.emissiveNode = None
-
+        self.shininessNode = None
         self.specularNode = None
 
-        self.envNode = None
+        self.alphaTestNode = None
 
-        self.lightsNode = None
+        self.lightNode = None
 
         self.positionNode = None
+
+        self.envNode = None
 
         self.setDefaultValues( defaultValues )
         self.setValues( parameters )
 
-    def build( self, builder ):
-        self.generatePosition(builder)
+    def constructLightingModel(self, *args ):
+        return phongLightingModel
 
-        diffuseColor = self.generateDiffuseColor(builder)
-
-        colorNode = diffuseColor['colorNode']
-        diffuseColorNode = diffuseColor['diffuseColorNode']
-
-        diffuseColorNode = self.generatePhongMaterial( builder, { 'colorNode': colorNode, 'diffuseColorNode': diffuseColorNode } )
-
-        if self.lightsNode:
-            builder.lightsNode = self.lightsNode
-
-        materialLightsNode = []
-
-        if builder.material.aoMap:
-            materialLightsNode.append(AONode(texture(builder.material.aoMap)))
-
-        if len(materialLightsNode)>0:
-            builder.lightsNode = LightsNode( builder.lightsNode.lightNodes + materialLightsNode)
-
-        outgoingLightNode = self.generateLight(builder, {
-                                               'diffuseColorNode': diffuseColorNode, 'lightingModelNode': PhongLightingModel})
-
-        self.generateOutput( builder, { 'diffuseColorNode': diffuseColorNode, 'outgoingLightNode': outgoingLightNode } )
-
-
-    def generatePhongMaterial( self, builder, parameters ):
-
-        # colorNode = parameters['colorNode']
-        diffuseColorNode = parameters['diffuseColorNode']
-
+    def constructLighting(self, builder, stack):
         material = builder.material
+
+        # OUTGOING LIGHT
+
+        lights = self.lights is True or self.lightsNode is not None
+
+        lightsNode = self.constructLights( builder ) if lights else None
+        lightingModelNode = self.constructLightingModel( builder ) if lightsNode else None
+
+        outgoingLightNode = diffuseColor.xyz
+
+        if lightsNode and lightsNode.hasLight is not False:
+            outgoingLightNode = label( lightingContext( lightsNode, lightingModelNode ), 'Light' )
+
+        # label( lightingContext( lightsNode, lightingModelNode ), 'Light' )
+
+        envNode = self.envNode or builder.material.envMap or builder.scene.environmentNode or builder.scene.environment
+        if envNode:
+            if envNode.isTexture:
+                envNode = cubeTexture(envNode)
+            else:
+                envNode = nodeObject(envNode)
+            outgoingLightNode = clamp( outgoingLightNode, 0.0, 1.0 )
+            if builder.material.combine == MultiplyOperation:
+                outgoingLightNode = mix(outgoingLightNode, mul(outgoingLightNode, envNode.xyz), materialReflectivity)
+            elif builder.material.combine == MixOperation:
+                outgoingLightNode = mix(outgoingLightNode, envNode.xyz, materialReflectivity)
+            elif builder.material.combine == AddOperation:
+                outgoingLightNode = add(outgoingLightNode, mul(envNode.xyz, materialReflectivity))
+
+        # EMISSIVE
+        if (self.emissiveNode and self.emissiveNode.isNode) or (material.emissive and material.emissive.isColor):
+            outgoingLightNode = outgoingLightNode + vec3( self.emissiveNode or materialEmissive )
+        
+        return outgoingLightNode
+
+    def constructVariants(self, builder, stack ):
+
+        # SHININESS
+
+        shininessNode = max(float(self.shininessNode or materialShininess), 1e-4 )  # to prevent pow( 0.0, 0.0 )
+        stack.assign( shininess, shininessNode )
 
         # SPECULAR COLOR
 
-        specularColorNode = self.specularNode or MaterialReferenceNode( 'specular', 'color' )
-
-        specularColorNode = vec4(specularColorNode) 
-
-        builder.addFlow( 'fragment', label( specularColorNode, 'SpecularColor' ) )
-
-        # Specular Strength
-        if material.specularMap and material.specularMap.isTexture:
-            specularStrength = SplitNode(TextureNode(material.specularMap), 'r')
-        else:
-            specularStrength = 1.0
-        
-        builder.addFlow( 'fragment', label( specularStrength, 'SpecularStrength' ) )
-
-        # Shininess
-        shininessNode = MaterialReferenceNode('shininess', 'float')
-        builder.addFlow( 'fragment', label( shininessNode, 'Shininess' ) )
-
-        # NORMAL VIEW
-        normalNode = vec3(self.normalNode) if self.normalNode else (
-            NormalMapNode(texture(material.normalMap), uniform(material.normalScale)) if material.normalMap else normalView)
-            
-        builder.addFlow( 'fragment', label( normalNode, 'TransformedNormalView' ) )
-
-        return diffuseColorNode
-
-    def generateLight(self, builder, parameters):
-
-        diffuseColorNode = parameters['diffuseColorNode']
-        lightingModelNode = parameters['lightingModelNode']
-        
-        lightsNode = parameters.get("lightsNode", builder.lightsNode)
-
-        renderer = builder.renderer
-
-        outgoingLightNode = super().generateLight(builder, {
-            'diffuseColorNode': diffuseColorNode, 'lightsNode': lightsNode, 'lightingModelNode': lightingModelNode})
-
-        # EMISSIVE
-        outgoingLightNode = add(
-            vec3(self.emissiveNode or materialEmissive), outgoingLightNode)
-
-        # ENV MAPPING
-        envNode = self.envNode or builder.material.envMap or builder.scene.environmentNode or builder.scene.environment
-
-        if envNode and envNode.isTexture:
-            envNode = cubeTexture(envNode)
-        else:
-            envNode = nodeObject(envNode)
-
-        if envNode:
-            reflectivity = MaterialReferenceNode('reflectivity', 'float')
-            if builder.material.combine == MultiplyOperation:
-                outgoingLightNode = mix(outgoingLightNode, mul(outgoingLightNode, envNode.xyz), mul(property('SpecularStrength', 'float'), reflectivity))
-            elif builder.material.combine == MixOperation:
-                outgoingLightNode = mix(outgoingLightNode, envNode.xyz, mul(property('SpecularStrength', 'float'), reflectivity))
-            elif builder.material.combine == AddOperation:
-                outgoingLightNode = add(outgoingLightNode, mul(envNode.xyz, mul(property('SpecularStrength', 'float'), reflectivity)))
-
-        # TONE MAPPING
-        if renderer.toneMappingNode:
-            outgoingLightNode = context(renderer.toneMappingNode, {'color': outgoingLightNode})
-
-        return outgoingLightNode
+        specularNode = vec3( self.specularNode or materialSpecularColor )
+        stack.assign( specularColor, specularNode )
 
     def copy( self, source: 'MeshPhongNodeMaterial' ):
 

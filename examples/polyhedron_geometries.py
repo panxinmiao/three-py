@@ -13,7 +13,7 @@ camera.position.z = 100
 scene = three.Scene()
 
 material = three.MeshNormalMaterial(side = three.DoubleSide)
-material.flatShading = True
+material.wireframe = True
 
 verticesOfCube = [
     -1,-1,-1,    1,-1,-1,    1, 1,-1,    -1, 1,-1,

@@ -76,9 +76,10 @@ from .lighting.hemisphere_light_node import HemisphereLightNode
 from .lighting.environment_node import EnvironmentNode
 from .lighting.ao_node import AONode
 from .lighting.analytic_light_node import AnalyticLightNode
-from .lighting.punctual_light_node import PunctualLightNode
-from .lighting.directional_light_node import DirectionalLightNode
 from .lighting.ambient_light_node import AmbientLightNode
+from .lighting.point_light_node import PointLightNode
+from .lighting.directional_light_node import DirectionalLightNode
+from .lighting.spot_light_node import SpotLightNode
 
 # utils
 from .utils.array_element_node import ArrayElementNode 

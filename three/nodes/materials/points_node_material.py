@@ -10,6 +10,9 @@ class PointsNodeMaterial(NodeMaterial):
     def __init__(self, parameters=None) -> None:
         super().__init__()
 
+        self.lights = False
+        self.normals = False
+
         self.transparent = True
 
         self.colorNode = None

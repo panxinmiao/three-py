@@ -17,8 +17,8 @@ class Light(Object3D):
         pass
 
 
-    def copy(self, source):
-        super().copy( source )
+    def copy(self, source, recursive=True):
+        super().copy( source, recursive )
 
         self.color.copy( source.color )
         self.intensity = source.intensity

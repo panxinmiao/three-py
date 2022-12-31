@@ -7,7 +7,6 @@ from wgpu.gui.auto import WgpuCanvas, run
 from pymeshio.pmx import reader
 from pathlib import Path
 
-
 p = Path(__file__).parent / "models" / "miku_pmx" / "blue.pmx"
 
 pmd_file = reader.read_from_file(p)
@@ -53,7 +52,7 @@ camera.position.y = 10
 
 scene = three.Scene()
 
-material = three.MeshBasicMaterial(color = 0xffffff, shinniness = 32.0)
+material = three.nodes.NodeMaterial(shinniness = 32.0)
 
 material.side = three.DoubleSide
 
@@ -114,12 +113,12 @@ def _phong_light_model(inputs, *args):
     
 
 
-
 phongLightModel = three.nodes.ShaderNode(_phong_light_model)
-lightingModelContext = three.nodes.ContextNode(
-    allLightsNode, {"lightingModelNode": {"direct": phongLightModel}})
+# lightingModelContext = three.nodes.ContextNode(
+#     allLightsNode, three.nodes.lightingModel(direct=phongLightModel))
 
-material.lightsNode = lightingModelContext
+material.lightsNode = allLightsNode
+material.constructLightingModel = lambda self: three.nodes.lightingModel(direct=phongLightModel)
 
 control = three.OrbitControls(camera, canvas)
 

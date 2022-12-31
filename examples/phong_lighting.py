@@ -63,18 +63,21 @@ scene.add(mesh)
 sp = three.SphereGeometry(0.5, 16, 8)
 
 light1 = three.PointLight(0xffaa00, 2*math.pi)
-light1.add(three.Mesh(sp, three.MeshBasicMaterial({'color': 0xffaa00})))
+# light1.add(three.Mesh(sp, three.MeshBasicMaterial({'color': 0xffaa00})))
 scene.add(light1)
+scene.add(three.PointLightHelper(light1, sp))
 
 light2 = three.PointLight(0x0040ff, 2*math.pi)
-light2.add(three.Mesh(sp, three.MeshBasicMaterial({'color': 0x0040ff})))
+# light2.add(three.Mesh(sp, three.MeshBasicMaterial({'color': 0x0040ff})))
 scene.add(light2)
+scene.add(three.PointLightHelper(light2, sp))
 
 light3 = three.PointLight(0x80ff80, 2*math.pi)
-light3.add(three.Mesh(sp, three.MeshBasicMaterial({'color': 0x80ff80})))
+# light3.add(three.Mesh(sp, three.MeshBasicMaterial({'color': 0x80ff80})))
 scene.add(light3)
+scene.add(three.PointLightHelper(light3, sp))
 
-# scene.add(three.AmbientLight(0x111111))
+scene.add(three.AmbientLight(0x111111))
 
 control = three.OrbitControls(camera, canvas)
 

@@ -56,10 +56,10 @@ class WgpuRenderer(NoneAttribute):
 
         self._parameters = parameters.copy()
 
-        self._pixelRatio = 1
-        self._width, self._height = self._canvas.get_physical_size()
-        # self._width = self.domElement.width
-        # self._height = self.domElement.height
+        self._pixelRatio = self._canvas.get_pixel_ratio()
+        self._width, self._height = self._canvas.get_logical_size()
+
+        self._drawingBufferWidth, self._drawingBufferHeight = self._canvas.get_physical_size()
 
         self._viewport = None
         self._scissor = None
@@ -204,11 +204,11 @@ class WgpuRenderer(NoneAttribute):
 
         cw, ch = self._canvas.get_physical_size()
 
-        if self._width != cw or self._height != ch:
+        if self._drawingBufferWidth != cw or self._drawingBufferHeight != ch:
             if cw == 0 or ch == 0:
                 return
-            self._width = cw
-            self._height = ch
+            self._drawingBufferWidth = cw
+            self._drawingBufferHeight = ch
             self._setupColorBuffer()
             self._setupDepthBuffer()
 
@@ -320,14 +320,17 @@ class WgpuRenderer(NoneAttribute):
         return self._context
 
     def getPixelRatio(self):
-        return self._canvas.get_pixel_ratio()
+        return self._pixelRatio
 
     def getDrawingBufferSize( self, target ):
-        return target.set( self._width * self._pixelRatio, self._height * self._pixelRatio ).floor()
+        return target.set( self._drawingBufferWidth, self._drawingBufferHeight )
 
 
-    def getSize( self, target ):
-        return target.set(self._width, self._height)
+    def getSize( self, target=None ):
+        if target and target.isVector2:
+            return target.set(self._width, self._height)
+        else:
+            return (self._width, self._height)
 
     # def setPixelRatio( self, value = 1 ):
     #     self._pixelRatio = value
@@ -349,15 +352,16 @@ class WgpuRenderer(NoneAttribute):
     #     self._setupColorBuffer()
     #     self._setupDepthBuffer()
 
-    def setSize( self, width, height, updateStyle = True ):
+    def setSize( self, width, height ):
 
         self._width = width
         self._height = height
 
-        if updateStyle:
-            self._canvas.set_logical_size( width, height)
+        self._canvas.set_logical_size( width, height)
 
-        self._configureContext()
+        self._drawingBufferWidth, self._drawingBufferHeight = self._canvas.get_physical_size()
+
+        # self._configureContext()
         self._setupColorBuffer()
         self._setupDepthBuffer()
 
@@ -636,8 +640,7 @@ class WgpuRenderer(NoneAttribute):
         passEncoder.set_bind_group( 0, bindGroup, [], 0, 99 )
 
         # index
-        # geometry:'three.Geometry' = object.geometry
-        index = geometry.index
+        index = self._geometries.getIndex( geometry, material.wireframe == True )
 
         hasIndex = index is not None
 
@@ -696,8 +699,8 @@ class WgpuRenderer(NoneAttribute):
 
             self._colorBuffer = self._device.create_texture(
                 size={
-                    'width': max(1, math.floor( self._width * self._pixelRatio )),
-                    'height': max(1, math.floor( self._height * self._pixelRatio )),
+                    'width': max(1, self._drawingBufferWidth),
+                    'height': max(1, self._drawingBufferHeight),
                     'depth_or_array_layers': 1
                 },
                 sample_count = self._parameters.sampleCount,
@@ -713,8 +716,8 @@ class WgpuRenderer(NoneAttribute):
 
             self._depthBuffer = self._device.create_texture(
                 size={
-                    'width': max(1, math.floor( self._width * self._pixelRatio )),
-                    'height': max(1, math.floor( self._height * self._pixelRatio )),
+                    'width': max(1, self._drawingBufferWidth),
+                    'height': max(1, self._drawingBufferHeight),
                     'depth_or_array_layers': 1
                 },
 
