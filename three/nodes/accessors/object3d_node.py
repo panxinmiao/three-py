@@ -12,6 +12,7 @@ class Object3DNode(Node):
     WORLD_MATRIX = 'worldMatrix'
     POSITION = 'position'
     VIEW_POSITION = 'viewPosition'
+    DIRECTION = 'direction'
 
     def __init__(self, scope = VIEW_MATRIX, object3d = None) -> None:
         super().__init__()
@@ -32,7 +33,7 @@ class Object3DNode(Node):
         elif scope == Object3DNode.NORMAL_MATRIX:
             return 'mat3'
 
-        elif scope == Object3DNode.POSITION or scope == Object3DNode.VIEW_POSITION:
+        elif scope == Object3DNode.POSITION or scope == Object3DNode.VIEW_POSITION or scope == Object3DNode.DIRECTION:
             return 'vec3'
 
 
@@ -53,6 +54,10 @@ class Object3DNode(Node):
         elif scope == Object3DNode.POSITION:
             # uniformNode.value = uniformNode.value or three.Vector3()
             uniformNode.value.setFromMatrixPosition( object.matrixWorld )
+        
+        elif scope == Object3DNode.DIRECTION:
+            uniformNode.value = uniformNode.value or three.Vector3()
+            object.getWorldDirection( uniformNode.value )
 
         elif scope == Object3DNode.VIEW_POSITION:
             camera = frame.camera
@@ -71,7 +76,7 @@ class Object3DNode(Node):
         elif scope == Object3DNode.NORMAL_MATRIX :
             self._uniformNode.nodeType = 'mat3'
 
-        elif scope == Object3DNode.POSITION or scope == Object3DNode.VIEW_POSITION:
+        elif scope == Object3DNode.POSITION or scope == Object3DNode.VIEW_POSITION or scope == Object3DNode.DIRECTION:
             self._uniformNode.nodeType = 'vec3'
 
         return self._uniformNode.build( builder )

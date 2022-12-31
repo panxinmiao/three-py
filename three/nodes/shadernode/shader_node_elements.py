@@ -4,6 +4,7 @@ from ..accessors.instance_node import InstanceNode
 from ..accessors.reflect_vector_node import ReflectVectorNode
 from ..accessors.refract_vector_node import RefractVectorNode
 from ..accessors.skinning_node import SkinningNode
+from ..accessors.extended_material_node import ExtendedMaterialNode
 
 # display
 from ..display.blend_mode_node import BlendModeNode
@@ -50,6 +51,10 @@ instance = nodeProxy(InstanceNode)
 reflectVector = nodeImmutable(ReflectVectorNode)
 refractVector = nodeImmutable(RefractVectorNode)
 skinning = nodeProxy(SkinningNode)
+
+# material
+
+materialNormal = nodeImmutable(ExtendedMaterialNode, ExtendedMaterialNode.NORMAL)
 
 # diaplay
 
@@ -116,4 +121,4 @@ checker = nodeProxy( CheckerNode )
 
 fog = nodeProxy( FogNode )
 rangeFog = nodeProxy( FogRangeNode )
-exp2Fog = nodeProxy( FogExp2Node )
+densityFog = nodeProxy( FogExp2Node )

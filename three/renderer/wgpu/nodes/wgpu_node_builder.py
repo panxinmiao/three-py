@@ -15,8 +15,6 @@ from .wgpu_node_uniform import FloatNodeUniform, Vector2NodeUniform, Vector3Node
 
 from three.nodes.materials import fromMaterial
 
-_flow_p = re.compile(r'.*;\s*$')
-
 gpuShaderStageLib = {
     'vertex': GPUShaderStage.VERTEX,
     'fragment': GPUShaderStage.FRAGMENT,
@@ -131,10 +129,10 @@ class WgpuNodeBuilder(NodeBuilder):
             self.addFlow('compute', self.object)
         return super().build()
 
-    def addFlowCode( self, code ):
-        if not _flow_p.match(code):
-            code += ';'
-        super().addFlowCode( code + '\n\t' )
+    # def addFlowCode( self, code ):
+    #     if not _flow_p.match(code):
+    #         code += ';'
+    #     super().addFlowCode( code + '\n\t' )
 
     def getSampler( self, textureProperty, uvSnippet, shaderStage = None ):
 
@@ -462,7 +460,8 @@ class WgpuNodeBuilder(NodeBuilder):
             flow += '\n\t'
 
             flowNodes = self.flowNodes[ shaderStage ]
-            mainNode = flowNodes[ - 1 ]
+            
+            mainNode = flowNodes[ - 1 ] if flowNodes else None
 
             for node in flowNodes:
                 flowSlotData = self.getFlowData( node )

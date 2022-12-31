@@ -1,5 +1,6 @@
 import warnings
 from .material import Material
+from ..math import Color
 from ..structure import Dict
 
 class ShaderMaterial(Material):
@@ -16,6 +17,8 @@ class ShaderMaterial(Material):
 
         self.defines = {}
         self.uniforms = {}
+
+        self.color = Color( 0xffffff )
 
         self.vertexShader = None # default_vertex
         self.fragmentShader = None # default_fragment

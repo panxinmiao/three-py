@@ -1,8 +1,7 @@
 import math
-from ...structure import Dict
 from ..shadernode.shader_node import ShaderNode
 from ..shadernode.shader_node_base_elements import (
-    vec3, mul, clamp, add, sub, dot, div, transformedNormalView,
+    vec3, mul, clamp, add, sub, dot, div, transformedNormalView, lightingModel,
     pow, exp2, dotNV,
     diffuseColor, specularColor, roughness, temp)
 
@@ -93,13 +92,6 @@ def __RE_AmbientOcclusion_Physical(inputs, *args):
 
     reflectedLight.indirectSpecular.mul(aoNode)
 
-
 RE_AmbientOcclusion_Physical = ShaderNode(__RE_AmbientOcclusion_Physical)
 
-
-PhysicalLightingModel = Dict({
-    "direct": RE_Direct_Physical,
-    "indirectDiffuse": RE_IndirectDiffuse_Physical,
-    "indirectSpecular": RE_IndirectSpecular_Physical,
-    "ambientOcclusion": RE_AmbientOcclusion_Physical
-})
+physicalLightingModel = lightingModel(RE_Direct_Physical, RE_IndirectDiffuse_Physical, RE_IndirectSpecular_Physical, RE_AmbientOcclusion_Physical)

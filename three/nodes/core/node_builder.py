@@ -428,7 +428,10 @@ class NodeBuilder(NoneAttribute):
 
         return nodeCode
 
-    def addFlowCode(self, code ):
+    def addFlowCode(self, code:str, breakline = True ):
+        # _flow_p = re.compile(r'.*;\s*$')
+        if breakline and not code.rstrip().endswith(';'):
+            code += ';\n\t'
         self.flow.code += code
 
     def getFlowData(self, node, *args):

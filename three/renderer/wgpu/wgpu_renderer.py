@@ -59,6 +59,8 @@ class WgpuRenderer(NoneAttribute):
         self._pixelRatio = self._canvas.get_pixel_ratio()
         self._width, self._height = self._canvas.get_logical_size()
 
+        self._drawingBufferWidth, self._drawingBufferHeight = self._canvas.get_physical_size()
+
         self._viewport = None
         self._scissor = None
 
@@ -200,13 +202,13 @@ class WgpuRenderer(NoneAttribute):
 
         # @TODO: move this to animation loop?
 
-        cw, ch = self._canvas.get_logical_size()
+        cw, ch = self._canvas.get_physical_size()
 
-        if self._width != cw or self._height != ch:
+        if self._drawingBufferWidth != cw or self._drawingBufferHeight != ch:
             if cw == 0 or ch == 0:
                 return
-            self._width = cw
-            self._height = ch
+            self._drawingBufferWidth = cw
+            self._drawingBufferHeight = ch
             self._setupColorBuffer()
             self._setupDepthBuffer()
 
@@ -321,7 +323,7 @@ class WgpuRenderer(NoneAttribute):
         return self._pixelRatio
 
     def getDrawingBufferSize( self, target ):
-        return target.set( self._width * self._pixelRatio, self._height * self._pixelRatio ).floor()
+        return target.set( self._drawingBufferWidth, self._drawingBufferHeight )
 
 
     def getSize( self, target=None ):
@@ -357,7 +359,9 @@ class WgpuRenderer(NoneAttribute):
 
         self._canvas.set_logical_size( width, height)
 
-        self._configureContext()
+        self._drawingBufferWidth, self._drawingBufferHeight = self._canvas.get_physical_size()
+
+        # self._configureContext()
         self._setupColorBuffer()
         self._setupDepthBuffer()
 
@@ -696,8 +700,8 @@ class WgpuRenderer(NoneAttribute):
 
             self._colorBuffer = self._device.create_texture(
                 size={
-                    'width': max(1, math.floor( self._width * self._pixelRatio )),
-                    'height': max(1, math.floor( self._height * self._pixelRatio )),
+                    'width': max(1, self._drawingBufferWidth),
+                    'height': max(1, self._drawingBufferHeight),
                     'depth_or_array_layers': 1
                 },
                 sample_count = self._parameters.sampleCount,
@@ -713,8 +717,8 @@ class WgpuRenderer(NoneAttribute):
 
             self._depthBuffer = self._device.create_texture(
                 size={
-                    'width': max(1, math.floor( self._width * self._pixelRatio )),
-                    'height': max(1, math.floor( self._height * self._pixelRatio )),
+                    'width': max(1, self._drawingBufferWidth),
+                    'height': max(1, self._drawingBufferHeight),
                     'depth_or_array_layers': 1
                 },
 

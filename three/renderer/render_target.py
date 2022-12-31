@@ -4,6 +4,8 @@ from ..textures import Texture
 from ..structure import Dict
 from ..constants import LinearFilter
 
+isRenderTarget = True
+
 class RenderTarget(EventDispatcher):
 
     def __init__(self, width, height, options = {}) -> None:

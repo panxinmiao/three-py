@@ -17,7 +17,8 @@ class SpriteNodeMaterial(NodeMaterial):
     def __init__(self, parameters=None) -> None:
         super().__init__()
 
-        self.lights = True
+        self.lights = False
+        self.normals = False
 
         self.colorNode = None
         self.opacityNode = None
@@ -34,23 +35,16 @@ class SpriteNodeMaterial(NodeMaterial):
 
         self.setValues(parameters)
 
-    def generatePosition(self, builder):
-        # < VERTEX STAGE >
-
+    def constructPosition( self, builder, stack ):
         positionNode = self.positionNode
         vertex = positionLocal
 
-        # if self.positionNode:
-        #     vertex = bypass(vertex, assign(positionLocal, self.positionNode))
         mvPosition = mul(modelViewMatrix, vec4(positionNode.xyz, 1) if positionNode else vec4(0, 0, 0, 1))
 
         scale = vec2(
             length(vec3(modelWorldMatrix[0].x, modelWorldMatrix[0].y, modelWorldMatrix[0].z)),
             length(vec3(modelWorldMatrix[1].x, modelWorldMatrix[1].y, modelWorldMatrix[1].z))
         )
-
-        # alignedPosition = mul(positionLocal.xy, scale)
-        # rotation = self.rotationNode or materialRotation
 
         if self.scaleNode:
             scale = mul(scale, self.scaleNode)
@@ -77,7 +71,7 @@ class SpriteNodeMaterial(NodeMaterial):
 
         builder.context.vertex = vertex
 
-        builder.addFlow('vertex', modelViewProjection)
+        return modelViewProjection
 
     def copy(self, source):
 

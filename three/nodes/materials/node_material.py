@@ -1,45 +1,66 @@
 from warnings import warn
 from inspect import isfunction
 from three.materials import ShaderMaterial
-from ..core.expression_node import ExpressionNode
+from ..core.stack_node import StackNode
+from ..lighting.lights_node import LightsNode
+from ..lighting.environment_node import EnvironmentNode
+from ..lighting.ao_node import AONode
 from ..core.node_utils import getCacheKey
 
 from ..shadernode.shader_node_elements import (
     float, vec3, vec4,
-    assign, label, mul, bypass, attribute,
-    positionLocal, skinning, instance, modelViewProjection, lightingContext, colorSpace,
-    materialAlphaTest, materialColor, materialOpacity, reference, rangeFog, exp2Fog)
+    assign, mul, bypass, attribute, context, texture, discard, mix,
+	positionLocal, diffuseColor, skinning, instance, modelViewProjection, lightingContext, colorSpace, cubeTexture,
+	materialAlphaTest, materialColor, materialOpacity, materialEmissive, materialNormal, transformedNormalView,
+	reference, rangeFog, densityFog)
 
 class NodeMaterial(ShaderMaterial):
 
     isNodeMaterial = True
 
-    def __init__(self) -> None:
-        super().__init__()
-        self.lights = True
-
+    def __init__(self, parameters = {}, **kwargs) -> None:
+        super().__init__(parameters, **kwargs)
         self._type = self.__class__.__name__
 
-    def build( self, builder ):
+        self.lights = True
+        self.normals = True
 
-        self.generatePosition(builder)
-
-        lightsNode = self.lightsNode
-        diffuseColorNode = self.generateDiffuseColor( builder )['diffuseColorNode']
-
-        outgoingLightNode = self.generateLight( builder, { 'diffuseColorNode':diffuseColorNode, 'lightsNode':lightsNode } )
-
-        self.generateOutput( builder, { 'diffuseColorNode': diffuseColorNode, 'outgoingLightNode': outgoingLightNode } )
+        self.lightsNode = None
 
     def customProgramCacheKey(self):
-        #return self.uuid + '-' + str(self.version)
         return getCacheKey( self )
 
-    def generatePosition(self, builder):
+    def build( self, builder ):
+        self.construct( builder )
 
-        object = builder.object
+    def construct(self, builder):
+
+        # < STACKS >
+        vertexStack = StackNode()
+        fragmentStack = StackNode()
 
         # < VERTEX STAGE >
+
+        vertexStack.outputNode = self.constructPosition( builder, vertexStack )
+
+        # < FRAGMENT STAGE >
+
+        if self.normals is True:
+            self.constructNormal( builder, fragmentStack )
+
+        self.constructDiffuseColor( builder, fragmentStack )
+        self.constructVariants( builder, fragmentStack )
+
+        outgoingLightNode = self.constructLighting( builder, fragmentStack )
+        fragmentStack.outputNode = self.constructOutput( builder, fragmentStack, outgoingLightNode, diffuseColor.a )
+
+        # < FLOW >
+
+        builder.addFlow( 'vertex', vertexStack )
+        builder.addFlow( 'fragment', fragmentStack )
+
+    def constructPosition(self, builder, stack):
+        object = builder.object
 
         vertex = positionLocal
 
@@ -49,86 +70,108 @@ class NodeMaterial(ShaderMaterial):
         if object.instanceMatrix and object.instanceMatrix.isInstancedBufferAttribute and builder.isAvailable('instance') == True:
             vertex = bypass( vertex, instance( object ) )
 
-
         if object.isSkinnedMesh == True:
             vertex = bypass( vertex, skinning( object ) )
 
-
         builder.context.vertex = vertex
 
-        builder.addFlow( 'vertex', modelViewProjection() )
+        return modelViewProjection()
 
-    def generateDiffuseColor(self, builder):
-
-        # < FRAGMENT STAGE >
+    def constructDiffuseColor(self, builder, stack):
 
         colorNode = vec4( self.colorNode or materialColor )
-
-        # TODO - add support for flatShading?
-
         opacityNode = float( self.opacityNode ) if self.opacityNode else materialOpacity
 
         # VERTEX COLORS
-        if builder.geometry.hasAttribute( 'color' ) and self.vertexColors == True:
+        if self.vertexColors is True and builder.geometry.hasAttribute( 'color' ):
             colorNode = vec4( mul( colorNode.xyz, attribute( 'color' ) ), colorNode.a )
 
         # COLOR
-        colorNode = builder.addFlow( 'fragment', label( colorNode, 'Color' ) )
-        diffuseColorNode = builder.addFlow( 'fragment', label( colorNode, 'DiffuseColor' ) )
+        stack.assign( diffuseColor, colorNode )
 
         # OPACITY
-        opacityNode = builder.addFlow( 'fragment', label( opacityNode, 'OPACITY' ) )
-        builder.addFlow( 'fragment', assign( diffuseColorNode.a, mul( diffuseColorNode.a, opacityNode ) ) )
+        stack.assign( diffuseColor.a, diffuseColor.a * opacityNode )
 
         # ALPHA TEST
         if self.alphaTestNode or self.alphaTest > 0:
-
             alphaTestNode = float( self.alphaTestNode ) if self.alphaTestNode else materialAlphaTest
+            stack.add( discard( diffuseColor.a <= alphaTestNode ) )
 
-            builder.addFlow( 'fragment', label( alphaTestNode, 'AlphaTest' ) )
+    
+    def constructVariants(self, *args):
+        # Interface function
+        pass
+    
+    def constructNormal(self, builder, stack):
+        # NORMAL VIEW
+        normalNode =  vec3( self.normalNode ) if self.normalNode else materialNormal
+        stack.assign( transformedNormalView, normalNode )
+        return normalNode
+    
+    def constructLights(self, builder):
+        return self.lightsNode or builder.lightsNode
 
-            # @TODO: remove ExpressionNode here and then possibly remove it completely
-            builder.addFlow( 'fragment', ExpressionNode( 'if ( DiffuseColor.a <= AlphaTest ) { discard; }' ) )
+        # envNode = self.envNode or builder.scene.environmentNode
+        # materialLightsNode = []
+        # envNode = self.envNode or builder.material.envMap or builder.scene.environmentNode or builder.scene.environment
+        # if envNode:
+        #     if envNode.isTexture:
+        #         envNode = cubeTexture(envNode)
+        #     materialLightsNode.append( EnvironmentNode( envNode ) )
+        
+        # if builder.material.aoMap:
+        #     materialLightsNode.append( AONode( texture( builder.material.aoMap ) ) )
 
-        return { 'colorNode': colorNode, 'diffuseColorNode': diffuseColorNode }
+        # if len( materialLightsNode ) > 0:
+        #     lightsNode = LightsNode( materialLightsNode + lightsNode.lightNodes )
+        
+        # return lightsNode
+    
+    def constructLightingModel( *args ):
+        # Interface function.
+        pass
 
-
-    def generateLight( self, builder, parameters:dict ):
-        diffuseColorNode = parameters.get('diffuseColorNode')
-        lightingModelNode = parameters.get('lightingModelNode', None)
-        lightsNode = parameters.get('lightsNode', builder.lightsNode)
-
-        # < ANALYTIC LIGHTS >
+    def constructLighting(self, builder, stack):
+        material = builder.material
 
         # OUTGOING LIGHT
 
-        outgoingLightNode = diffuseColorNode.xyz
-        if lightsNode: # and lightsNode.hasLight != False:  # TODO if show basic color when no lights?
-            outgoingLightNode = builder.addFlow( 'fragment', label( lightingContext( lightsNode, lightingModelNode ), 'Light' ) )
+        lights = self.lights is True or self.lightsNode is not None
 
+        lightsNode = self.constructLights( builder ) if lights else None
+        lightingModelNode = self.constructLightingModel( builder ) if lightsNode else None
+
+        outgoingLightNode = diffuseColor.xyz
+
+        if lightingModelNode and lightsNode and lightsNode.hasLight is not False:
+            outgoingLightNode = lightingContext( lightsNode, lightingModelNode )
+
+        # EMISSIVE
+        if (self.emissiveNode and self.emissiveNode.isNode) or (material.emissive and material.emissive.isColor):
+            outgoingLightNode = outgoingLightNode + vec3( self.emissiveNode or materialEmissive )
+        
         return outgoingLightNode
 
-    def generateOutput( self, builder, parameters ):
+    def constructOutput( self, builder, stack, outgoingLight, opacity ):
+        renderer = builder.renderer
 
-        diffuseColorNode = parameters['diffuseColorNode']
-        outgoingLightNode = parameters['outgoingLightNode']
+        # TONE MAPPING
+        if renderer.toneMappingNode and renderer.toneMappingNode.isNode:
+            outgoingLight = context(renderer.toneMappingNode, {'color': outgoingLight})
 
-        # OUTPUT
-        outputNode = vec4( outgoingLightNode, diffuseColorNode.a )
+        outputNode = vec4( outgoingLight, opacity )
 
         # ENCODING
-        outputNode = colorSpace( outputNode, builder.renderer.outputEncoding )
+        outputNode = colorSpace( outputNode, renderer.outputEncoding )
 
         # FOG
-        # if builder.fogNode:
-        #     outputNode = vec4(vec3(builder.fogNode.mix(outputNode)), outputNode.w)
 
         fogNode = builder.fogNode
 
         if (fogNode is None or fogNode.isNode != True) and builder.scene.fog:
             fog = builder.scene.fog
             if fog.isFogExp2:
-                fogNode = exp2Fog( reference( 'color', 'color', fog ), reference( 'density', 'float', fog ) )
+                fogNode = densityFog( reference( 'color', 'color', fog ), reference( 'density', 'float', fog ) )
             elif fog.isFog:
                 fogNode = rangeFog( reference( 'color', 'color', fog ), reference( 'near', 'float', fog ), reference( 'far', 'float', fog ) )
             else:
@@ -136,12 +179,8 @@ class NodeMaterial(ShaderMaterial):
 
         if fogNode:
             outputNode = vec4( vec3( fogNode.mix( outputNode ) ), outputNode.w )
-
-        # RESULT
-        builder.addFlow( 'fragment', label( outputNode, 'Output' ) )
-
+        
         return outputNode
-
 
     def setDefaultValues( self, values ):
 

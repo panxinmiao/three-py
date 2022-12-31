@@ -1,18 +1,15 @@
 from .node_material import NodeMaterial
 from three.materials import MeshStandardMaterial
-
 from ..lighting.lights_node import LightsNode
 from ..lighting.environment_node import EnvironmentNode
 from ..lighting.ao_node import AONode
 from ..functions.material.getRoughness import getRoughness
-from ..functions.physical_lighting_model import PhysicalLightingModel
-
-from ..display.normal_map_node import NormalMapNode
+from ..functions.physical_lighting_model import physicalLightingModel
 
 from ..shadernode.shader_node_elements import (
-        float, vec3, vec4, normalView, add, context,
-        assign, label, mul, invert, mix, texture, uniform, cubeTexture, nodeObject,
-        materialRoughness, materialMetalness, materialEmissive)
+        float, vec3, vec4, mix, invert, texture, cubeTexture,
+        materialRoughness, materialMetalness, materialColor, diffuseColor,
+        metalness, roughness, specularColor)
 
 defaultValues = MeshStandardMaterial()
 
@@ -23,6 +20,8 @@ class MeshStandardNodeMaterial(NodeMaterial):
     def __init__(self, parameters = None) -> None:
 
         super().__init__()
+
+        self.lights = True
 
         self.colorNode = None
         self.opacityNode = None
@@ -45,99 +44,44 @@ class MeshStandardNodeMaterial(NodeMaterial):
         self.setDefaultValues( defaultValues )
         self.setValues( parameters )
 
-    def build( self, builder ):
-        self.generatePosition(builder)
+    def constructLightingModel(self, *args):
+        return physicalLightingModel
 
-        diffuseColor = self.generateDiffuseColor(builder)
+    def constructLights(self, builder):
+        # lightsNode = self.lightsNode or builder.lightsNode
 
-        colorNode = diffuseColor['colorNode']
-        diffuseColorNode = diffuseColor['diffuseColorNode']
+        lightsNode = super().constructLights(builder)
 
         # envNode = self.envNode or builder.scene.environmentNode
-        envNode = self.envNode or builder.material.envMap or builder.scene.environmentNode or builder.scene.environment
-
-        if envNode and envNode.isTexture:
-            envNode = cubeTexture(envNode)
-
-        diffuseColorNode = self.generateStandardMaterial( builder, { 'colorNode': colorNode, 'diffuseColorNode': diffuseColorNode } )
-
-        if self.lightsNode:
-            builder.lightsNode = self.lightsNode
-
         materialLightsNode = []
-
+        envNode = self.envNode or builder.material.envMap or builder.scene.environmentNode or builder.scene.environment
         if envNode:
-            materialLightsNode.append(EnvironmentNode(envNode))
-
+            if envNode.isTexture:
+                envNode = cubeTexture(envNode)
+            materialLightsNode.append( EnvironmentNode( envNode ) )
+        
         if builder.material.aoMap:
-            materialLightsNode.append(AONode(texture(builder.material.aoMap)))
+            materialLightsNode.append( AONode( texture( builder.material.aoMap ) ) )
 
-        if len(materialLightsNode)>0:
-            builder.lightsNode = LightsNode( builder.lightsNode.lightNodes + materialLightsNode)
+        if len( materialLightsNode ) > 0:
+            lightsNode = LightsNode( materialLightsNode + lightsNode.lightNodes )
+        
+        return lightsNode
 
-        outgoingLightNode = self.generateLight(builder, {
-                                               'diffuseColorNode': diffuseColorNode, 'lightingModelNode': PhysicalLightingModel})
-
-        self.generateOutput( builder, { 'diffuseColorNode': diffuseColorNode, 'outgoingLightNode': outgoingLightNode } )
-
-
-    def generateStandardMaterial( self, builder, parameters ):
-
-        colorNode = parameters['colorNode']
-        diffuseColorNode = parameters['diffuseColorNode']
-
-        material = builder.material
-
+    def constructVariants( self, builder, stack ):
         # METALNESS
-
-        metalnessNode = float( self.metalnessNode ) if self.metalnessNode else materialMetalness
-
-        metalnessNode = builder.addFlow( 'fragment', label( metalnessNode, 'Metalness' ) )
-        builder.addFlow( 'fragment', assign( diffuseColorNode, vec4( mul( diffuseColorNode.rgb, invert( metalnessNode ) ), diffuseColorNode.a ) ) )
+        metalnessNode = float(self.metalnessNode) if self.metalnessNode else materialMetalness
+        stack.assign( metalness, metalnessNode )
+        stack.assign( diffuseColor, vec4( diffuseColor.rgb * invert(metalnessNode) , diffuseColor.a ) )
 
         # ROUGHNESS
-
-        roughnessNode = float( self.roughnessNode ) if self.roughnessNode else materialRoughness
+        roughnessNode = float(self.roughnessNode) if self.roughnessNode else materialRoughness
         roughnessNode = getRoughness( { 'roughness': roughnessNode } )
-
-        builder.addFlow( 'fragment', label( roughnessNode, 'Roughness' ) )
+        stack.assign( roughness, roughnessNode )
 
         # SPECULAR COLOR
-
-        specularColorNode = mix( vec3( 0.04 ), colorNode.rgb, metalnessNode )
-
-        builder.addFlow( 'fragment', label( specularColorNode, 'SpecularColor' ) )
-
-        # NORMAL VIEW
-
-        normalNode = vec3(self.normalNode) if self.normalNode else (
-            NormalMapNode(texture(material.normalMap), uniform(material.normalScale)) if material.normalMap else normalView)
-            
-        builder.addFlow( 'fragment', label( normalNode, 'TransformedNormalView' ) )
-
-        return diffuseColorNode
-
-    def generateLight(self, builder, parameters):
-
-        diffuseColorNode = parameters['diffuseColorNode']
-        lightingModelNode = parameters['lightingModelNode']
-        
-        lightsNode = parameters.get("lightsNode", builder.lightsNode)
-
-        renderer = builder.renderer
-
-        outgoingLightNode = super().generateLight(builder, {
-            'diffuseColorNode': diffuseColorNode, 'lightsNode': lightsNode, 'lightingModelNode': lightingModelNode})
-
-        # EMISSIVE
-        outgoingLightNode = add(
-            vec3(self.emissiveNode or materialEmissive), outgoingLightNode)
-
-        # TONE MAPPING
-        if renderer.toneMappingNode:
-            outgoingLightNode = context(renderer.toneMappingNode, {'color': outgoingLightNode})
-
-        return outgoingLightNode
+        specularColorNode = mix( vec3( 0.04 ), materialColor.rgb, metalnessNode )
+        stack.assign( specularColor, specularColorNode )
 
     def copy( self, source: 'MeshStandardNodeMaterial' ):
 

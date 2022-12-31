@@ -1,10 +1,8 @@
 import math
 from .lighting_node import LightingNode
 from ..core.context_node import ContextNode
-# from ..utils.max_mip_level_node import MaxMipLevelNode
-from ..shadernode.shader_node import ShaderNode
 from ..shadernode.shader_node_elements import (
-        float, add, mul, div, log2, clamp, roughness, reflect, mix, positionViewDirection, negate, normalize, equirectUV, vec2, invert, 
+        float, mul, roughness, reflect, mix, positionViewDirection, negate, normalize, equirectUV, vec2, invert, 
         transformedNormalView, transformedNormalWorld, transformDirection, cameraViewMatrix
     )
 from ..core.cache_node import CacheNode
