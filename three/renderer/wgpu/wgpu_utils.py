@@ -43,19 +43,16 @@ class WgpuUtils:
         return format
 
     def getPrimitiveTopology( self, object ):
-        if object.isMesh:
-            if object.material.wireframe:
-                return GPUPrimitiveTopology.LineList
-            else:
-                return GPUPrimitiveTopology.TriangleList
         if object.isSprite:
             return GPUPrimitiveTopology.TriangleList
         elif object.isPoints:
             return GPUPrimitiveTopology.PointList
-        elif object.isLineSegments:
+        elif object.isLineSegments or (object.isMesh and object.material.wireframe):
             return GPUPrimitiveTopology.LineList
         elif object.isLine:
             return GPUPrimitiveTopology.LineStrip
+        elif object.isMesh:
+            return GPUPrimitiveTopology.TriangleList
 
     def getSampleCount(self):
         return self.renderer._parameters.sampleCount

@@ -27,7 +27,9 @@ class WgpuObjects:
         if forceUpdate or self.geometries.has(geometry) == False or updateMap.get( geometry ) != frame:
             if forceUpdate:
                 geometry._needsUpdate = False
-            self.geometries.update( geometry )
+            
+            material = object.material
+            self.geometries.update( geometry, material.wireframe == True )
             updateMap[geometry] = frame
 
     def dispose(self):

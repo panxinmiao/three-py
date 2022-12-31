@@ -640,8 +640,7 @@ class WgpuRenderer(NoneAttribute):
         passEncoder.set_bind_group( 0, bindGroup, [], 0, 99 )
 
         # index
-        # geometry:'three.Geometry' = object.geometry
-        index = geometry.index
+        index = self._geometries.getIndex( geometry, material.wireframe == True )
 
         hasIndex = index is not None
 
