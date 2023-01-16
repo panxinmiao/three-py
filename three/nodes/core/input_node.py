@@ -46,7 +46,7 @@ class InputNode(Node):
         super().deserialize( data )
 
         self.nodeType = data.nodeType
-        self.value = getValueFromType( data.valueType )
+        self.value = getValueFromType( data.valueType, *data.value ) if isinstance(data.value, list) else data.value
 
         if self.value and hasattr(self.value, 'fromArray'):
             self.value = self.value.fromArray( data.value )

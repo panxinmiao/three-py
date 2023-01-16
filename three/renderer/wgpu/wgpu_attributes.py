@@ -26,9 +26,8 @@ class WgpuAttributes:
         data = self.buffers.get( attribute )
 
         if data:
-            data.buffer.destroy()
+            self._destroyBuffers( data )
             self.buffers.pop( attribute )
-            #self.buffers.delete( attribute )
 
     def update( self, attribute: three.BufferAttribute, isIndex = False, usage = None ):
         if attribute._type == 'InterleavedBufferAttribute':
@@ -45,13 +44,47 @@ class WgpuAttributes:
             self.buffers[attribute]  = data
 
         elif usage and usage != data.usage:
-            data.buffer.destroy()
+            self._destroyBuffers( data )
             data = self._createBuffer( attribute, usage )
             self.buffers.set( attribute, data )
 
         elif data.version < attribute.version:
             self._writeBuffer( data.buffer, attribute )
             data.version = attribute.version
+
+    def getArrayBuffer( self, attribute ):
+        data = self.get( attribute )
+        device = self.device
+
+        gpuBuffer = data.buffer
+        size = gpuBuffer.size
+
+        gpuReadBuffer = data.readBuffer
+        
+        if gpuReadBuffer is None:
+            gpuReadBuffer = device.create_buffer(
+                size = size,
+                usage = GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ
+            )
+
+            data.readBuffer = gpuReadBuffer
+
+        cmdEncoder: wgpu.GPUCommandEncoder = device.create_command_encoder()
+
+        cmdEncoder.copy_buffer_to_buffer(
+            gpuBuffer,
+            0,
+            gpuReadBuffer,
+            0,
+            size
+        )
+
+        gpuCommands = cmdEncoder.finish()
+        device.queue.submit( [ gpuCommands ] )
+
+        arrayBuffer = gpuReadBuffer.map_read()
+
+        return three.Float32Array( arrayBuffer )
 
 
     def _createBuffer( self, attribute: three.BufferAttribute, usage ):
@@ -64,7 +97,7 @@ class WgpuAttributes:
             buffer = (buffer if isinstance(buffer, bytearray) else bytearray(buffer)) + bytearray(size - ary.byteLength)
 
         buffer: wgpu.GPUBuffer = self.device.create_buffer_with_data(
-            data = buffer, usage = usage | GPUBufferUsage.COPY_DST       #, mapped_at_creation = True
+            data = buffer, usage = usage | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST       #, mapped_at_creation = True
         )
 
         # buffer = self.device.createBuffer( {
@@ -82,6 +115,7 @@ class WgpuAttributes:
         return Dict({
             'version': attribute.version,
             'buffer': buffer,
+            'readBuffer': None,
             'usage': usage
         })
 
@@ -110,3 +144,8 @@ class WgpuAttributes:
             )
             
             updateRange.count = - 1; # reset range
+
+    def _destroyBuffers( self, data ):
+        data.buffer.destroy()
+        if data.readBuffer is not None:
+            data.readBuffer.destroy()

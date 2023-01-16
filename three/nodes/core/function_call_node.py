@@ -38,11 +38,10 @@ class FunctionCallNode(TempNode):
 
             for inputNode in inputs:
                 node = parameters[ inputNode.name ]
-
-                if node:
+                if node is not None:
                     params.append( node.build( builder, inputNode.type ) )
                 else:
-                    raise Exception( "FunctionCallNode: Input '{inputNode.name}' not found in FunctionNode." )
+                    raise Exception( f"FunctionCallNode: Input '{inputNode.name}' not found in FunctionNode." )
 
         functionName = functionNode.build( builder, 'property' )
 

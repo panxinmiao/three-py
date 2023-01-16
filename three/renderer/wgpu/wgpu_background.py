@@ -118,7 +118,7 @@ class WgpuBackground:
         depthStencilAttachment = renderPassDescriptor.depth_stencil_attachment
 
         if renderer.autoClear or forceClear:
-            if renderer.autoClearColor or forceClear:
+            if renderer.autoClearColor:
                 WgpuBackground._clearColor.multiplyScalar( WgpuBackground._clearAlpha )
                 colorAttachment.clear_value = (WgpuBackground._clearColor.r, WgpuBackground._clearColor.g, WgpuBackground._clearColor.b, WgpuBackground._clearAlpha)
                 colorAttachment.load_op = GPULoadOp.Clear
@@ -126,22 +126,26 @@ class WgpuBackground:
 
             else:
                 colorAttachment.load_op = GPULoadOp.Load
+                colorAttachment.store_op = GPUStoreOp.Store
 
-            if renderer.autoClearDepth or forceClear:
+            if renderer.autoClearDepth:
                 depthStencilAttachment.depth_clear_value = renderer._clearDepth
                 depthStencilAttachment.depth_load_op = GPULoadOp.Clear
+                depthStencilAttachment.depth_store_op = GPUStoreOp.Store
 
             else:
                 depthStencilAttachment.depth_load_op = GPULoadOp.Load
+                depthStencilAttachment.depth_store_op = GPUStoreOp.Store
 
 
-            if renderer.autoClearStencil or forceClear:
+            if renderer.autoClearStencil:
                 depthStencilAttachment.stencil_clear_value = renderer._clearStencil
                 depthStencilAttachment.stencil_load_op = GPULoadOp.Clear
+                depthStencilAttachment.stencil_store_op = GPUStoreOp.Store
 
             else:
                 depthStencilAttachment.stencil_load_op = GPULoadOp.Load
-
+                depthStencilAttachment.stencil_store_op = GPUStoreOp.Store
 
         else:
 

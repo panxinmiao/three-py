@@ -1,5 +1,3 @@
-#from three.renderer.nodes import Node, NodeUpdateType, Matrix3Node, Matrix4Node, Vector3Node
-
 from ..core.node import Node
 from ..core.uniform_node import UniformNode
 from ..core.constants import NodeUpdateType
@@ -52,7 +50,7 @@ class Object3DNode(Node):
             uniformNode.value = object.matrixWorld
 
         elif scope == Object3DNode.POSITION:
-            # uniformNode.value = uniformNode.value or three.Vector3()
+            uniformNode.value = uniformNode.value or three.Vector3()
             uniformNode.value.setFromMatrixPosition( object.matrixWorld )
         
         elif scope == Object3DNode.DIRECTION:
