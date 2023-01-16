@@ -6,7 +6,7 @@ from ....structure import Dict
 from three.nodes import NodeBuilder, WGSLNodeParser, CodeNode
 from ..wgpu_buffer_utils import getStrideLength, getVectorLength
 from .wgpu_node_sampler import WgpuNodeSampler
-from .wgpu_node_sampled_texture import WgpuNodeSampledTexture, WgpuNodeSampledCubeTexture
+from .wgpu_node_sampled_texture import WgpuNodeSampledTexture, WgpuNodeSampledCubeTexture, WgpuNodeSampled3DTexture
 from ..constants import GPUShaderStage
 from ..wgpu_uniforms_group import WgpuUniformsGroup
 from ..wgpu_uniform_buffer import WgpuUniformBuffer
@@ -195,7 +195,7 @@ class WgpuNodeBuilder(NodeBuilder):
             name = node.name
             type = node.type
 
-            if type == 'texture' or type == 'cubeTexture':
+            if type == 'texture' or type == 'cubeTexture' or type == '3dTexture':
                 return name
             elif type == 'buffer' or type == 'storageBuffer':
                 return f'NodeBuffer_{node.name}.{name}'
@@ -216,7 +216,7 @@ class WgpuNodeBuilder(NodeBuilder):
         if nodeData.uniformGPU is None:
             uniformGPU = None
             bindings = self.bindings[ shaderStage ]
-            if type == 'texture' or type == 'cubeTexture':
+            if type == 'texture' or type == 'cubeTexture' or type == '3dTexture':
                 sampler = WgpuNodeSampler( f'{uniformNode.name}_sampler', uniformNode.node )
                 # texture = WgpuNodeSampledTexture( uniformNode.name, uniformNode.node )
 
@@ -224,7 +224,10 @@ class WgpuNodeBuilder(NodeBuilder):
                     texture = WgpuNodeSampledTexture( uniformNode.name, uniformNode.node )
                 elif type == 'cubeTexture':
                     texture = WgpuNodeSampledCubeTexture( uniformNode.name, uniformNode.node )
+                elif type == '3dTexture':
+                    texture = WgpuNodeSampled3DTexture( uniformNode.name, uniformNode.node )
 
+                texture.setVisibility(gpuShaderStageLib[shaderStage])
                 # add first textures in sequence and group for last
                 lastBinding = bindings[-1] if bindings else None
                 index = len(bindings)-1 if (lastBinding and lastBinding.isUniformsGroup) else len(bindings)
@@ -417,6 +420,15 @@ class WgpuNodeBuilder(NodeBuilder):
                     index += 1
 
                 bindingSnippets.append( f'@group( 0 ) @binding( {index} ) var {uniform.name} : texture_cube<f32>;' )
+                index += 1
+            
+            elif uniform.type == '3dTexture':
+
+                if shaderStage == 'fragment':
+                    bindingSnippets.append( f'@group( 0 ) @binding( {index} ) var {uniform.name}_sampler : sampler;' )
+                    index += 1
+
+                bindingSnippets.append( f'@group( 0 ) @binding( {index} ) var {uniform.name} : texture_3d<f32>;' )
                 index += 1
 
             elif uniform.type == 'buffer' or uniform.type == 'storageBuffer':

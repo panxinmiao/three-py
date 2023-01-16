@@ -1,10 +1,9 @@
 from warnings import warn
 from inspect import isfunction
 from three.materials import ShaderMaterial
+from three.constants import NoToneMapping
 from ..core.stack_node import StackNode
-from ..lighting.lights_node import LightsNode
-from ..lighting.environment_node import EnvironmentNode
-from ..lighting.ao_node import AONode
+from ..display.tone_mapping_node import ToneMappingNode
 from ..core.node_utils import getCacheKey
 
 from ..shadernode.shader_node_elements import (
@@ -156,8 +155,13 @@ class NodeMaterial(ShaderMaterial):
         renderer = builder.renderer
 
         # TONE MAPPING
+        toneMappingNode = renderer.toneMappingNode
+
+        if not toneMappingNode and renderer.toneMapping != NoToneMapping:
+            toneMappingNode = ToneMappingNode( renderer.toneMapping, reference( 'toneMappingExposure', 'float', renderer ), outgoingLight )
+
         if renderer.toneMappingNode and renderer.toneMappingNode.isNode:
-            outgoingLight = context(renderer.toneMappingNode, {'color': outgoingLight})
+            outgoingLight = context(toneMappingNode, {'color': outgoingLight})
 
         outputNode = vec4( outgoingLight, opacity )
 

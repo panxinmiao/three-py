@@ -19,7 +19,7 @@ from .wgpu_background import WgpuBackground
 from .nodes.wgpu_nodes import WgpuNodes
 from .wgpu_utils import WgpuUtils
 
-from ...constants import LinearEncoding
+from ...constants import LinearEncoding, NoToneMapping
 from .constants import GPUStoreOp, GPUTextureFormat, GPUIndexFormat, GPUTextureUsage
 
 _frustum = Frustum()
@@ -49,6 +49,9 @@ class WgpuRenderer(NoneAttribute):
         self.autoClearStencil = True
 
         self.outputEncoding = LinearEncoding
+
+        self.toneMapping = NoToneMapping
+        self.toneMappingExposure = 1.0
 
         self.sortObjects = True
 
@@ -318,6 +321,9 @@ class WgpuRenderer(NoneAttribute):
 
     def getContext(self):
         return self._context
+
+    def getArrayFromBuffer(self, attribute):
+        return self._attributes.getArrayBuffer( attribute )
 
     def getPixelRatio(self):
         return self._pixelRatio

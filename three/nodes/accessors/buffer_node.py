@@ -9,5 +9,5 @@ class BufferNode(UniformNode):
         self.bufferType = bufferType
         self.bufferCount = bufferCount
 
-    def getInputType(self, *args ): # /*builder*/
+    def getInputType(self, *args): # /*builder*/
         return 'buffer'

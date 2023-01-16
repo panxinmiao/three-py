@@ -3,7 +3,7 @@ import math
 from warnings import warn
 
 from ...structure import Dict
-from ...materials import Texture, CubeTexture
+from ...textures import Texture, CubeTexture, Data3DTexture
 from ...constants import (NearestFilter, NearestMipmapNearestFilter, NearestMipmapLinearFilter, LinearFilter, RepeatWrapping, MirroredRepeatWrapping,
             RGBAFormat, RedFormat, RGFormat, RGBA_S3TC_DXT1_Format, RGBA_S3TC_DXT3_Format, RGBA_S3TC_DXT5_Format, UnsignedByteType, FloatType, HalfFloatType, sRGBEncoding)
 from .constants import GPUTextureFormat, GPUAddressMode, GPUFilterMode, GPUTextureDimension, GPUTextureUsage
@@ -18,6 +18,7 @@ class WgpuTextures:
 
         self.defaultTexture = None
         self.defaultCubeTexture = None
+        self.default3DTexture = None
         self.defaultSampler = None
 
         self.samplerCache = {}
@@ -58,6 +59,19 @@ class WgpuTextures:
             self.defaultCubeTexture = self.getTextureGPU( texture )
 
         return self.defaultCubeTexture
+
+    def getDefault3DTexture(self):
+        if self.default3DTexture is None:
+            
+            texture = Data3DTexture()
+            texture.minFilter = NearestFilter
+            texture.magFilter = NearestFilter
+
+            self._uploadTexture( texture )
+
+            self.default3DTexture = self.getTextureGPU( texture )
+
+        return self.default3DTexture
 
     def getTextureGPU( self, texture ):
         textureProperties = self.properties.get( texture )
@@ -102,7 +116,7 @@ class WgpuTextures:
         if textureProperties.initializedRTT == False:
             textureProperties.initializedRTT = True
             needsUpdate = True
-            
+        
         return needsUpdate
 
     
@@ -273,8 +287,9 @@ class WgpuTextures:
         # transfer texture data
 
         # always dataTexture at present
-        if texture.isDataTexture or texture.isDataTexture2DArray or texture.isDataTexture3D:
-            self._copyBufferToTexture( image, format, textureGPU )
+        if texture.isDataTexture or texture.isDataArrayTexture or texture.isData3DTexture:
+            if image is not None and image.data is not None:
+                self._copyBufferToTexture( image, format, textureGPU )
 
             if needsMipmaps == True:
                 self._generateMipmaps( textureGPU, textureGPUDescriptor )
@@ -349,7 +364,8 @@ class WgpuTextures:
             data,
             {
                 'offset': 0,
-                'bytes_per_row': bytesPerRow
+                'bytes_per_row': bytesPerRow,
+                'rows_per_image': image.height
             },
             (image.width, image.height, image.depth if image.depth is not None else 1)
         )
@@ -440,7 +456,7 @@ class WgpuTextures:
 
     def _getDimension( self, texture ):
 
-        dimension = GPUTextureDimension.ThreeD if texture.isDataTexture3D else GPUTextureDimension.TwoD
+        dimension = GPUTextureDimension.ThreeD if texture.isData3DTexture else GPUTextureDimension.TwoD
 
         return dimension
 
@@ -530,7 +546,9 @@ class WgpuTextures:
             depth = image.depth if image.depth != None else 1
 
         else:
-            width = height = depth = 1
+            width = 1
+            height = 1
+            depth = 1
 
         return (width, height, depth)
 

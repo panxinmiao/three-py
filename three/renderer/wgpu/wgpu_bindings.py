@@ -130,7 +130,7 @@ class WgpuBindings:
         if needsBindGroupRefresh:
             data['group'] = self._createBindGroup( bindings, data['layout'] )
 
-        
+    
     def dispose(self):
         self.uniformsData = WeakKeyDictionary()
         self.updateMap = WeakKeyDictionary()
@@ -173,6 +173,8 @@ class WgpuBindings:
                 if binding.textureGPU is None:
                     if binding.isSampledCubeTexture:
                         binding.textureGPU = self.textures.getDefaultCubeTexture()
+                    elif binding.isSampled3DTexture:
+                        binding.textureGPU = self.textures.getDefault3DTexture()
                     else:
                         binding.textureGPU = self.textures.getDefaultTexture()
 

@@ -30,7 +30,7 @@ class Mesh(Object3D):
         geometry = self.geometry
 
         morphAttributes = geometry.morphAttributes
-        keys = morphAttributes.keys()
+        keys = list(morphAttributes.keys())
 
         if len(keys) > 0:
             morphAttribute = morphAttributes[ keys[ 0 ] ]

@@ -30,22 +30,22 @@ def getValueType( value ):
     elif type(value) == bool:
         return 'bool'
 
-    elif value and value.isVector2:
+    elif value and isinstance(value, Vector2):
         return 'vec2'
 
-    elif value and value.isVector3:
+    elif value and isinstance(value, Vector3):
         return 'vec3'
 
-    elif value and value.isVector4:
+    elif value and isinstance(value, Vector4):
         return 'vec4'
 
-    elif value and value.isMatrix3:
+    elif value and isinstance(value, Matrix3):
         return 'mat3'
 
-    elif value and value.isMatrix4:
+    elif value and isinstance(value, Matrix4):
         return 'mat4'
 
-    elif value and value.isColor:
+    elif value and isinstance(value, Color):
         return 'color'
 
     return None
@@ -75,9 +75,9 @@ def getValueFromType(type, *params):
         return Matrix4( *params )
 
     elif type == 'bool':
-        return False
+        return params[ 0 ] or False
 
     elif type == 'float' or type == 'int' or type == 'uint':
-        return 0
+        return params[ 0 ] or 0
 
     return None

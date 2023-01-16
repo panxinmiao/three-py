@@ -239,7 +239,7 @@ normalGeometry = nodeImmutable(NormalNode, NormalNode.GEOMETRY)
 normalLocal = nodeImmutable(NormalNode, NormalNode.LOCAL)
 normalView = nodeImmutable(NormalNode, NormalNode.VIEW)
 normalWorld = nodeImmutable(NormalNode, NormalNode.WORLD)
-transformedNormalView = nodeImmutable(PropertyNode, 'vec3', 'TransformedNormalView')
+transformedNormalView = nodeImmutable(VarNode, normalView, 'TransformedNormalView')
 transformedNormalWorld = normalize(transformDirection(transformedNormalView, cameraViewMatrix))
 
 tangentGeometry = nodeImmutable(TangentNode, TangentNode.GEOMETRY)
