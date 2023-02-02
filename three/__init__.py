@@ -15,4 +15,4 @@ from .helpers import *
 from .textures import *
 from .scenes import *
 
-__version__ = "0.0.2"
+__version__ = "0.1.0"

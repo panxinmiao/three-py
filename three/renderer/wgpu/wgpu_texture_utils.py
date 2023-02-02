@@ -13,7 +13,7 @@ struct VarysStruct {
     @builtin( position ) Position: vec4<f32>,
     @location( 0 ) vTex : vec2<f32>
 };
-@stage( vertex )
+@vertex
 fn main( @builtin( vertex_index ) vertexIndex : u32 ) -> VarysStruct {
     var Varys : VarysStruct;
     var pos = array< vec2<f32>, 4 >(
@@ -41,7 +41,7 @@ var imgSampler : sampler;
 @group( 0 ) @binding( 1 )
 var img : texture_2d<f32>;
 
-@stage( fragment )
+@fragment
 fn main( @location( 0 ) vTex : vec2<f32> ) -> @location( 0 ) vec4<f32> {
     return textureSample( img, imgSampler, vTex );
 }

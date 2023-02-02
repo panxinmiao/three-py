@@ -16,7 +16,7 @@ getMorph = three.nodes.FunctionNode('''
     }
 ''')
 
-class MorphMaterial(three.nodes.NodeMaterial):
+class MorphMaterial(three.nodes.MeshStandardNodeMaterial):
 
     def __init__(self):
         super().__init__()
@@ -31,10 +31,10 @@ class MorphMaterial(three.nodes.NodeMaterial):
             morphTextureNode = three.nodes.UniformNode( self.morphTexture, '3dTexture' )
             morphTargetInfluences = object.morphTargetInfluencesBuffer
             # morphTargetInfluences = buffer(influences, 'float', len(influences))
-            for i in range(len(mesh.influences)):
+            for i in range(len(mesh.morphTargetInfluences)):
                 morph = getMorph({"tex": morphTextureNode, "vertex_index": vertexIndex, "morph_index": uint(i)})
                 # morphPosition = storage(geometry.morphAttributes.position[i], 'vec3', geometry.morphAttributes.position[i].count)
-                morphWeight = element(morphTargetInfluences, 1)
+                morphWeight = element(morphTargetInfluences, i).x
                 stack.assign(vertex, add(vertex, morph * morphWeight))
 
 
@@ -142,7 +142,7 @@ mesh = three.Mesh(geometry, material)
 
 mesh.influences = three.Float32Array.allocate( len(mesh.morphTargetInfluences) * 4 ) # padding to 16 bytes
 
-mesh.morphTargetInfluencesBuffer = buffer(mesh.influences, 'float', len(mesh.influences))
+mesh.morphTargetInfluencesBuffer = buffer(mesh.influences, 'vec4', len(mesh.morphTargetInfluences))
 
 # print(mesh.morphTargetInfluences)
 # geometry.setAttribute("morphTargetInfluences", three.Float32Array(mesh.morphTargetInfluences))

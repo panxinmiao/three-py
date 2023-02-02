@@ -8,7 +8,7 @@ from ..core.node_utils import getCacheKey
 
 from ..shadernode.shader_node_elements import (
     float, vec3, vec4,
-    assign, mul, bypass, attribute, context, texture, discard, mix,
+    assign, mul, bypass, attribute, context, discard,
 	positionLocal, diffuseColor, skinning, instance, modelViewProjection, lightingContext, colorSpace, cubeTexture,
 	materialAlphaTest, materialColor, materialOpacity, materialEmissive, materialNormal, transformedNormalView,
 	reference, rangeFog, densityFog)
@@ -92,9 +92,9 @@ class NodeMaterial(ShaderMaterial):
         stack.assign( diffuseColor.a, diffuseColor.a * opacityNode )
 
         # ALPHA TEST
-        if self.alphaTestNode or self.alphaTest > 0:
-            alphaTestNode = float( self.alphaTestNode ) if self.alphaTestNode else materialAlphaTest
-            stack.add( discard( diffuseColor.a <= alphaTestNode ) )
+        # if self.alphaTestNode or self.alphaTest > 0:
+        #     alphaTestNode = float( self.alphaTestNode ) if self.alphaTestNode else materialAlphaTest
+        #     stack.add( discard( diffuseColor.a <= alphaTestNode ) )
 
     
     def constructVariants(self, *args):
@@ -164,6 +164,13 @@ class NodeMaterial(ShaderMaterial):
             outgoingLight = context(toneMappingNode, {'color': outgoingLight})
 
         outputNode = vec4( outgoingLight, opacity )
+
+        # ALPHA TEST 
+        # TODO: move to constructDiffuseColor when uniformity analysis updated in naga
+        # See: https://github.com/gfx-rs/naga/issues/1744
+        if self.alphaTestNode or self.alphaTest > 0:
+            alphaTestNode = float( self.alphaTestNode ) if self.alphaTestNode else materialAlphaTest
+            stack.add( discard( outputNode.a <= alphaTestNode ) )
 
         # ENCODING
         outputNode = colorSpace( outputNode, renderer.outputEncoding )

@@ -1,7 +1,8 @@
 import three
 from pathlib import Path
+import trimesh
 
-class Loader:
+class ModelLoader:
     # TODO cache
     def __init__(self, path=''):
         self.path = path
@@ -15,8 +16,7 @@ class Loader:
             return self._parsePBRMaterial(trimaterial)
         else:
             raise NotImplementedError()
-       
-    
+        
     def _parseBasicMaterial(self, basicMaterial):
         material = three.MeshBasicMaterial()
         material.color = three.Color(*basicMaterial.diffuse[:3]/255)
@@ -34,7 +34,8 @@ class Loader:
         material.map = self._parseTexture(
             pbrMaterial.baseColorTexture, encoding=three.sRGBEncoding)
 
-        material.emissive = three.Color(*pbrMaterial.emissiveFactor)
+        if pbrMaterial.emissiveFactor is not None:
+            material.emissive = three.Color(*pbrMaterial.emissiveFactor)
         material.emissiveMap = self._parseTexture(
             pbrMaterial.emissiveTexture, encoding=three.sRGBEncoding)
 
@@ -94,6 +95,10 @@ class Loader:
         geometry.setIndex(mesh.faces.flatten().tolist())
 
         visual = mesh.visual
+
+        if isinstance(visual, trimesh.visual.ColorVisuals):
+            visual = visual.to_texture()
+
         uv = visual.uv
         uv = uv * np.array([1, -1]) + np.array([0, 1])   # uv.y = 1 - uv.y
         geometry.setAttribute('uv', three.Float32BufferAttribute(uv.flatten(), 2))
@@ -101,14 +106,12 @@ class Loader:
         return three.Mesh(geometry, material)
 
     def loadObj(self, name):
-        import trimesh
 
         path = Path(self.path) / name
         mesh = trimesh.load(path)
         return self._parseMesh(mesh)
 
     def loadGLTF(self, name):
-        import trimesh
 
         path = Path(self.path) / name
         scene = trimesh.load(path)

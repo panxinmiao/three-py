@@ -18,6 +18,8 @@ class WgpuBackground:
         self.planeMesh = None
         self.forceClear = False
 
+        self._background = None
+
     def clear(self):
         self.forceClear = True
 
@@ -25,6 +27,10 @@ class WgpuBackground:
         renderer = self.renderer
         background = scene.backgroundNode or scene.background if scene.isScene else None
         forceClear = self.forceClear
+
+        if self._background != background:
+            self._background = background
+            self.boxMesh = None
         
         if background is None:
             # no background settings, use clear color configuration from the renderer
@@ -81,31 +87,8 @@ class WgpuBackground:
                     boxMesh.matrixWorld.copyPosition(camera.matrixWorld)
 
                 boxMesh.onBeforeRender = _onBeforeRender
-
-
+            
             renderList.unshift(boxMesh, boxMesh.geometry, boxMesh.material, 0, 0, None)
-
-        # elif background.isTextureNode or background.isTexture:
-        #     WgpuBackground._clearColor.copy(renderer._clearColor)
-        #     WgpuBackground._clearAlpha = renderer._clearAlpha
-
-        #     planeMesh = self.planeMesh
-
-        #     if background.isTexture:
-        #         background = TextureNode(background)
-
-        #     if planeMesh is None:
-        #         uv = nodeObject(UVNode())
-        #         background.uvNode =  vec2(uv.x, -uv.y + 1)
-        #         nodeMaterial = BackgroundNodeMaterial()
-        #         nodeMaterial.colorNode = background
-        #         nodeMaterial.depthTest = False
-        #         nodeMaterial.depthWrite = False
-        #         nodeMaterial.fog = False
-
-        #         self.planeMesh = planeMesh = Mesh(PlaneGeometry(2, 2), nodeMaterial)
-
-        #     renderList.unshift(planeMesh, planeMesh.geometry, planeMesh.material, 0, 0, None)
             
         else:
             warn( f'THREE.WebGPURenderer: Unsupported background configuration.{background}' )

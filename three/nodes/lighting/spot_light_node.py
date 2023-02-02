@@ -7,8 +7,6 @@ from ..shadernode.shader_node_base_elements import uniform, smoothstep, position
 from ...lights import SpotLight
 from ...math import Vector3
 
-getSpotAttenuation = lambda coneCosine, penumbraCosine, angleCosine: smoothstep(coneCosine, penumbraCosine, angleCosine)
-
 class SpotLightNode(AnalyticLightNode):
 
     def __init__(self, light=None) -> None:
@@ -35,6 +33,9 @@ class SpotLightNode(AnalyticLightNode):
 
         self.cutoffDistanceNode.value = light.distance
         self.decayExponentNode.value = light.decay
+
+    def getSpotAttenuation( self, angleCosine ):
+        return smoothstep( self.coneCosNode, self.penumbraCosNode, angleCosine )
     
     def construct(self, builder):
         
@@ -46,7 +47,7 @@ class SpotLightNode(AnalyticLightNode):
         lVector = objectViewPosition(light) - positionView
         lightDirection = normalize(lVector)
         angleCos = dot(lightDirection, self.directionNode)
-        spotAttenuation = getSpotAttenuation( self.coneCosNode, self.penumbraCosNode, angleCos )
+        spotAttenuation = self.getSpotAttenuation( angleCos )
 
         lightDistance = length(lVector)
 

@@ -75,13 +75,6 @@ fn mod( x : f32, y : f32 ) -> f32 {
     return x - y * floor( x / y );
 }
 ''' ),
-    # delete when update wgpu-core
-    'smoothstep':  CodeNode( '''
-fn smoothstep( low : f32, high : f32, x : f32 ) -> f32 {
-    let t = clamp( ( x - low ) / ( high - low ), 0.0, 1.0 );
-    return t * t * ( 3.0 - 2.0 * t );
-}
-''' ),
     'repeatWrapping': CodeNode( '''
 fn repeatWrapping( uv : vec2<f32>, dimension : vec2<u32> ) -> vec2<u32> {
     let uvScaled = vec2<u32>( uv * vec2<f32>( dimension ) );
@@ -562,7 +555,7 @@ class WgpuNodeBuilder(NodeBuilder):
 // codes
 {shaderData.codes}
 
-@stage( vertex )
+@vertex
 fn main( {shaderData.attributes} ) -> NodeVaryingsStruct {{
 
     // system
@@ -588,7 +581,7 @@ fn main( {shaderData.attributes} ) -> NodeVaryingsStruct {{
 // codes
 {shaderData.codes}
 
-@stage( fragment )
+@fragment
 fn main( {shaderData.varyings} ) -> @location( 0 ) vec4<f32> {{
 
     // vars
@@ -611,7 +604,7 @@ var<private> instanceIndex : u32;
 // codes
 {shaderData.codes}
 
-@stage( compute ) @workgroup_size( {workgroupSize} )
+@compute @workgroup_size( {workgroupSize} )
 fn main( {shaderData.attributes} ) {{
     // system
     instanceIndex = id.x;
