@@ -61,7 +61,8 @@ wgslTypeLib = {
 wgslMethods = {
     'dFdx': 'dpdx',
     'dFdy': 'dpdy',
-    'inversesqrt': 'inverseSqrt'
+    'inversesqrt': 'inverseSqrt',
+    'mod': '_mod'
 }
 
 wgslPolyfill = {
@@ -71,15 +72,8 @@ fn lessThanEqual( a : vec3<f32>, b : vec3<f32> ) -> vec3<bool> {
 }
 ''' ),
     'mod': CodeNode( '''
-fn mod( x : f32, y : f32 ) -> f32 {
+fn _mod( x : f32, y : f32 ) -> f32 {
     return x - y * floor( x / y );
-}
-''' ),
-    # delete when update wgpu-core
-    'smoothstep':  CodeNode( '''
-fn smoothstep( low : f32, high : f32, x : f32 ) -> f32 {
-    let t = clamp( ( x - low ) / ( high - low ), 0.0, 1.0 );
-    return t * t * ( 3.0 - 2.0 * t );
 }
 ''' ),
     'repeatWrapping': CodeNode( '''
@@ -562,7 +556,7 @@ class WgpuNodeBuilder(NodeBuilder):
 // codes
 {shaderData.codes}
 
-@stage( vertex )
+@vertex
 fn main( {shaderData.attributes} ) -> NodeVaryingsStruct {{
 
     // system
@@ -588,7 +582,7 @@ fn main( {shaderData.attributes} ) -> NodeVaryingsStruct {{
 // codes
 {shaderData.codes}
 
-@stage( fragment )
+@fragment
 fn main( {shaderData.varyings} ) -> @location( 0 ) vec4<f32> {{
 
     // vars
@@ -611,7 +605,7 @@ var<private> instanceIndex : u32;
 // codes
 {shaderData.codes}
 
-@stage( compute ) @workgroup_size( {workgroupSize} )
+@compute @workgroup_size( {workgroupSize} )
 fn main( {shaderData.attributes} ) {{
     // system
     instanceIndex = id.x;

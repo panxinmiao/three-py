@@ -71,7 +71,6 @@ class WgpuComputePipelines:
                     "buffer": {
                         "type": 'uniform',
                         "has_dynamic_offset": False,
-                        "min_binding_size": 0,
                     }
                 })
 
@@ -82,7 +81,6 @@ class WgpuComputePipelines:
                     "buffer": {
                         "type": 'storage',
                         "has_dynamic_offset": False,
-                        "min_binding_size": 0,
                     }
                 })
 

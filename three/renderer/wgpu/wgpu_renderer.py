@@ -146,7 +146,7 @@ class WgpuRenderer(NoneAttribute):
 
         # render_texture_format = context.get_preferred_format(device.adapter)
 
-        context.configure( device = device, format = GPUTextureFormat.BGRA8Unorm, compositing_alpha_mode= 'premultiplied')  # GPUTextureFormat.BGRA8Unorm
+        context.configure( device = device, format = GPUTextureFormat.BGRA8Unorm, alpha_mode= 'premultiplied')  # GPUTextureFormat.BGRA8Unorm
 
         self._adapter = adapter
         self._device = device
@@ -739,7 +739,7 @@ class WgpuRenderer(NoneAttribute):
                 device= device,
                 format= GPUTextureFormat.BGRA8Unorm,
                 usage= GPUTextureUsage.RENDER_ATTACHMENT,
-                compositing_alpha_mode='premultiplied'
+                alpha_mode='premultiplied'
                 # size= {
                 #     'width': math.floor( self._width * self._pixelRatio ),
                 #     'height': math.floor( self._height * self._pixelRatio ),

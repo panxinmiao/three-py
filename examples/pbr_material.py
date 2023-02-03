@@ -1,5 +1,5 @@
 import three
-import three.extra
+from three.extra.model_loader import ModelLoader
 import three.nodes
 from pathlib import Path
 from wgpu.gui.auto import WgpuCanvas, run
@@ -35,7 +35,7 @@ def init_scene():
 
     gltf_path = Path(__file__).parent / "models" / "DamagedHelmet" / "glTF" / "DamagedHelmet.gltf"
     
-    modelLoader = three.extra.Loader()
+    modelLoader = ModelLoader()
     meshes = modelLoader.loadGLTF(gltf_path)
 
     # meshes[0].geometry.computeTangents()  # optional: use tangent to compute normalMap

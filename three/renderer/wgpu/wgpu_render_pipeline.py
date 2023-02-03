@@ -546,8 +546,7 @@ class WgpuRenderPipeline():
                     'visibility': binding.visibility,
                     "buffer": {
                         "type": 'uniform',
-                        "has_dynamic_offset": False,
-                        "min_binding_size": 0,
+                        "has_dynamic_offset": False
                     }
                 })
 
@@ -557,8 +556,7 @@ class WgpuRenderPipeline():
                     'visibility': binding.visibility,
                     "buffer": {
                         "type": 'storage',
-                        "has_dynamic_offset": False,
-                        "min_binding_size": 0,
+                        "has_dynamic_offset": False
                     }
                 })
 

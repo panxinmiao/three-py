@@ -119,6 +119,8 @@ class Material(EventDispatcher):
             # if val is None:
             #     warnings.warn(f"THREE.Material: '{key}' parameter is None.")
             #     continue
+            if key == '_type':
+                continue
             
             if key == 'shading':
                 warnings.warn(f'THREE.{self.type}: .shading has been removed. Use the boolean .flatShading instead.')
