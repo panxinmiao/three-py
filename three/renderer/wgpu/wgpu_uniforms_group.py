@@ -34,7 +34,8 @@ class WgpuUniformsGroup(WgpuUniformBuffer):
         if buffer is None:
             byteLength = self.getByteLength()
 
-            buffer = Float32Array.wrap( bytearray(byteLength) )
+            # buffer = Float32Array.wrap( bytearray(byteLength) )
+            buffer = memoryview( bytearray(byteLength) ).cast('f')
             self.buffer = buffer
 
         return buffer
@@ -78,22 +79,36 @@ class WgpuUniformsGroup(WgpuUniformBuffer):
 
 
     def updateByType( self, uniform:'WgpuUniform' ):
-        if isinstance(uniform, FloatUniform):
-            return self.updateNumber( uniform )
-        if isinstance(uniform, Vector2Uniform):
-            return self.updateVector2( uniform )
-        if isinstance(uniform, Vector3Uniform):
-            return self.updateVector3( uniform )
-        if isinstance(uniform, Vector4Uniform):
-            return self.updateVector4( uniform )
-        if isinstance(uniform, ColorUniform):
-            return self.updateColor( uniform )
-        if isinstance(uniform, Matrix3Uniform):
-            return self.updateMatrix3( uniform )
-        if isinstance(uniform, Matrix4Uniform):
-            return self.updateMatrix4( uniform )
+        return self.updateBuffer( uniform )
+        # if isinstance(uniform, FloatUniform):
+        #     return self.updateNumber( uniform )
+        # if isinstance(uniform, Vector2Uniform):
+        #     return self.updateVector2( uniform )
+        # if isinstance(uniform, Vector3Uniform):
+        #     return self.updateVector3( uniform )
+        # if isinstance(uniform, Vector4Uniform):
+        #     return self.updateVector4( uniform )
+        # if isinstance(uniform, ColorUniform):
+        #     return self.updateColor( uniform )
+        # if isinstance(uniform, Matrix3Uniform):
+        #     return self.updateMatrix3( uniform )
+        # if isinstance(uniform, Matrix4Uniform):
+        #     return self.updateMatrix4( uniform )
 
-        warnings.warn( f'THREE.WebGPUUniformsGroup: Unsupported uniform type.{uniform}' )
+        # warnings.warn( f'THREE.WebGPUUniformsGroup: Unsupported uniform type.{uniform}' )
+
+    def updateBuffer( self, uniform:'WgpuUniform' ):
+        updated = False
+        a = self.buffer
+        v = uniform.getBuffer()
+        offset = uniform.offset
+        itemSize = uniform.itemSize
+
+        if a[ offset : offset + itemSize ] != v:
+            a[ offset : offset + itemSize ] = v
+            updated = True
+
+        return updated
 
     def updateNumber( self, uniform:'WgpuUniform' ):
         updated = False
@@ -196,7 +211,8 @@ class WgpuUniformsGroup(WgpuUniformBuffer):
         offset = uniform.offset
         e = uniform.getValue().elements
         if arraysEqual( a, e, offset ) == False:
-            a.set( e, offset )
+            a[offset: offset + 16] = e[0:16]
+            # a.set( e, offset )
 
             updated = True
         

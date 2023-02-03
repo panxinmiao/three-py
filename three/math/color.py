@@ -1,7 +1,8 @@
 import math
 import three
+from array import array
 from ..structure import NoneAttribute, Dict
-from .math_utils import clamp, euclideanModulo, lerp
+from .math_utils import clamp, euclideanModulo
 from .color_management import ColorManagement, LinearToSRGB, SRGBToLinear
 from ..constants import SRGBColorSpace, LinearSRGBColorSpace
 
@@ -37,12 +38,38 @@ class Color(NoneAttribute):
 
     def __init__(self, r=None, g=None, b=None) -> None:
         
+        self._buffer = array('f', [0, 0, 0])
+
         if g is None and b is None:
             self.set(r)
         else:
             self.setRGB(r, g, b)
 
+    @property
+    def r(self):
+        return self._buffer[0]
     
+    @r.setter
+    def r(self, value):
+        self._buffer[0] = value
+    
+    @property
+    def g(self):
+        return self._buffer[1]
+    
+    @g.setter
+    def g(self, value):
+        self._buffer[1] = value
+    
+    @property
+    def b(self):
+        return self._buffer[2]
+    
+    @b.setter
+    def b(self, value):
+        self._buffer[2] = value
+
+
     def __repr__(self) -> str:
         return f"Color({self.r}, {self.g}, {self.b})"
 
@@ -124,9 +151,9 @@ class Color(NoneAttribute):
         return Color().copy(self)
 
     def copySRGBToLinear( self, color ):
-        self.r = LinearToSRGB( color.r )
-        self.g = LinearToSRGB( color.g )
-        self.b = LinearToSRGB( color.b )
+        self.r = SRGBToLinear( color.r )
+        self.g = SRGBToLinear( color.g )
+        self.b = SRGBToLinear( color.b )
         return self
 
     def copyLinearToSRGB( self, color ):
