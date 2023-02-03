@@ -1,11 +1,11 @@
-import math, time, os
+import math, time
 import numpy as np
 import three
 import three.nodes
-from three.nodes import positionLocal, uniform, storage, buffer, vertexIndex, element, add, bypass, skinning, modelViewProjection, uint, greaterThan, cond
+from three.nodes import positionLocal, buffer, vertexIndex, element, add, bypass, skinning, modelViewProjection, uint
 from wgpu.gui.auto import WgpuCanvas, run
 
-os.environ["WGPU_BACKEND_TYPE"] = "D3D12"
+# os.environ["WGPU_BACKEND_TYPE"] = "D3D12"
 
 getMorph = three.nodes.FunctionNode('''
     fn getMorph( tex: texture_3d<f32>, vertex_index: u32, morph_index: u32 ) -> vec4<f32> {
@@ -18,8 +18,8 @@ getMorph = three.nodes.FunctionNode('''
 
 class MorphMaterial(three.nodes.MeshStandardNodeMaterial):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parameters = None):
+        super().__init__(parameters)
 
 
     def constructPosition(self, builder, stack):
@@ -31,7 +31,7 @@ class MorphMaterial(three.nodes.MeshStandardNodeMaterial):
             morphTextureNode = three.nodes.UniformNode( self.morphTexture, '3dTexture' )
             morphTargetInfluences = object.morphTargetInfluencesBuffer
             # morphTargetInfluences = buffer(influences, 'float', len(influences))
-            for i in range(len(mesh.morphTargetInfluences)):
+            for i in range(len(object.morphTargetInfluences)):
                 morph = getMorph({"tex": morphTextureNode, "vertex_index": vertexIndex, "morph_index": uint(i)})
                 # morphPosition = storage(geometry.morphAttributes.position[i], 'vec3', geometry.morphAttributes.position[i].count)
                 morphWeight = element(morphTargetInfluences, i).x
@@ -157,7 +157,7 @@ def updateMorphTargetInfluencesTypedArray(morphTargetInfluences, influencesArray
 def loop():
     now = time.time()
     mesh.morphTargetInfluences[ 0 ] = (math.sin(now)+1)/2
-    mesh.morphTargetInfluences[ 1 ] = (math.sin(now)+1)/2
+    mesh.morphTargetInfluences[ 1 ] = (math.cos(now)+1)/2
     updateMorphTargetInfluencesTypedArray(mesh.morphTargetInfluences, mesh.influences)
 
     # mesh.rotation.x += 0.01

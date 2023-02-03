@@ -29,7 +29,7 @@ def init_scene():
     env_texture = loader.load(env_text_urls, encoding=three.sRGBEncoding)
     env_texture.generateMipmaps = True
 
-    # scene.environment = three.nodes.CubeTextureNode(env_texture)
+    scene.environment = three.nodes.CubeTextureNode(env_texture)
 
     scene.background = scene.environment
 

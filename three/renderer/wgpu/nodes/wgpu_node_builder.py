@@ -61,7 +61,8 @@ wgslTypeLib = {
 wgslMethods = {
     'dFdx': 'dpdx',
     'dFdy': 'dpdy',
-    'inversesqrt': 'inverseSqrt'
+    'inversesqrt': 'inverseSqrt',
+    'mod': '_mod'
 }
 
 wgslPolyfill = {
@@ -71,7 +72,7 @@ fn lessThanEqual( a : vec3<f32>, b : vec3<f32> ) -> vec3<bool> {
 }
 ''' ),
     'mod': CodeNode( '''
-fn mod( x : f32, y : f32 ) -> f32 {
+fn _mod( x : f32, y : f32 ) -> f32 {
     return x - y * floor( x / y );
 }
 ''' ),
