@@ -79,6 +79,12 @@ material.opacityNode = three.nodes.TextureNode( opacityTexture )
 material.alphaTestNode = three.nodes.UniformNode( 0.5 )
 materials.append( material )
 
+# Normal
+material = three.nodes.MeshNormalNodeMaterial()
+material.opacity = 0.5
+material.transparent = True
+materials.append( material )
+
 
 # ADVANCED
 

@@ -16,7 +16,7 @@ getMorph = three.nodes.FunctionNode('''
     }
 ''')
 
-class MorphMaterial(three.nodes.MeshStandardNodeMaterial):
+class MorphMaterial(three.nodes.MeshNormalNodeMaterial):
 
     def __init__(self, parameters = None):
         super().__init__(parameters)
@@ -157,7 +157,7 @@ def updateMorphTargetInfluencesTypedArray(morphTargetInfluences, influencesArray
 def loop():
     now = time.time()
     mesh.morphTargetInfluences[ 0 ] = (math.sin(now)+1)/2
-    mesh.morphTargetInfluences[ 1 ] = (math.cos(now)+1)/2
+    mesh.morphTargetInfluences[ 1 ] = (math.cos(now+1)+1)/2
     updateMorphTargetInfluencesTypedArray(mesh.morphTargetInfluences, mesh.influences)
 
     # mesh.rotation.x += 0.01

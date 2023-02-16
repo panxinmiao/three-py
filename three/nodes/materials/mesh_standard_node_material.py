@@ -56,8 +56,10 @@ class MeshStandardNodeMaterial(NodeMaterial):
         materialLightsNode = []
         envNode = self.envNode or builder.material.envMap or builder.scene.environmentNode or builder.scene.environment
         if envNode:
-            if envNode.isTexture:
+            if envNode.isCubeTexture:
                 envNode = cubeTexture(envNode)
+            elif envNode.isTexture:
+                envNode = texture(envNode)
             materialLightsNode.append( EnvironmentNode( envNode ) )
         
         if builder.material.aoMap:

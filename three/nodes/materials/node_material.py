@@ -9,7 +9,8 @@ from ..core.node_utils import getCacheKey
 from ..shadernode.shader_node_elements import (
     float, vec3, vec4,
     assign, mul, bypass, attribute, context, discard,
-	positionLocal, diffuseColor, skinning, instance, modelViewProjection, lightingContext, colorSpace, cubeTexture,
+	positionLocal, diffuseColor, skinning, instance, modelViewProjection, lightingContext, colorSpace,
+    normalize, cross, dFdx, dFdy, positionView,
 	materialAlphaTest, materialColor, materialOpacity, materialEmissive, materialNormal, transformedNormalView,
 	reference, rangeFog, densityFog)
 
@@ -97,13 +98,16 @@ class NodeMaterial(ShaderMaterial):
         #     stack.add( discard( diffuseColor.a <= alphaTestNode ) )
 
     
-    def constructVariants(self, *args):
+    def constructVariants(self, builder, stack):
         # Interface function
         pass
     
     def constructNormal(self, builder, stack):
         # NORMAL VIEW
-        normalNode =  vec3( self.normalNode ) if self.normalNode else materialNormal
+        if self.flatShading:
+            normalNode = normalize(cross(dFdx(positionView), dFdy(positionView)))
+        else:
+            normalNode =  vec3( self.normalNode ) if self.normalNode else materialNormal
         stack.assign( transformedNormalView, normalNode )
         return normalNode
     
