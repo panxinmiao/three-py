@@ -1,15 +1,33 @@
 from math import floor, ceil
-from .math_utils import clamp
+from array import array
 import three
-from ..structure import NoneAttribute
+from .math_utils import clamp
+from ..structure import NoneAttribute, Float32Array
 
 class Vector2(NoneAttribute):
 
     isVector2 = True
 
     def __init__(self, x: float = 0, y: float = 0) -> None:
-        self.x = x
-        self.y = y
+        self._buffer = array('f', [x, y])
+        # self.x = x
+        # self.y = y
+
+    @property
+    def x(self):
+        return self._buffer[0]
+    
+    @x.setter
+    def x(self, value):
+        self._buffer[0] = value
+    
+    @property
+    def y(self):
+        return self._buffer[1]
+    
+    @y.setter
+    def y(self, value):
+        self._buffer[1] = value
 
     def __repr__(self) -> str:
         return f"Vector2({self.x}, {self.y})"
@@ -241,22 +259,32 @@ class Vector2(NoneAttribute):
     def __eq__(self, other: "Vector2") -> bool:
         return isinstance(other, Vector2) and self.equals(other)
 
-    def fromArray(self, array: list, offset: int = 0) -> "Vector2":
-        self.x = array[offset]
-        self.y = array[offset + 1]
+    def fromArray(self, arr: Float32Array, offset: int = 0) -> "Vector2":
+        # m = memoryview(self._buffer)
+        # m[:] = arr.buffer[offset:offset+2]
+        self.x = arr[offset]
+        self.y = arr[offset + 1]
         return self
 
-    def toArray(self, array: list = None, offset: int = 0) -> list:
-        if array is None:
-            array = []
-
-        padding = offset + 2 - len(array)
+    def toArray(self, arr: Float32Array = None, offset: int = 0) -> Float32Array:
+        if arr is None:
+            arr = Float32Array(2)
+        padding = offset + 2 - len(arr)
         if padding > 0:
-            array.extend((None for _ in range(padding)))
+            arr.extend((None for _ in range(padding)))
 
-        array[offset] = self.x
-        array[offset + 1] = self.y
-        return array
+        arr[offset: offset + 2] = self._buffer
+
+        # if array is None:
+        #     array = []
+
+        # padding = offset + 2 - len(array)
+        # if padding > 0:
+        #     array.extend((None for _ in range(padding)))
+
+        # array[offset] = self.x
+        # array[offset + 1] = self.y
+        return arr
 
     def fromBufferAttribute(self, attribute:'three.BufferAttribute', index: int) -> 'Vector2':
         self.x = attribute.getX( index )

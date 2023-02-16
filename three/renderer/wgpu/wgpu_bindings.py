@@ -96,7 +96,7 @@ class WgpuBindings:
 
                 if needsBufferWrite:
                     bufferGPU = binding.bufferGPU
-                    self.device.queue.write_buffer( bufferGPU, 0, buffer.range_buffer(), 0 )
+                    self.device.queue.write_buffer( bufferGPU, 0, buffer, 0 )
 
 
             elif binding.isStorageBuffer:

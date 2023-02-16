@@ -1,20 +1,46 @@
 import math
 import random
+from array import array
+import three
 
 from .math_utils import clamp
 from .quaternion import Quaternion
 
-import three
-from ..structure import NoneAttribute
+from ..structure import NoneAttribute, Float32Array
 
 class Vector3(NoneAttribute):
 
     isVector3 = True
 
     def __init__(self, x: float = 0, y: float = 0, z: float = 0) -> None:
-        self.x = x
-        self.y = y
-        self.z = z
+        self._buffer = array('f', [x, y, z])
+        # self.x = x
+        # self.y = y
+        # self.z = z
+
+    @property
+    def x(self):
+        return self._buffer[0]
+    
+    @x.setter
+    def x(self, value):
+        self._buffer[0] = value
+    
+    @property
+    def y(self):
+        return self._buffer[1]
+    
+    @y.setter
+    def y(self, value):
+        self._buffer[1] = value
+    
+    @property
+    def z(self):
+        return self._buffer[2]
+    
+    @z.setter
+    def z(self, value):
+        self._buffer[2] = value
 
     def __repr__(self) -> str:
         return f"Vector3({self.x}, {self.y}, {self.z})"
@@ -405,24 +431,34 @@ class Vector3(NoneAttribute):
     def __eq__(self, other: "Vector3") -> bool:
         return isinstance(other, Vector3) and self.equals(other)
 
-    def fromArray(self, array: list, offset: int = 0) -> "Vector3":
-        self.x = array[offset]
-        self.y = array[offset + 1]
-        self.z = array[offset + 2]
+    def fromArray(self, arr: Float32Array, offset: int = 0) -> "Vector3":
+        # m = memoryview(self._buffer)
+        # m[:] = arr.buffer[offset:offset+3]
+        self.x = arr[offset]
+        self.y = arr[offset + 1]
+        self.z = arr[offset + 2]
         return self
 
-    def toArray(self, array: list = None, offset: int = 0) -> list:
-        if array is None:
-            array = []
-
-        padding = offset + 3 - len(array)
+    def toArray(self, arr: Float32Array = None, offset: int = 0) -> Float32Array:
+        if arr is None:
+            arr = Float32Array(3)
+        padding = offset + 3 - len(arr)
         if padding > 0:
-            array.extend((None for _ in range(padding)))
+            arr.extend((None for _ in range(padding)))
 
-        array[offset] = self.x
-        array[offset + 1] = self.y
-        array[offset + 2] = self.z
-        return array
+        arr[offset: offset + 3] = self._buffer
+
+        # if array is None:
+        #     array = []
+
+        # padding = offset + 3 - len(array)
+        # if padding > 0:
+        #     array.extend((None for _ in range(padding)))
+
+        # array[offset] = self.x
+        # array[offset + 1] = self.y
+        # array[offset + 2] = self.z
+        return arr
 
     def fromBufferAttribute(self, attribute:'three.BufferAttribute', index: int) -> "Vector3":
         self.x = attribute.getX(index)

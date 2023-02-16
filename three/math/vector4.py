@@ -1,16 +1,52 @@
 import three
 import math, random
-from ..structure import NoneAttribute
+from array import array
+from ..structure import NoneAttribute, Float32Array
 
 class Vector4(NoneAttribute):
 
     isVector4 = True
 
     def __init__(self, x: float = 0, y: float = 0, z: float = 0, w: float = 0) -> None:
-        self.x = x
-        self.y = y
-        self.z = z
-        self.w = w
+
+        self._buffer = array('f', [x, y, z, w])
+
+        # self.x = x
+        # self.y = y
+        # self.z = z
+        # self.w = w
+
+    @property
+    def x(self):
+        return self._buffer[0]
+    
+    @x.setter
+    def x(self, value):
+        self._buffer[0] = value
+    
+    @property
+    def y(self):
+        return self._buffer[1]
+    
+    @y.setter
+    def y(self, value):
+        self._buffer[1] = value
+    
+    @property
+    def z(self):
+        return self._buffer[2]
+    
+    @z.setter
+    def z(self, value):
+        self._buffer[2] = value
+    
+    @property
+    def w(self):
+        return self._buffer[3]
+    
+    @w.setter
+    def w(self, value):
+        self._buffer[3] = value
 
     @property
     def width(self):
@@ -403,21 +439,31 @@ class Vector4(NoneAttribute):
     equals = __eq__
 
 
-    def fromArray( self, array, offset = 0 ) -> "Vector4":
-        self.x = array[ offset ]
-        self.y = array[ offset + 1 ]
-        self.z = array[ offset + 2 ]
-        self.w = array[ offset + 3 ]
+    def fromArray( self, arr: Float32Array, offset = 0 ) -> "Vector4":
+        # m = memoryview(self._buffer)
+        # m[:] = arr.buffer[offset:offset+4]
+        self.x = arr[ offset ]
+        self.y = arr[ offset + 1 ]
+        self.z = arr[ offset + 2 ]
+        self.w = arr[ offset + 3 ]
 
         return self
 
-    def toArray( self, array = [], offset = 0 ) -> "Vector4":
-        array[ offset ] = self.x
-        array[ offset + 1 ] = self.y
-        array[ offset + 2 ] = self.z
-        array[ offset + 3 ] = self.w
+    def toArray( self, arr: Float32Array = None, offset = 0 ) -> "Float32Array":
+        if arr is None:
+            arr = Float32Array(4)
+        padding = offset + 4 - len(arr)
+        if padding > 0:
+            arr.extend((None for _ in range(padding)))
 
-        return array
+        arr[offset: offset + 4] = self._buffer
+
+        # array[ offset ] = self.x
+        # array[ offset + 1 ] = self.y
+        # array[ offset + 2 ] = self.z
+        # array[ offset + 3 ] = self.w
+
+        return arr
 
     def fromBufferAttribute( self, attribute:'three.BufferAttribute', index ) -> "Vector4":
 

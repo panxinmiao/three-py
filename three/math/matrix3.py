@@ -1,16 +1,17 @@
 import three, math
-from ..structure import NoneAttribute
+from array import array
+from ..structure import NoneAttribute, Float32Array
 
 class Matrix3(NoneAttribute):
 
     isMatrix3 = True
 
     def __init__(self) -> None:
-        self.elements = [
+        self.elements = array('f', [
             1, 0, 0,
             0, 1, 0,
             0, 0, 1,
-        ]
+        ])
 
     def __repr__(self) -> str:
         return f"Matrix3({self.elements[0]}, {self.elements[1]}, {self.elements[2]}, {self.elements[3]}, {self.elements[4]}, {self.elements[5]}, {self.elements[6]}, {self.elements[7]}, {self.elements[8]})"
@@ -97,13 +98,13 @@ class Matrix3(NoneAttribute):
         be = b.elements
         te = self.elements
 
-        a11 = ae[ 0 ], a12 = ae[ 3 ], a13 = ae[ 6 ]
-        a21 = ae[ 1 ], a22 = ae[ 4 ], a23 = ae[ 7 ]
-        a31 = ae[ 2 ], a32 = ae[ 5 ], a33 = ae[ 8 ]
+        a11 = ae[ 0 ]; a12 = ae[ 3 ]; a13 = ae[ 6 ]
+        a21 = ae[ 1 ]; a22 = ae[ 4 ]; a23 = ae[ 7 ]
+        a31 = ae[ 2 ]; a32 = ae[ 5 ]; a33 = ae[ 8 ]
 
-        b11 = be[ 0 ], b12 = be[ 3 ], b13 = be[ 6 ]
-        b21 = be[ 1 ], b22 = be[ 4 ], b23 = be[ 7 ]
-        b31 = be[ 2 ], b32 = be[ 5 ], b33 = be[ 8 ]
+        b11 = be[ 0 ]; b12 = be[ 3 ]; b13 = be[ 6 ]
+        b21 = be[ 1 ]; b22 = be[ 4 ]; b23 = be[ 7 ]
+        b31 = be[ 2 ]; b32 = be[ 5 ]; b33 = be[ 8 ]
 
         te[ 0 ] = a11 * b11 + a12 * b21 + a13 * b31
         te[ 3 ] = a11 * b12 + a12 * b22 + a13 * b32
@@ -264,28 +265,38 @@ class Matrix3(NoneAttribute):
         return isinstance(__o, Matrix3) and self.equals(__o)
 
 
-    def fromArray(self, array: list, offset: int = 0) -> "Matrix3":
+    def fromArray(self, arr: Float32Array, offset: int = 0) -> "Matrix3":
+        # m = memoryview(self.elements)
+        # m[:] = arr.buffer[offset:offset+9]
         for i in range(9):
-            self.elements[i] = array[i + offset]
+            self.elements[i] = arr[i + offset]
         return self
 
-    def toArray( self, array = [], offset = 0 ) -> 'list':
+    def toArray( self, arr: Float32Array = None, offset = 0 ) -> 'Float32Array':
 
-        te = self.elements
+        if arr is None:
+            arr = Float32Array(9)
+        padding = offset + 9 - len(arr)
+        if padding > 0:
+            arr.extend((None for _ in range(padding)))
 
-        array[ offset ] = te[ 0 ]
-        array[ offset + 1 ] = te[ 1 ]
-        array[ offset + 2 ] = te[ 2 ]
+        arr[offset: offset + 9] = self.elements
 
-        array[ offset + 3 ] = te[ 3 ]
-        array[ offset + 4 ] = te[ 4 ]
-        array[ offset + 5 ] = te[ 5 ]
+        # te = self.elements
 
-        array[ offset + 6 ] = te[ 6 ]
-        array[ offset + 7 ] = te[ 7 ]
-        array[ offset + 8 ] = te[ 8 ]
+        # array[ offset ] = te[ 0 ]
+        # array[ offset + 1 ] = te[ 1 ]
+        # array[ offset + 2 ] = te[ 2 ]
 
-        return array
+        # array[ offset + 3 ] = te[ 3 ]
+        # array[ offset + 4 ] = te[ 4 ]
+        # array[ offset + 5 ] = te[ 5 ]
+
+        # array[ offset + 6 ] = te[ 6 ]
+        # array[ offset + 7 ] = te[ 7 ]
+        # array[ offset + 8 ] = te[ 8 ]
+
+        return arr
 
 
     def clone( self ) -> "Matrix3":

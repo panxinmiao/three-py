@@ -1,6 +1,7 @@
 from math import cos, sin
+from array import array
 from .vector3 import Vector3
-from ..structure import NoneAttribute
+from ..structure import NoneAttribute, Float32Array
 
 import three
 
@@ -9,14 +10,14 @@ class Matrix4(NoneAttribute):
     isMatrix4 = True
 
     def __init__(self) -> None:
-        self.elements = [
-
+        self.elements = array('f', [
             1, 0, 0, 0,
             0, 1, 0, 0,
             0, 0, 1, 0,
             0, 0, 0, 1,
+        ])
 
-        ]
+        self._buffer = self.elements
 
     def __repr__(self) -> str:
         return f"Matrix4({self.elements[0]}, {self.elements[1]}, {self.elements[2]}, {self.elements[3]}, {self.elements[4]}, {self.elements[5]}, {self.elements[6]}, {self.elements[7]}, {self.elements[8]}, {self.elements[9]}, {self.elements[10]}, {self.elements[11]}, {self.elements[12]}, {self.elements[13]}, {self.elements[14]}, {self.elements[15]})"
@@ -741,7 +742,7 @@ class Matrix4(NoneAttribute):
 
         return self
 
-    def makeOrthographic(self, left: float, right: float, top: float, bottom: float, near: float, far: float ) -> "Matrix4":
+    def makeOrthographicGL(self, left: float, right: float, top: float, bottom: float, near: float, far: float ) -> "Matrix4":
         te = self.elements
         w = 1.0 / (right - left)
         h = 1.0 / (top - bottom)
@@ -786,20 +787,29 @@ class Matrix4(NoneAttribute):
     def __eq__(self, other: "Matrix4") -> bool:
         return isinstance(other, Matrix4) and self.equals(other)
 
-    def fromArray(self, array: list, offset: int = 0) -> "Matrix4":
+    def fromArray(self, arr: Float32Array, offset: int = 0) -> "Matrix4":
+        # m = memoryview(self.elements)
+        # if isinstance(arr, Float32Array):
+        #     buffer = memoryview(arr.buffer)
+        # else:
+        #     buffer = memoryview(arr)
+    
+        # m[:] = buffer[offset:offset+16]
         for i in range(16):
-            self.elements[i] = array[i + offset]
+            self.elements[i] = arr[i + offset]
         return self
 
-    def toArray(self, array: list = None, offset: int = 0) -> list:
-        if array is None:
-            array = []
-        padding = offset + 16 - len(array)
+    def toArray(self, arr: Float32Array = None, offset: int = 0) -> Float32Array:
+        if arr is None:
+            arr = Float32Array(16)
+        padding = offset + 16 - len(arr)
         if padding > 0:
-            array.extend((None for _ in range(padding)))
-        for i in range(16):
-            array[i + offset] = self.elements[i]
-        return array
+            arr.extend((None for _ in range(padding)))
+
+        arr[offset: offset + 16] = self.elements
+        # for i in range(16):
+        #     array[i + offset] = self.elements[i]
+        return arr
 
 _zero = Vector3(0, 0, 0)
 _one = Vector3(1, 1, 1)

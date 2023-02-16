@@ -1,4 +1,4 @@
-
+from array import array
 from ...structure import NoneAttribute
 from ...math import Vector2, Vector3, Vector4, Color, Matrix3, Matrix4
 
@@ -25,9 +25,11 @@ class WgpuUniform(NoneAttribute):
     def setValue( self, value ):
         self.value = value
 
-
     def getValue(self):
         return self.value
+
+    def getBuffer(self) -> memoryview:
+        raise NotImplementedError()
 
 
 class FloatUniform(WgpuUniform):
@@ -38,6 +40,11 @@ class FloatUniform(WgpuUniform):
 
         self.boundary = 4
         self.itemSize = 1
+    
+    def getBuffer(self):
+        v = self.getValue() if self.getValue() is not None else 0
+        # return memoryview((ctypes.c_float*1)(v))
+        return memoryview(array('f', [v]))
 
 class Vector2Uniform(WgpuUniform):
     isVector2Uniform = True
@@ -48,6 +55,9 @@ class Vector2Uniform(WgpuUniform):
         self.boundary = 8
         self.itemSize = 2
 
+    def getBuffer(self):
+        return memoryview(self.getValue()._buffer)
+
 class Vector3Uniform(WgpuUniform):
     isVector3Uniform = True
 
@@ -56,6 +66,9 @@ class Vector3Uniform(WgpuUniform):
 
         self.boundary = 16
         self.itemSize = 3
+
+    def getBuffer(self):
+        return memoryview(self.getValue()._buffer)
 
 
 class Vector4Uniform(WgpuUniform):
@@ -67,6 +80,9 @@ class Vector4Uniform(WgpuUniform):
         self.boundary = 16
         self.itemSize = 4
 
+    def getBuffer(self):
+        return memoryview(self.getValue()._buffer)
+
 
 class ColorUniform(WgpuUniform):
     isColorUniform = True
@@ -77,6 +93,9 @@ class ColorUniform(WgpuUniform):
         self.boundary = 16
         self.itemSize = 3
 
+    def getBuffer(self):
+        return memoryview(self.getValue()._buffer)
+
 class Matrix3Uniform(WgpuUniform):
     isMatrix3Uniform = True
 
@@ -85,6 +104,16 @@ class Matrix3Uniform(WgpuUniform):
 
         self.boundary = 48
         self.itemSize = 12
+
+    def getBuffer(self):
+        buffer = array('f', [0]*12)
+        a = self.getValue().elements
+
+        buffer[0:3] = a[0:3]
+        buffer[4:7] = a[3:6]
+        buffer[8:11] = a[6:9]
+
+        return memoryview(buffer)
 
 
 class Matrix4Uniform(WgpuUniform):
@@ -95,5 +124,8 @@ class Matrix4Uniform(WgpuUniform):
 
         self.boundary = 64
         self.itemSize = 16
+    
+    def getBuffer(self):
+        return memoryview(self.getValue()._buffer)
 
 
