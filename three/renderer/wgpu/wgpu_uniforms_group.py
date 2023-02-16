@@ -110,119 +110,119 @@ class WgpuUniformsGroup(WgpuUniformBuffer):
 
         return updated
 
-    def updateNumber( self, uniform:'WgpuUniform' ):
-        updated = False
-        a = self.buffer
-        v = uniform.getValue()
-        offset = uniform.offset
+#     def updateNumber( self, uniform:'WgpuUniform' ):
+#         updated = False
+#         a = self.buffer
+#         v = uniform.getValue()
+#         offset = uniform.offset
 
-        if a[ offset ] != v:
-            a[ offset ] = v
-            updated = True
+#         if a[ offset ] != v:
+#             a[ offset ] = v
+#             updated = True
 
-        return updated
+#         return updated
 
-    def updateVector2( self, uniform:'WgpuUniform' ):
-        updated = False
-        a = self.buffer
-        v = uniform.getValue()
-        offset = uniform.offset
+#     def updateVector2( self, uniform:'WgpuUniform' ):
+#         updated = False
+#         a = self.buffer
+#         v = uniform.getValue()
+#         offset = uniform.offset
 
-        if a[ offset + 0 ] != v.x or a[ offset + 1 ] != v.y:
-            a[ offset + 0 ] = v.x
-            a[ offset + 1 ] = v.y
+#         if a[ offset + 0 ] != v.x or a[ offset + 1 ] != v.y:
+#             a[ offset + 0 ] = v.x
+#             a[ offset + 1 ] = v.y
 
-            updated = True
+#             updated = True
 
-        return updated
+#         return updated
 
-    def updateVector3( self, uniform:'WgpuUniform' ):
-        updated = False
-        a = self.buffer
-        v = uniform.getValue()
-        offset = uniform.offset
+#     def updateVector3( self, uniform:'WgpuUniform' ):
+#         updated = False
+#         a = self.buffer
+#         v = uniform.getValue()
+#         offset = uniform.offset
 
-        if a[ offset + 0 ] != v.x or a[ offset + 1 ] != v.y or a[ offset + 2 ] != v.z:
-            a[ offset + 0 ] = v.x
-            a[ offset + 1 ] = v.y
-            a[ offset + 2 ] = v.z
+#         if a[ offset + 0 ] != v.x or a[ offset + 1 ] != v.y or a[ offset + 2 ] != v.z:
+#             a[ offset + 0 ] = v.x
+#             a[ offset + 1 ] = v.y
+#             a[ offset + 2 ] = v.z
 
-            updated = True
+#             updated = True
 
-        return updated
+#         return updated
 
-    def updateVector4( self, uniform:'WgpuUniform' ):
-        updated = False
-        a = self.buffer
-        v = uniform.getValue()
-        offset = uniform.offset
+#     def updateVector4( self, uniform:'WgpuUniform' ):
+#         updated = False
+#         a = self.buffer
+#         v = uniform.getValue()
+#         offset = uniform.offset
 
-        if a[ offset + 0 ] != v.x or a[ offset + 1 ] != v.y or a[ offset + 2 ] != v.z or a[ offset + 4 ] != v.w:
-            a[ offset + 0 ] = v.x
-            a[ offset + 1 ] = v.y
-            a[ offset + 2 ] = v.z
-            a[ offset + 3 ] = v.w
+#         if a[ offset + 0 ] != v.x or a[ offset + 1 ] != v.y or a[ offset + 2 ] != v.z or a[ offset + 4 ] != v.w:
+#             a[ offset + 0 ] = v.x
+#             a[ offset + 1 ] = v.y
+#             a[ offset + 2 ] = v.z
+#             a[ offset + 3 ] = v.w
 
-            updated = True
+#             updated = True
 
-        return updated
+#         return updated
 
-    def updateColor( self, uniform:'WgpuUniform' ):
-        updated = False
-        a = self.buffer
-        c = uniform.getValue()
-        offset = uniform.offset
+#     def updateColor( self, uniform:'WgpuUniform' ):
+#         updated = False
+#         a = self.buffer
+#         c = uniform.getValue()
+#         offset = uniform.offset
 
-        if a[ offset + 0 ] != c.r or a[ offset + 1 ] != c.g or a[ offset + 2 ] != c.b:
-            a[ offset + 0 ] = c.r
-            a[ offset + 1 ] = c.g
-            a[ offset + 2 ] = c.b
-            updated = True
+#         if a[ offset + 0 ] != c.r or a[ offset + 1 ] != c.g or a[ offset + 2 ] != c.b:
+#             a[ offset + 0 ] = c.r
+#             a[ offset + 1 ] = c.g
+#             a[ offset + 2 ] = c.b
+#             updated = True
 
-        return updated
+#         return updated
 
-    def updateMatrix3( self, uniform:'WgpuUniform' ):
-        updated = False
-        a = self.buffer
-        e = uniform.getValue().elements
-        offset = uniform.offset
+#     def updateMatrix3( self, uniform:'WgpuUniform' ):
+#         updated = False
+#         a = self.buffer
+#         e = uniform.getValue().elements
+#         offset = uniform.offset
 
-        if (a[ offset + 0 ] != e[ 0 ] or a[ offset + 1 ] != e[ 1 ] or a[ offset + 2 ] != e[ 2 ] or
-            a[ offset + 4 ] != e[ 3 ] or a[ offset + 5 ] != e[ 4 ] or a[ offset + 6 ] != e[ 5 ] or
-            a[ offset + 8 ] != e[ 6 ] or a[ offset + 9 ] != e[ 7 ] or a[ offset + 10 ] != e[ 8 ] ):
+#         if (a[ offset + 0 ] != e[ 0 ] or a[ offset + 1 ] != e[ 1 ] or a[ offset + 2 ] != e[ 2 ] or
+#             a[ offset + 4 ] != e[ 3 ] or a[ offset + 5 ] != e[ 4 ] or a[ offset + 6 ] != e[ 5 ] or
+#             a[ offset + 8 ] != e[ 6 ] or a[ offset + 9 ] != e[ 7 ] or a[ offset + 10 ] != e[ 8 ] ):
 
-            a[ offset + 0 ] = e[ 0 ]
-            a[ offset + 1 ] = e[ 1 ]
-            a[ offset + 2 ] = e[ 2 ]
-            a[ offset + 4 ] = e[ 3 ]
-            a[ offset + 5 ] = e[ 4 ]
-            a[ offset + 6 ] = e[ 5 ]
-            a[ offset + 8 ] = e[ 6 ]
-            a[ offset + 9 ] = e[ 7 ]
-            a[ offset + 10 ] = e[ 8 ]
+#             a[ offset + 0 ] = e[ 0 ]
+#             a[ offset + 1 ] = e[ 1 ]
+#             a[ offset + 2 ] = e[ 2 ]
+#             a[ offset + 4 ] = e[ 3 ]
+#             a[ offset + 5 ] = e[ 4 ]
+#             a[ offset + 6 ] = e[ 5 ]
+#             a[ offset + 8 ] = e[ 6 ]
+#             a[ offset + 9 ] = e[ 7 ]
+#             a[ offset + 10 ] = e[ 8 ]
 
-            updated = True
+#             updated = True
 
-        return updated
+#         return updated
 
-    def updateMatrix4( self, uniform:'WgpuUniform' ):
-        updated = False
-        a = self.buffer
-        offset = uniform.offset
-        e = uniform.getValue().elements
-        if arraysEqual( a, e, offset ) == False:
-            a[offset: offset + 16] = e[0:16]
-            # a.set( e, offset )
+#     def updateMatrix4( self, uniform:'WgpuUniform' ):
+#         updated = False
+#         a = self.buffer
+#         offset = uniform.offset
+#         e = uniform.getValue().elements
+#         if arraysEqual( a, e, offset ) == False:
+#             a[offset: offset + 16] = e[0:16]
+#             # a.set( e, offset )
 
-            updated = True
+#             updated = True
         
-        return updated
+#         return updated
 
 
-def arraysEqual( a, b, offset ):
-    for i in range(len(b)):
-        if a[ offset + i ] != b[ i ]:
-            return False
+# def arraysEqual( a, b, offset ):
+#     for i in range(len(b)):
+#         if a[ offset + i ] != b[ i ]:
+#             return False
 
-    return True
+#     return True
 

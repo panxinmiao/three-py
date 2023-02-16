@@ -52,7 +52,7 @@ class WgpuAttributes:
             self._writeBuffer( data.buffer, attribute )
             data.version = attribute.version
 
-    def getArrayBuffer( self, attribute ):
+    def getArrayBuffer( self, attribute ) -> memoryview:
         data = self.get( attribute )
         device = self.device
 
@@ -84,7 +84,7 @@ class WgpuAttributes:
 
         arrayBuffer = gpuReadBuffer.map_read()
 
-        return three.Float32Array( arrayBuffer )
+        return arrayBuffer
 
 
     def _createBuffer( self, attribute: three.BufferAttribute, usage ):

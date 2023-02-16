@@ -1,6 +1,6 @@
 from .material_node import MaterialNode
 from ..display.normal_map_node import NormalMapNode
-from ..shadernode.shader_node_base_elements import texture, materialReference, normalView
+from ..shadernode.shader_node_base_elements import materialReference, normalView
 
 class ExtendedMaterialNode(MaterialNode):
 
@@ -24,7 +24,7 @@ class ExtendedMaterialNode(MaterialNode):
         node = None
         if scope == ExtendedMaterialNode.NORMAL:
             if material.normalMap is not None:
-                node = NormalMapNode(texture(material.normalMap), materialReference( 'normalScale', 'vec2' ))
+                node = NormalMapNode(self.getTexture( 'normalMap' ), materialReference( 'normalScale', 'vec2' ))
             else:
                 node = normalView
 

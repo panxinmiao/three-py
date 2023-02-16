@@ -1,7 +1,6 @@
-#from three.renderer.nodes import Node, NodeUpdateType, FloatNode, Vector2Node, Vector3Node, Vector4Node, ColorNode, TextureNode
-
 from ..core.node import Node
 from ..core.uniform_node import UniformNode
+from ..accessors.texture_node import TextureNode
 from ..core.constants import NodeUpdateType
 
 class ReferenceNode(Node):
@@ -20,18 +19,17 @@ class ReferenceNode(Node):
 
     
     def setNodeType( self, uniformType ):
-        self.node = UniformNode( None, uniformType )
-        self.nodeType = uniformType
 
-        if uniformType == 'color':
-            self.nodeType = 'vec3'
+        if uniformType == 'texture':
+            node = TextureNode( None )
+        else:
+            node = UniformNode( None, uniformType )
 
-        elif uniformType == 'texture':
-            self.nodeType = 'vec4'
+        self.node = node
 
 
-    def getNodeType( self, *args ):
-        return self.uniformType
+    def getNodeType( self, builder ):
+        return self.node.getNodeType( builder )
 
     def update( self, frame ):
         object = self.object if self.object else frame.object
@@ -39,5 +37,11 @@ class ReferenceNode(Node):
         value = getattr(object, self.property)
         self.node.value = value
 
+        # print('ReferenceNode.update()', self, self.property, self.uniformType, self.object, self.node.value)
+
     def generate( self, builder ):
+        # return self.node
         return self.node.build( builder, self.getNodeType( builder ) )
+    
+    def construct( self, *args ):
+        return self.node

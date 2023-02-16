@@ -1,8 +1,6 @@
 import re, math
 import weakref
 
-from three.structure import Dict, NoneAttribute
-
 from ..core.node import Node
 from ..core.const_node import ConstNode
 from ..core.stack_node import StackNode
@@ -84,6 +82,8 @@ class ProxyNode:
 
     def __getattribute__(self, prop: str):
         node = object.__getattribute__(self, 'ori_node')
+        if prop == 'ori_node':
+            return node
         if type(prop) == str and getattr(node, prop) == None:
             if ProxyNode.p1.match(prop):
                 prop = re.sub(r"r|s", 'x', prop)
@@ -97,6 +97,9 @@ class ProxyNode:
                 return ShaderNodeObject(ArrayElementNode(node, ConstNode(int(prop), 'uint')))
                 
         return getattr(node, prop)
+
+    def __repr__(self) -> str:
+        return f'Proxy({str(self.ori_node)})'
 
     def __setattr__(self, prop: str, value):
         node = object.__getattribute__(self, 'ori_node')
@@ -278,9 +281,10 @@ class ConvertType:
 
 
 def getConstNodeType(value):
-    if isinstance(value, NoneAttribute):
-        return value.nodeType or value.convertTo or None
-    else:
-        return value if type(value) == str else None
+    return getattr(value, 'nodeType', None) or getattr(value, 'convertTo', None) or (value if type(value) == str else None)
+    # if isinstance(value, NoneAttribute):
+    #     return value.nodeType or value.convertTo or None
+    # else:
+    #     return value if type(value) == str else None
 
 

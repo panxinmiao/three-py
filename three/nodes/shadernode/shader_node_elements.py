@@ -28,6 +28,7 @@ from ..utils.specular_mip_level_node import SpecularMipLevelNode
 from ..utils.sprite_sheet_uv_node import SpriteSheetUVNode
 from ..utils.timer_node import TimerNode
 from ..utils.triplanar_textures_node import TriplanarTexturesNode
+from ..utils.packing_node import PackingNode
 
 # geometry
 from ..geometry.range_node import RangeNode
@@ -108,6 +109,9 @@ frameId = nodeImmutable( TimerNode, TimerNode.FRAME )
 
 triplanarTextures = nodeProxy( TriplanarTexturesNode )
 triplanarTexture = lambda texture, *args, **kwargs: triplanarTextures( texture, texture, texture, *args, **kwargs )
+
+directionToColor = nodeProxy( PackingNode, PackingNode.DIRECTION_TO_COLOR )
+colorToDirection = nodeProxy( PackingNode, PackingNode.COLOR_TO_DIRECTION )
 
 # geometry
 
