@@ -5,7 +5,6 @@ from ..core.const_node import ConstNode
 from ..accessors.uv_node import UVNode
 from ..math.operator_node import OperatorNode
 from .material_reference_node import MaterialReferenceNode
-from .texture_node import TextureNode
 from ..utils.split_node import SplitNode
 from ..utils.join_node import JoinNode
 
@@ -49,65 +48,75 @@ class MaterialNode(Node):
         # else:
         #     raise Exception( 'Unknown scope: ' + scope )
 
+    def getFloat( self, property):
+        return MaterialReferenceNode( property, 'float' )
+    
+    def getColor( self, property):
+        return MaterialReferenceNode( property, 'color' )
+    
+    def getTexture( self, property):
+        textureRefNode = MaterialReferenceNode( property, 'texture' )
+        textureRefNode.node.uvNode = MaterialNode( MaterialNode.UV )
+        return textureRefNode
+
     def construct( self, builder ):
         material = builder.getContextValue( 'material' )
         scope = self.scope
         node = None
         if scope == MaterialNode.ALPHA_TEST:
-            node = MaterialReferenceNode( 'alphaTest', 'float' )
+            node = self.getFloat( 'alphaTest' )
 
         elif scope == MaterialNode.COLOR:
-            colorNode = MaterialReferenceNode( 'color', 'color' )
+            colorNode = self.getColor( 'color' )
 
             if material.map and material.map.isTexture:
-                map = TextureNode(material.map, MaterialNode( MaterialNode.UV ))
-                node = OperatorNode('*', colorNode, map)
+                node = OperatorNode( '*', colorNode, self.getTexture( 'map' ) )
             else:
                 node = colorNode
 
         elif scope == MaterialNode.OPACITY:
-            opacityNode = MaterialReferenceNode( 'opacity', 'float' )
+            opacityNode = self.getFloat( 'opacity' )
 
             if material.alphaMap and material.alphaMap.isTexture:
-                node = OperatorNode( '*', opacityNode, MaterialReferenceNode( 'alphaMap', 'texture' ) )
+                node = OperatorNode( '*', opacityNode, self.getTexture( 'alphaMap' ) )
             else:
                 node = opacityNode
         
         elif scope == MaterialNode.SHININESS:
-            return MaterialReferenceNode( 'shininess', 'float' )
+            return self.getFloat( 'shininess' )
 
         elif scope == MaterialNode.SPECULAR_COLOR:
-            return MaterialReferenceNode( 'specular', 'color' )
+            return self.getColor( 'specular' )
         
         elif scope == MaterialNode.REFLECTIVITY:
-            reflectivityNode = MaterialReferenceNode( 'reflectivity', 'float' )
+            reflectivityNode = self.getFloat( 'reflectivity' )
 
             if material.specularMap and material.specularMap.isTexture:
-                node = OperatorNode( '*', reflectivityNode, SplitNode( TextureNode( material.specularMap ), 'r' ) )
+                node = OperatorNode( '*', reflectivityNode, SplitNode( self.getTexture( 'specularMap' ), 'r' ) )
             else:
                 node = reflectivityNode
 
         elif scope == MaterialNode.ROUGHNESS:
-            roughnessNode = MaterialReferenceNode('roughness', 'float')
+            roughnessNode = self.getFloat( 'roughness' )
             if material.roughnessMap and material.roughnessMap.isTexture:
-                node = OperatorNode('*', roughnessNode, SplitNode(TextureNode(material.roughnessMap), 'g'))
+                node = OperatorNode( '*', roughnessNode, SplitNode( self.getTexture( 'roughnessMap' ), 'g' ) )
             else:
                 node = roughnessNode
 
         elif scope == MaterialNode.METALNESS:
-            metalnessNode = MaterialReferenceNode('metalness', 'float')
+            metalnessNode = self.getFloat( 'metalness' )
             if material.metalnessMap and material.metalnessMap.isTexture:
-                node = OperatorNode('*', metalnessNode, SplitNode(TextureNode(material.metalnessMap), 'b'))
+                node = OperatorNode( '*', metalnessNode, SplitNode( self.getTexture( 'metalnessMap' ), 'b' ) )
             else:
                 node = metalnessNode
         elif scope == MaterialNode.EMISSIVE:
-            emissiveNode = MaterialReferenceNode('emissive', 'color')
+            emissiveNode = self.getColor( 'emissive' )
             if material.emissiveMap and material.emissiveMap.isTexture:
-                node = OperatorNode('*', emissiveNode, TextureNode(material.emissiveMap) )
+                node = OperatorNode( '*', emissiveNode, self.getTexture( 'emissiveMap' ) )
             else:
                 node = emissiveNode
         elif scope == MaterialNode.ROTATION:
-            node = MaterialReferenceNode( 'rotation', 'float' )
+            node = self.getFloat( 'rotation' )
         
         elif scope == MaterialNode.UV:
 
