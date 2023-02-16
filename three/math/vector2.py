@@ -266,7 +266,7 @@ class Vector2(NoneAttribute):
         self.y = arr[offset + 1]
         return self
 
-    def toArray(self, arr: Float32Array = None, offset: int = 0) -> list:
+    def toArray(self, arr: Float32Array = None, offset: int = 0) -> Float32Array:
         if arr is None:
             arr = Float32Array(2)
         padding = offset + 2 - len(arr)

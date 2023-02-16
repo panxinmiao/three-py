@@ -449,7 +449,7 @@ class Vector4(NoneAttribute):
 
         return self
 
-    def toArray( self, arr: Float32Array = None, offset = 0 ) -> "Vector4":
+    def toArray( self, arr: Float32Array = None, offset = 0 ) -> "Float32Array":
         if arr is None:
             arr = Float32Array(4)
         padding = offset + 4 - len(arr)

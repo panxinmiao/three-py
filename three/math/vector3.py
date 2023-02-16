@@ -439,7 +439,7 @@ class Vector3(NoneAttribute):
         self.z = arr[offset + 2]
         return self
 
-    def toArray(self, arr: Float32Array = None, offset: int = 0) -> list:
+    def toArray(self, arr: Float32Array = None, offset: int = 0) -> Float32Array:
         if arr is None:
             arr = Float32Array(3)
         padding = offset + 3 - len(arr)

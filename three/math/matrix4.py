@@ -799,7 +799,7 @@ class Matrix4(NoneAttribute):
             self.elements[i] = arr[i + offset]
         return self
 
-    def toArray(self, arr: Float32Array = None, offset: int = 0) -> list:
+    def toArray(self, arr: Float32Array = None, offset: int = 0) -> Float32Array:
         if arr is None:
             arr = Float32Array(16)
         padding = offset + 16 - len(arr)
