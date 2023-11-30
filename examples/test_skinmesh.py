@@ -1,11 +1,5 @@
-import three, math, time, os
+import three, math, time
 from wgpu.gui.auto import WgpuCanvas, run
-
-''' 
-    Vulkan backend does not support at present.
-    For more information, see: https://github.com/gfx-rs/naga/pull/1820/commits/65f8750dbae95efd25d60189285269643e9bd453 
-'''
-os.environ["WGPU_BACKEND_TYPE"] = "D3D12"
 
 def createGeometry( sizing ):
     geometry = three.CylinderGeometry( 5, 5, sizing.height, 8, sizing.segmentHeight, True )

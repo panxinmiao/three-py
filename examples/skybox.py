@@ -15,23 +15,23 @@ camera = three.PerspectiveCamera(45, 640 / 480, 0.1, 10000)
 camera.position.z = 300
 scene = three.Scene()
 
-dirLight = three.DirectionalLight(0xffffff)
-dirLight.position.set(1, 0, 1).normalize()
+dirLight = three.DirectionalLight(0xffffff, intensity=3.0)
+dirLight.position.set(3, 0, 1).normalize()
 scene.add(dirLight)
 
-scene.add(three.AmbientLight(0x111111))
+# scene.add(three.AmbientLight(0x111111))
 
 texture_loader = TextureLoader(Path(__file__).parent / "textures", encoding=three.sRGBEncoding)
 
 earth_geometry = three.SphereGeometry(63.71, 100, 50)
 
 earth_material = three.MeshPhongMaterial(
-    specular = 0x333333,
+    specular = 0x111111,
     shininess = 10,
     map=texture_loader.load("planets/earth_atmos_4096.jpg", flip=True),
     specularMap = texture_loader.load( 'planets/earth_specular_2048.jpg', flip=True),
     normalMap = texture_loader.load( 'planets/earth_normal_2048.jpg', flip=True),
-    emissive = 0x111111,
+    emissive = 0x808060,
     emissiveMap = texture_loader.load( 'planets/earth_lights_2048.png', flip=True),
     normalScale = three.Vector2( 0.85, - 0.85 )
 )
@@ -40,7 +40,8 @@ earth_mesh = three.Mesh(earth_geometry, earth_material)
 scene.add(earth_mesh)
 
 earth_clouds_material = three.MeshPhongMaterial(
-    map=texture_loader.load("planets/earth_clouds_2048.png"),
+    map=texture_loader.load("planets/earth_clouds_2048.png", flip=True),
+    side = three.FrontSide,
     transparent = True
 )
 
@@ -58,7 +59,6 @@ env_text_urls = ['dark-s_px.jpg', 'dark-s_nx.jpg',
 
 loader = CubeTextureLoader(env_text_path, encoding=three.sRGBEncoding)
 env_texture = loader.load(env_text_urls)
-env_texture.generateMipmaps = True
 
 scene.background = three.nodes.CubeTextureNode(env_texture)
 

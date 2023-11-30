@@ -11,7 +11,6 @@ class IdProvider:
         self._lock = threading.RLock()
 
     def claim_id(self, wobject):
-        """Used by wobjects to claim an id."""
         # We don't simply count up, but keep a pool of ids. This is
         # because an application *could* create and discard objects at
         # a high rate, so we want to be able to re-use these ids.
