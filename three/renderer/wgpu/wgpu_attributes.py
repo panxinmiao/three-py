@@ -3,7 +3,6 @@ from .constants import GPUBufferUsage
 from ...structure import Dict
 import three
 import wgpu
-import wgpu.backends.rs
 
 class WgpuAttributes:
 
@@ -60,12 +59,15 @@ class WgpuAttributes:
         size = gpuBuffer.size
 
         gpuReadBuffer = data.readBuffer
+        needsUnmap = True
         
         if gpuReadBuffer is None:
             gpuReadBuffer = device.create_buffer(
                 size = size,
                 usage = GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ
             )
+
+            needsUnmap = False
 
             data.readBuffer = gpuReadBuffer
 
@@ -79,10 +81,14 @@ class WgpuAttributes:
             size
         )
 
+        if needsUnmap:
+            gpuReadBuffer.unmap()
+
         gpuCommands = cmdEncoder.finish()
         device.queue.submit( [ gpuCommands ] )
 
-        arrayBuffer = gpuReadBuffer.map_read()
+        gpuReadBuffer.map("READ")
+        arrayBuffer = gpuReadBuffer.read_mapped()
 
         return arrayBuffer
 

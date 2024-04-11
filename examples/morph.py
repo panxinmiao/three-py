@@ -123,7 +123,7 @@ def generateMorphTargetsTexture( geometry ):
 
 canvas = WgpuCanvas(size=(640, 480), max_fps=60, title="wgpu_renderer")
 
-render = three.WgpuRenderer(canvas, antialias = True)
+render = three.WgpuRenderer(canvas, antialias = True, requiredFeatures = ["texture_adapter_specific_format_features"])
 render.init()
 
 camera = three.PerspectiveCamera(45, 640 / 480, 0.01, 100)

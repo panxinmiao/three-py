@@ -60,7 +60,7 @@ wgslTypeLib = {
 
 wgslMethods = {
     'dFdx': 'dpdx',
-    'dFdy': 'dpdy',
+    'dFdy': '- dpdy',
     'inversesqrt': 'inverseSqrt',
     'mod': '_mod'
 }

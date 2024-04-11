@@ -1,52 +1,81 @@
+import base64, types
 from three import Color, Matrix3, Matrix4, Vector2, Vector3, Vector4
 
-def getNodesKeys( object:'object' ):
-    from .node import Node
-    props = []
-    for name in object.__dict__:
-        value = object.__dict__[ name ]
-        if value and isinstance(value, Node):
-            props.append( name )
+def getNodeChildren( node:'object' ):
+    
+    for property in node.__dict__:
 
-    return props
+        if property.startswith('_'):
+            continue
+
+        _object = node.__dict__[property]
+        if isinstance(_object, list):
+            for index, child in enumerate(_object):
+                if child and getattr(child, 'isNode', False):
+                    yield property, index, child
+
+        elif _object and getattr(_object, 'isNode', False):
+            yield property, None, _object
+
+        elif isinstance(_object, dict):
+            for subProperty in _object:
+                child = _object[subProperty]
+                if child and getattr(child, 'isNode', False):
+                    yield property, subProperty, child
+
 
 def getCacheKey( object ):
     cacheKey = '{'
 
     if object.isNode:
-        cacheKey += f'uuid:"{ object.uuid }",'
+        cacheKey += object.id
 
-    for property in getNodesKeys( object ):
-        cacheKey += f'{ property }:{ object[ property ].getCacheKey() },'
+    for property, _ , childNode in getNodeChildren( object ):
+        cacheKey += f',{ property[0:-4] }:{ childNode.getCacheKey() }'
 
     cacheKey += '}'
 
     return cacheKey
 
 def getValueType( value ):
-    if type(value) == int or type(value) == float:
+    if value is None:
+        return None
+    
+    if getattr(value, 'isNode', False):
+        return 'node'
+
+    elif type(value) is int or type(value) is float:
         return 'float'
 
-    elif type(value) == bool:
+    elif type(value) is bool:
         return 'bool'
 
-    elif value and isinstance(value, Vector2):
+    elif type(value) is str:
+        return 'string'
+    
+    elif type(value) is types.FunctionType:
+        return 'shader'
+
+    elif isinstance(value, Vector2):
         return 'vec2'
 
-    elif value and isinstance(value, Vector3):
+    elif isinstance(value, Vector3):
         return 'vec3'
 
-    elif value and isinstance(value, Vector4):
+    elif isinstance(value, Vector4):
         return 'vec4'
 
-    elif value and isinstance(value, Matrix3):
+    elif isinstance(value, Matrix3):
         return 'mat3'
 
-    elif value and isinstance(value, Matrix4):
+    elif isinstance(value, Matrix4):
         return 'mat4'
 
-    elif value and isinstance(value, Color):
+    elif isinstance(value, Color):
         return 'color'
+
+    elif isinstance(value, bytearray):
+        return 'ArrayBuffer'
 
     return None
 
@@ -56,6 +85,14 @@ def getValueFromType(type, *params):
     
     last4 = type[-4:]
 
+    if len(params) == 1:
+        if last4 == 'vec2':
+            params = [ params[ 0 ], params[ 0 ] ]
+        elif last4 == 'vec3':
+            params = [ params[ 0 ], params[ 0 ], params[ 0 ] ]
+        elif last4 == 'vec4':
+            params = [ params[ 0 ], params[ 0 ], params[ 0 ], params[ 0 ] ]
+    
     if type == 'color':
         return Color( *params )
 
@@ -79,5 +116,11 @@ def getValueFromType(type, *params):
 
     elif type == 'float' or type == 'int' or type == 'uint':
         return params[ 0 ] or 0
+    
+    elif type == 'string':
+        return params[ 0 ] or ''
+
+    elif type == 'ArrayBuffer':
+        return bytearray( base64.b64decode( params[0] ) )
 
     return None

@@ -1,4 +1,3 @@
-#from three.renderer.nodes import InputNode
 from .uniform_node import UniformNode 
 
 class ArrayUniformNode(UniformNode):

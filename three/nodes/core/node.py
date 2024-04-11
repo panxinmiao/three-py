@@ -1,60 +1,56 @@
 import uuid, warnings
 
-#from three.renderer.nodes import NodeUpdateType, NodeBuilder
-from three.structure import NoneAttribute
+from three.core import EventDispatcher
 from .constants import NodeUpdateType
 from .node_builder import NodeBuilder
-from .node_utils import getCacheKey
+from .node_utils import getCacheKey, getNodeChildren
 
 _nodeId = 0
 
-class Node(NoneAttribute):
+class Node(EventDispatcher):
 
     isNode = True
 
     def __init__(self, nodeType = None) -> None:
         self.nodeType = nodeType
         self.updateType = NodeUpdateType.NONE
+        self.updateBeforeType = NodeUpdateType.NONE
         self.uuid = uuid.uuid1()
-        self.isNode = True
         global _nodeId
-        self.id = _nodeId
+        self.__id = _nodeId
         _nodeId += 1
+
+    @property
+    def id(self):
+        return self.__id
 
     @property
     def type(self):
         return self.__class__.__name__
+    
+    def getSelf(self):
+        # non-node object
+        return getattr(self, 'selfNode', self)
+    
+    def updateReference(self):
+        return self
 
     def isGlobal(self, *args):  # ( builder )
         return False
 
     def getChildren(self):
-        children = []
-        for property in self.__dict__:
-            _object = self.__dict__[property]
-            if isinstance(_object, list):
-                for child in _object:
-                    if child and isinstance(child, Node):
-                        children.append(child)
+        for _, _ ,childNode in getNodeChildren( self ):
+            yield childNode
 
-            elif _object and isinstance(_object, Node):
-                children.append(_object)
-            # elif isinstance(_object, object):
-            elif isinstance(_object, dict):
-                for property in _object:
-                    child = _object[property]
-                    if child and isinstance(child, Node):
-                        children.append(child)
-            # elif hasattr(_object, '__dict__'):
-            #     for property in _object.__dict__:
-            #         child = _object.__dict__[property]
-            #         if child and isinstance(child, Node):
-            #             children.append(child)
+    def dispose(self):
+        self.dispatchEvent('dispose')
 
-        return children
+    def traverse(self, callback):
+        callback( self )
+        for childNode in self.getChildren():
+            childNode.traverse( callback )
 
     def getCacheKey(self):
-        # needs to be verified
         return getCacheKey( self )
 
     def getHash(self, *args):       # ( builder )
@@ -62,29 +58,41 @@ class Node(NoneAttribute):
 
     def getUpdateType(self, *args):  # ( builder )
         return self.updateType
+    
+    def getUpdateBeforeType(self, *args):  # ( builder )
+        return self.updateBeforeType
 
-    def getNodeType(self, *args):  # ( builder )s
+    def getNodeType(self, builder:'NodeBuilder', *args):
+        outputNode = builder.getNodeProperties(self).outputNode
+        if outputNode:
+            return outputNode.getNodeType( builder )
+
         return self.nodeType
     
-    # def getConstructHash(self, *args ):
-    #     return str(self.uuid)
-
-    def getReference(self, builder):
+    def getShared(self, builder:'NodeBuilder'):
         hash = self.getHash(builder)
         nodeFromHash = builder.getNodeFromHash(hash)
         return nodeFromHash or self
-
-    def construct(self, builder):
+    
+    def getReference(self, builder:'NodeBuilder'):
+        # deprecated
+        warnings.warn('getReference is deprecated, use getShared instead.')
+        return self.getShared(builder)
+    
+    def setup(self, builder:'NodeBuilder'):
         nodeProperties = builder.getNodeProperties(self)
-
         for childNode in self.getChildren():
             nodeProperties['_node' + str(childNode.id)] = childNode
-
+        
         # return a outputNode if exists
         return None
 
+    def construct(self, builder:'NodeBuilder'):
+        # deprecated
+        # warnings.warn('construct is deprecated, use setup instead.')
+        return self.setup(builder)
+
     def analyze( self, builder:'NodeBuilder' ):
-        # refNode = self.getReference(builder)
         nodeData = builder.getDataFromNode(self)
         nodeData.dependenciesCount = 1 if nodeData.dependenciesCount is None else nodeData.dependenciesCount + 1
 
@@ -100,12 +108,15 @@ class Node(NoneAttribute):
 
         if outputNode and outputNode.isNode:
             return outputNode.build(builder, output)
+    
+    def updateBefore(self, *args):  # ( frame )
+        warnings.warn('Abstract function.')
 
-    def update(self, *args):  # ( builder )
+    def update(self, *args):  # ( frame )
         warnings.warn('Abstract function.')
 
     def build( self, builder:'NodeBuilder', output = None ):
-        refNode = self.getReference(builder)
+        refNode = self.getShared(builder)
 
         if self != refNode:
             return refNode.build(builder, output)
@@ -114,21 +125,27 @@ class Node(NoneAttribute):
         builder.addStack( self )
 
         '''
-        expected return:
-            - "construct"    -> Node
-            - "analyze"      -> null
+        expected results:
+            - "setup"    -> Node
+            - "analyze"      -> None
             - "generate"     -> String
         '''
 
         result = None
         buildStage = builder.getBuildStage()
 
-        if buildStage == 'construct':
+        if buildStage == 'setup' or buildStage == 'construct':
             properties = builder.getNodeProperties(self)
 
             if properties.initialized != True or builder.context.tempRead == False:
+
+                # stackNodesBeforeSetup = len(builder.stack.nodes)
+
                 properties.initialized = True
                 properties["outputNode"] = self.construct(builder)
+
+                # if properties.outputNode and len(builder.stack.nodes) != stackNodesBeforeSetup:
+                #     properties.outputNode = builder.stack
 
                 for childNode in properties.values():
                     if childNode and isinstance(childNode, Node):
@@ -152,15 +169,32 @@ class Node(NoneAttribute):
             else:
                 result = self.generate(builder, output) or ''
 
-        builder.removeStack( self )
+        # builder.removeChain( self )
+        builder.removeStack(self)
 
         return result
 
+    def getSerializeChildren(self):
+        return getNodeChildren(self)
     
     def serialize( self, json ):
         raise NotImplementedError
 
-
-
     def deserialize( self, json ):
         raise NotImplementedError
+
+_NodeClasses = {}
+
+def addNodeClass(classType, nodeClass):
+    if not issubclass(nodeClass, Node) or classType is None:
+        raise Exception(f'Node class {classType} is not a class')
+
+    if classType in _NodeClasses:
+        raise Exception(f'Redefinition of node class {classType}')
+    _NodeClasses[classType] = nodeClass
+    nodeClass.type = classType
+
+def createNodeFromType(classType):
+    Cls = _NodeClasses.get( classType, None )
+    if Cls:
+        return Cls()

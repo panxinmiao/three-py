@@ -7,7 +7,7 @@ SUMMARY = "A Python render engine like threejs"
 with open(f"three/__init__.py") as fh:
     VERSION = re.search(r"__version__ = \"(.*?)\"", fh.read()).group(1)
 
-runtime_deps = ["wgpu>=0.9.0,<0.10.0"]
+runtime_deps = ["wgpu>=0.15.0,<0.16.0"]
 
 setup(
     name=NAME,

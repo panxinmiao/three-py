@@ -38,9 +38,9 @@ Also see the [examples](./examples/).
 import three
 from wgpu.gui.auto import WgpuCanvas, run
 
-canvas = WgpuCanvas(size=(640, 480), title="wgpu_renderer")
+canvas = WgpuCanvas(size=(640, 480), title="cube")
 
-render = three.WgpuRenderer(canvas, antialias = True)
+render = three.WgpuRenderer(canvas, antialias=True)
 render.init()
 
 camera = three.PerspectiveCamera(70, 640 / 480, 0.01, 100)
