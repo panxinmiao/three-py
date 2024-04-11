@@ -89,7 +89,7 @@ class Node(EventDispatcher):
 
     def construct(self, builder:'NodeBuilder'):
         # deprecated
-        warnings.warn('construct is deprecated, use setup instead.')
+        # warnings.warn('construct is deprecated, use setup instead.')
         return self.setup(builder)
 
     def analyze( self, builder:'NodeBuilder' ):

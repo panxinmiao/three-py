@@ -11,10 +11,6 @@ class Vector4(NoneAttribute):
 
         self._buffer = array('f', [x, y, z, w])
 
-        # self.x = x
-        # self.y = y
-        # self.z = z
-        # self.w = w
 
     @property
     def x(self):
@@ -68,17 +64,15 @@ class Vector4(NoneAttribute):
         return f"Vector4({self.x}, {self.y}, {self.z}, {self.w})"
 
     def set(self, x: float, y: float, z: float, w: float) -> "Vector4":
-        self.x = x
-        self.y = y
-        self.z = z
-        self.w = w
+        self._buffer[:] = [x, y, z, w]
         return self
 
     def setScalar( self, scalar ) -> "Vector4":
-        self.x = scalar
-        self.y = scalar
-        self.z = scalar
-        self.w = scalar
+        self._buffer[:] = [scalar, scalar, scalar, scalar]
+        # self.x = scalar
+        # self.y = scalar
+        # self.z = scalar
+        # self.w = scalar
         return self
 
     def setX( self, x ) -> "Vector4":
@@ -99,30 +93,15 @@ class Vector4(NoneAttribute):
 
 
     def setComponent( self, index, value ) -> "Vector4":
-        if index == 0:
-            self.x = value
-        elif index == 1:
-            self.y = value
-        elif index == 2:
-            self.z = value
-        elif index == 3:
-            self.w = value
-        else:
+        if index < 0 or index > 3:
             raise RuntimeError(f'index:{index} out of range')
-
+        self._buffer[index] = value
         return self
 
     def getComponent( self, index ):
-        if index == 0:
-            return self.x
-        elif index == 1:
-            return self.y
-        elif index == 2:
-            return self.z
-        elif index == 3:
-            return self.w
-        else:
+        if index < 0 or index > 3:
             raise RuntimeError(f'index:{index} out of range')
+        return self._buffer[index]
 
     def copy( self, v:'Vector4' ) -> "Vector4":
         self.x = v.x

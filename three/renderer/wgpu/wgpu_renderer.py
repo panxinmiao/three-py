@@ -1,5 +1,4 @@
 import wgpu, math, three
-import wgpu.backends.rs
 from warnings import warn
 from ...structure import Dict, Uint16Array, NoneAttribute
 from ...math import Color, Frustum, Matrix4, Vector3
@@ -123,7 +122,7 @@ class WgpuRenderer(NoneAttribute):
         #     'powerPreference': parameters.powerPreference
         # }
 
-        adapter = wgpu.request_adapter(
+        adapter = wgpu.gpu.request_adapter(
             canvas = self._canvas, power_preference = parameters.powerPreference
         )
 
@@ -146,7 +145,7 @@ class WgpuRenderer(NoneAttribute):
 
         # render_texture_format = context.get_preferred_format(device.adapter)
 
-        context.configure( device = device, format = GPUTextureFormat.BGRA8Unorm, alpha_mode= 'premultiplied')  # GPUTextureFormat.BGRA8Unorm
+        context.configure( device = device, format = GPUTextureFormat.BGRA8Unorm, alpha_mode= 'opaque')  # GPUTextureFormat.BGRA8Unorm
 
         self._adapter = adapter
         self._device = device
@@ -266,10 +265,10 @@ class WgpuRenderer(NoneAttribute):
 
                 #GPUTextureView( "", view_id, self._device, None, size)
 
-                colorAttachment.resolve_target = self._context.get_current_texture() #.create_view()
+                colorAttachment.resolve_target = self._context.get_current_texture().create_view()
 
             else:
-                colorAttachment.view = self._context.get_current_texture() #.create_view()
+                colorAttachment.view = self._context.get_current_texture().create_view()
                 colorAttachment.resolve_target = None
             
             depthStencilAttachment.view = self._depthBuffer.create_view()
@@ -333,10 +332,11 @@ class WgpuRenderer(NoneAttribute):
 
 
     def getSize( self, target=None ):
+        w, h = self._canvas.get_logical_size()
         if target and target.isVector2:
-            return target.set(self._width, self._height)
+            return target.set(w, h)
         else:
-            return (self._width, self._height)
+            return (w, h)
 
     # def setPixelRatio( self, value = 1 ):
     #     self._pixelRatio = value
