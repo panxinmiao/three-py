@@ -126,6 +126,6 @@ class Matrix4Uniform(WgpuUniform):
         self.itemSize = 16
     
     def getBuffer(self):
-        return memoryview(self.getValue()._buffer)
+        return memoryview(self.getValue().elements)
 
 

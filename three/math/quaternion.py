@@ -7,6 +7,8 @@ import three
 
 class Quaternion(NoneAttribute):
 
+    __slots__ = ['_x', '_y', '_z', '_w']
+
     isQuaternion = True
 
     def __init__(self, x: float = 0, y: float = 0, z: float = 0, w: float = 1) -> None:

@@ -34,6 +34,8 @@ def toComponents( source, target ):
 # @TODO ColorSpace
 class Color(NoneAttribute):
 
+    __slots__ = ['_buffer']
+
     isColor = True
 
     def __init__(self, r=None, g=None, b=None) -> None:

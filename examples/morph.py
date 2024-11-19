@@ -4,8 +4,8 @@ import three
 import three.nodes
 from three.nodes import positionLocal, buffer, vertexIndex, element, add, bypass, skinning, modelViewProjection, uint
 from wgpu.gui.auto import WgpuCanvas, run
-
-# os.environ["WGPU_BACKEND_TYPE"] = "D3D12"
+from imgui_bundle import imgui
+from wgpu.utils.imgui import ImguiRenderer
 
 getMorph = three.nodes.FunctionNode('''
     fn getMorph( tex: texture_3d<f32>, vertex_index: u32, morph_index: u32 ) -> vec4<f32> {
@@ -34,7 +34,7 @@ class MorphMaterial(three.nodes.MeshNormalNodeMaterial):
             for i in range(len(object.morphTargetInfluences)):
                 morph = getMorph({"tex": morphTextureNode, "vertex_index": vertexIndex, "morph_index": uint(i)})
                 # morphPosition = storage(geometry.morphAttributes.position[i], 'vec3', geometry.morphAttributes.position[i].count)
-                morphWeight = element(morphTargetInfluences, i).x
+                morphWeight = element(morphTargetInfluences, uint(i)).x
                 stack.assign(vertex, add(vertex, morph * morphWeight))
 
 
@@ -123,8 +123,8 @@ def generateMorphTargetsTexture( geometry ):
 
 canvas = WgpuCanvas(size=(640, 480), max_fps=60, title="wgpu_renderer")
 
-render = three.WgpuRenderer(canvas, antialias = True, requiredFeatures = ["texture_adapter_specific_format_features"])
-render.init()
+renderer = three.WgpuRenderer(canvas, antialias = True)
+renderer.init()
 
 camera = three.PerspectiveCamera(45, 640 / 480, 0.01, 100)
 camera.position.z = 10
@@ -154,17 +154,53 @@ def updateMorphTargetInfluencesTypedArray(morphTargetInfluences, influencesArray
     for i in range(len(morphTargetInfluences)):
         influencesArray[i*4] = morphTargetInfluences[i]
 
+
+gui_renderer = ImguiRenderer(renderer._device, canvas, render_target_format=renderer._color_format)
+
+state = {
+    "auto": True,
+    "spherify": 0,
+    "twist": 0,
+}
+
+
+def draw_imgui():
+    imgui.new_frame()
+    imgui.set_next_window_size((250, 0), imgui.Cond_.always)
+    imgui.set_next_window_pos(
+        (gui_renderer.backend.io.display_size.x - 250, 0), imgui.Cond_.always
+    )
+    is_expand, _ = imgui.begin(
+        "Morph Targets",
+        None,
+        flags=imgui.WindowFlags_.no_move | imgui.WindowFlags_.no_resize,
+    )
+    if is_expand:
+        _, state["auto"] = imgui.checkbox("animate", state["auto"])
+        if state["auto"]:
+            t = time.time()
+            state["spherify"] = (math.sin(t)+1)/2
+            state["twist"] = (math.cos(t+1)+1)/2
+        _, state["spherify"] = imgui.slider_float("spherify", state["spherify"], 0, 1)
+        _, state["twist"] = imgui.slider_float("twist", state["twist"], 0, 1)
+
+    imgui.end()
+    imgui.end_frame()
+    imgui.render()
+    return imgui.get_draw_data()
+
+
+gui_renderer.set_gui(draw_imgui)
+
 def loop():
-    now = time.time()
-    mesh.morphTargetInfluences[ 0 ] = (math.sin(now)+1)/2
-    mesh.morphTargetInfluences[ 1 ] = (math.cos(now+1)+1)/2
+    mesh.morphTargetInfluences[ 0 ] = state["spherify"]
+    mesh.morphTargetInfluences[ 1 ] = state["twist"]
     updateMorphTargetInfluencesTypedArray(mesh.morphTargetInfluences, mesh.influences)
 
-    # mesh.rotation.x += 0.01
-    # mesh.rotation.y += 0.02
-    render.render(scene, camera)
+    renderer.render(scene, camera)
+    gui_renderer.render()
 
-render.setAnimationLoop(loop)
+renderer.setAnimationLoop(loop)
 
 if __name__ == '__main__':
     run()

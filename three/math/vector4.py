@@ -5,6 +5,8 @@ from ..structure import NoneAttribute, Float32Array
 
 class Vector4(NoneAttribute):
 
+    __slots__ = ['_buffer']
+
     isVector4 = True
 
     def __init__(self, x: float = 0, y: float = 0, z: float = 0, w: float = 0) -> None:

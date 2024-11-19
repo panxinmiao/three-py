@@ -10,6 +10,8 @@ import three
 
 class Euler(NoneAttribute):
 
+    __slots__ = ["_x", "_y", "_z", "_order"]
+
     isEuler = True
 
     class RotationOrders(Enum):

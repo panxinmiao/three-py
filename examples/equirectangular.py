@@ -7,7 +7,7 @@ from loaders.texture_loader import TextureLoader, RGBELoader
 
 canvas = WgpuCanvas(size=(640, 480), max_fps=60, title="wgpu_renderer")
 
-render = three.WgpuRenderer(canvas, antialias = True, requiredFeatures = ["float32-filterable"])
+render = three.WgpuRenderer(canvas, antialias = True)
 render.init()
 
 camera = three.PerspectiveCamera(45, 640 / 480, 0.25, 20)

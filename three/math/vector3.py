@@ -9,6 +9,7 @@ from .quaternion import Quaternion
 from ..structure import NoneAttribute, Float32Array
 
 class Vector3(NoneAttribute):
+    __slots__ = ["_buffer"]
 
     isVector3 = True
 

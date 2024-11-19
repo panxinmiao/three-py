@@ -122,7 +122,7 @@ class WgpuRenderer(NoneAttribute):
         #     'powerPreference': parameters.powerPreference
         # }
 
-        adapter = wgpu.gpu.request_adapter(
+        adapter = wgpu.gpu.request_adapter_sync(
             canvas = self._canvas, power_preference = parameters.powerPreference
         )
 
@@ -132,6 +132,9 @@ class WgpuRenderer(NoneAttribute):
             raise Exception('WebGPURenderer: Unable to create WebGPU adapter.')
 
 
+        if "float32-filterable" not in parameters.requiredFeatures:
+            parameters.requiredFeatures.append( "float32-filterable" ) # we add this feature by default
+
         deviceDescriptor = {
             'required_features': parameters.requiredFeatures,
             'required_limits': parameters.requiredLimits
@@ -139,13 +142,15 @@ class WgpuRenderer(NoneAttribute):
 
         # device = await adapter.requestDevice( deviceDescriptor );
 
-        device:wgpu.GPUDevice = adapter.request_device(**deviceDescriptor)
+        device:wgpu.GPUDevice = adapter.request_device_sync(**deviceDescriptor)
 
         context:'wgpu.GPUCanvasContext' = parameters.context if parameters.context is not None else self._canvas.get_context()
 
         # render_texture_format = context.get_preferred_format(device.adapter)
 
-        context.configure( device = device, format = GPUTextureFormat.BGRA8Unorm, alpha_mode= 'opaque')  # GPUTextureFormat.BGRA8Unorm
+        self._color_format = GPUTextureFormat.BGRA8Unorm
+
+        context.configure( device = device, format = self._color_format, alpha_mode= 'opaque')  # GPUTextureFormat.BGRA8Unorm
 
         self._adapter = adapter
         self._device = device
@@ -710,7 +715,7 @@ class WgpuRenderer(NoneAttribute):
                     'depth_or_array_layers': 1
                 },
                 sample_count = self._parameters.sampleCount,
-                format= GPUTextureFormat.BGRA8Unorm,
+                format= self._color_format,
                 usage= GPUTextureUsage.RENDER_ATTACHMENT
             )
 
@@ -737,7 +742,7 @@ class WgpuRenderer(NoneAttribute):
         if device:
             self._context.configure(
                 device= device,
-                format= GPUTextureFormat.BGRA8Unorm,
+                format= self._color_format,
                 usage= GPUTextureUsage.RENDER_ATTACHMENT,
                 alpha_mode='premultiplied'
                 # size= {
