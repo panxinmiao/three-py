@@ -7,7 +7,7 @@ SUMMARY = "A Python render engine like threejs"
 with open(f"three/__init__.py") as fh:
     VERSION = re.search(r"__version__ = \"(.*?)\"", fh.read()).group(1)
 
-runtime_deps = ["wgpu>=0.15.0,<0.16.0"]
+runtime_deps = ["wgpu>=0.19.0,<0.20.0"]
 
 setup(
     name=NAME,
@@ -23,7 +23,7 @@ setup(
     packages=find_packages(
         include=["three", 'three.*'], exclude=["*.tests", "*.tests.*", "tests.*", "tests"]
     ),
-    python_requires=">=3.7.0",
+    python_requires=">=3.9.0",
     install_requires=runtime_deps,
     license="MIT",
     description=SUMMARY,

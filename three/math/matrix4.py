@@ -6,6 +6,7 @@ from ..structure import NoneAttribute, Float32Array
 import three
 
 class Matrix4(NoneAttribute):
+    __slots__ = ["elements"]
 
     isMatrix4 = True
 
@@ -17,7 +18,7 @@ class Matrix4(NoneAttribute):
             0, 0, 0, 1,
         ])
 
-        self._buffer = self.elements
+        # self._buffer = self.elements
 
     def __repr__(self) -> str:
         return f"Matrix4({self.elements[0]}, {self.elements[1]}, {self.elements[2]}, {self.elements[3]}, {self.elements[4]}, {self.elements[5]}, {self.elements[6]}, {self.elements[7]}, {self.elements[8]}, {self.elements[9]}, {self.elements[10]}, {self.elements[11]}, {self.elements[12]}, {self.elements[13]}, {self.elements[14]}, {self.elements[15]})"

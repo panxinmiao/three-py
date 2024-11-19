@@ -4,6 +4,8 @@ from ..structure import NoneAttribute, Float32Array
 
 class Matrix3(NoneAttribute):
 
+    __slots__ = ['elements']
+
     isMatrix3 = True
 
     def __init__(self) -> None:
